@@ -3,17 +3,17 @@ import { client, config } from "../..";
 import { Event, ServerManager } from "../../structs";
 
 const excludeChannels = [
-    config.dcGuild.channels.staff,
-    config.dcGuild.channels.dev,
-    config.dcGuild.channels.work,
-    config.dcGuild.channels.logs
+    config.guild.channels.staff,
+    config.guild.channels.dev,
+    config.guild.channels.work,
+    config.guild.channels.logs
 ]
 
 export default new Event({name: "messageDelete", async run(message){
     const { guild, channel, member } = message;
     if (!guild || guild.id != client.mainGuildID || channel.type != ChannelType.GuildText || member?.id == client.onwerID) return;
 
-    const cLogs = ServerManager.findChannel(guild, config.dcGuild.channels.logs, ChannelType.GuildText) as TextChannel | undefined; 
+    const cLogs = ServerManager.findChannel(guild, config.guild.channels.logs, ChannelType.GuildText) as TextChannel | undefined; 
 
     if (!cLogs) return;
     if (excludeChannels.includes(channel.name)) return;

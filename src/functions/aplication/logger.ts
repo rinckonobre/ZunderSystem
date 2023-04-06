@@ -11,10 +11,10 @@ export function logger(message: string){
         return;
     }
 
-    const cLogs = ServerManager.findChannel(guild, config.dcGuild.channels.logs) as TextChannel | undefined;
+    const cLogs = ServerManager.findChannel(guild, config.guild.channels.logs) as TextChannel | undefined;
     if (!cLogs) {
-        console.log("Não foi possível localizar o chat de logs")
-        console.log(message)
+        console.log("Não foi possível localizar o chat de logs");
+        console.log(message);
         return;
     }
 

@@ -1,7 +1,6 @@
 import { ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
-import { db } from "../..";
+import { config, db } from "../..";
 
-import { colors, dcGuild } from "../../config.json";
 import { DocPlayer, ServerManager } from "../../structs";
 
 export const systemExperience = {
@@ -56,14 +55,14 @@ export const systemExperience = {
             //     MemberDataManager.add(`inventory.coins`, coinsReward);
             //     memberData.inventory.coins += coinsReward;
             // }
-            const cAudit = ServerManager.findChannel(member.guild, dcGuild.channels.audit, ChannelType.GuildText) as TextChannel | undefined;
+            const cAudit = ServerManager.findChannel(member.guild, config.guild.channels.audit, ChannelType.GuildText) as TextChannel | undefined;
             //guildManager.findChannel<TextChannel>(dcGuild.channels.audit, ChannelType.GuildText);
             if (cAudit) {
                 const emojiLevel = ServerManager.findEmoji(member.guild, `${type}Level`);
                 const emojiCoins = ServerManager.findEmoji(member.guild, `coins`);
 
                 const embed = new EmbedBuilder()
-                .setColor(colors.systems.interaction as ColorResolvable)
+                .setColor(config.colors.systems.interaction as ColorResolvable)
                 .setDescription(`${emojiLevel} ${member} subiu para o nível de ${type == "work" ? "trabalho" : "interação"} \`${newLevel}\` 
                 Recompensa: ${emojiCoins} \`${coinsReward}\` moedas `)
 

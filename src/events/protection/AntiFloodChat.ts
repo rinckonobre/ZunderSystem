@@ -14,8 +14,8 @@ export default new Event({name: 'messageCreate', async run(message){
 
     if (member.id == guildManager.guild.ownerId) return;
     
-    const cGeneral = guildManager.findChannel<TextChannel>(config.dcGuild.channels.general, ChannelType.GuildText);
-    const cTerms = guildManager.findChannel<TextChannel>(config.dcGuild.channels.terms, ChannelType.GuildText);
+    const cGeneral = guildManager.findChannel<TextChannel>(config.guild.channels.general, ChannelType.GuildText);
+    const cTerms = guildManager.findChannel<TextChannel>(config.guild.channels.terms, ChannelType.GuildText);
 
     const times = MemberCooldowns.AntiFloodChat.get(member)
     if (!times) {

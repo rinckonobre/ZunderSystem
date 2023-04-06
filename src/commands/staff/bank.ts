@@ -1,8 +1,8 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
 
-import { colors, dcGuild } from "../../config.json";
 import { systemRegister } from "../../functions";
 import { BreakInteraction, Command, DiscordCreate, DocGuild, DocPlayer, Firestore, GuildManager } from "../../structs";
+import { config } from "../..";
 
 const playersColl = new Firestore("players");
 const guildsColl = new Firestore("guilds");
@@ -66,7 +66,7 @@ export default new Command({
         }
 
         const guildManager = new GuildManager(guild);
-        const cBank = guildManager.findChannel<TextChannel>(dcGuild.channels.bank, ChannelType.GuildText);
+        const cBank = guildManager.findChannel<TextChannel>(config.guild.channels.bank, ChannelType.GuildText);
         if (!cBank) {
             new BreakInteraction(interaction, "O chat do banco não está disponível!");
             return;
@@ -107,16 +107,16 @@ export default new Command({
 
                 const embed = new EmbedBuilder()
                     .setTitle("📥 Valor adicionado")
-                    .setColor(colors.systems.economy as ColorResolvable)
+                    .setColor(config.colors.systems.economy as ColorResolvable)
                     .setDescription(`${mention} **${mention.user.tag}** apoiou o grupo
                 💵 Valor: \` ${value} \` reais`);
 
                 cBank.edit({ topic: `Valor total em conta: ${guildData.bank.total} reais` });
                 cBank.send({ embeds: [embed] });
 
-                interaction.reply({ ephemeral: true, embeds: [DiscordCreate.simpleEmbed(colors.success, `${value} reais adicionado ao banco da Zunder!`)] });
+                interaction.reply({ ephemeral: true, embeds: [DiscordCreate.simpleEmbed(config.colors.success, `${value} reais adicionado ao banco da Zunder!`)] });
 
-                const supporterRole = guildManager.findRole(dcGuild.roles.functional.supporter);
+                const supporterRole = guildManager.findRole(config.guild.roles.functional.supporter);
                 if (supporterRole) {
                     if (!mention.roles.cache.has(supporterRole.id)) mention.roles.add(supporterRole);
 
@@ -153,7 +153,7 @@ export default new Command({
                 const reason = options.getString("motivo", true);
 
                 const embed = new EmbedBuilder()
-                    .setColor(colors.danger as ColorResolvable)
+                    .setColor(config.colors.danger as ColorResolvable)
                     .setTitle("📤 Valor gasto")
                     .setDescription(`💵 Valor: \` ${value} \` reais
                 > Motivo: ${reason}`);
@@ -161,7 +161,7 @@ export default new Command({
                 cBank.edit({ topic: `Valor total em conta: ${guildData.bank.total} reais` });
                 cBank.send({ embeds: [embed] });
 
-                interaction.reply({ ephemeral: true, embeds: [DiscordCreate.simpleEmbed(colors.success, `${value} reais removidos do banco da Zunder!`)] });
+                interaction.reply({ ephemeral: true, embeds: [DiscordCreate.simpleEmbed(config.colors.success, `${value} reais removidos do banco da Zunder!`)] });
 
                 guildsColl.saveDocData(guild.id, guildData);
                 break;

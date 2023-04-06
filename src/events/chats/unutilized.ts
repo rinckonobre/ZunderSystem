@@ -14,7 +14,7 @@ export default new Event({
 
         if (channel.parent?.name.toLowerCase() != "unutilized") return;
         if (!member) return;
-        const cRegister = guild.channels.cache.find(c => c.name == config.dcGuild.channels.register);
+        const cRegister = guild.channels.cache.find(c => c.name == config.guild.channels.register);
 
         const embed = new EmbedBuilder({
             author: {name: member.displayName, iconURL: member.displayAvatarURL()},

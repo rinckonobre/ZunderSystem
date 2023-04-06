@@ -8,7 +8,7 @@ const playersColl = new Firestore("players");
 
 export default new Event({name: "messageCreate", async run(message){
     if (message.channel.type != ChannelType.GuildText ||
-        message.channel.name != config.dcGuild.channels.work ||
+        message.channel.name != config.guild.channels.work ||
         !message.guild || message.guild?.id != client.mainGuildID ||
         !message.member || message.member.user.bot
     ) return;
@@ -25,7 +25,7 @@ export default new Event({name: "messageCreate", async run(message){
         return;
     };
     
-    const cWork = ServerManager.findChannel(message.guild, config.dcGuild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
+    const cWork = ServerManager.findChannel(message.guild, config.guild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
     if (!cWork) {
         message.delete().catch(() => {})
         return;

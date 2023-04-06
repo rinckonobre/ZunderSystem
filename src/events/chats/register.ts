@@ -17,7 +17,7 @@ export default new Event({
     name: "messageCreate", 
     async run(message){
         if (message.channel.type != ChannelType.GuildText ||
-            message.channel.name != config.dcGuild.channels.register ||
+            message.channel.name != config.guild.channels.register ||
             message.guild?.id != client.mainGuildID ||
             !message.member || message.member.user.bot
         ) return;

@@ -119,7 +119,7 @@ export default new Command({
                     components: []
                 })
 
-                const role = guildManager.findRole(config.dcGuild.roles.registers["member-discord"]);
+                const role = guildManager.findRole(config.guild.roles.registers["member-discord"]);
                 if (role) mention.roles.add(role);
             })
             return;

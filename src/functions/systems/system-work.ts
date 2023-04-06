@@ -9,7 +9,7 @@ const playersColl = new Firestore("players");
 export const systemWork = {
     async accept(member: GuildMember, image: Attachment, memberData: DocPlayer){
         const guild = member.guild
-        const cWork = ServerManager.findChannel(guild, config.dcGuild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
+        const cWork = ServerManager.findChannel(guild, config.guild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
         if (!cWork) return;
 
         const sectorID = memberData.work!.gameID

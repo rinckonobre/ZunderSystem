@@ -34,7 +34,7 @@ export default new Command({
         ]})
 
         // Cargos
-        const roleShare = ServerManager.findRole(guild, config.dcGuild.roles.functional.share);
+        const roleShare = ServerManager.findRole(guild, config.guild.roles.functional.share);
 
         //
 
@@ -84,7 +84,7 @@ export default new Command({
                     else target.roles.remove(roleShare!);
     
                     systemRecords.send(guild, { system: {
-                        title: config.dcGuild.roles.functional.share, color: config.colors.systems.share, style: "FULL" }, 
+                        title: config.guild.roles.functional.share, color: config.colors.systems.share, style: "FULL" }, 
                         staff: member, mention: target, details: `> ${target.roles.highest} ${target}
                         ${action == "adicionar"? "Recebeu" : "Perdeu"} tag ${roleShare}`
                     })

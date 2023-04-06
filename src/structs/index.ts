@@ -16,9 +16,7 @@ export * from "./classes/Firestore"
 export * from "./classes/MessageUtils"
 export * from "./classes/ReplyBuilder"
 
-export * from "./interfaces/CustomMessage"
 export * from "./interfaces/FirestoreDocuments"
-export * from "./interfaces/ZunderEmojis"
 
 export * from "./manages/GuildManager"
 export * from "./manages/MemberManager"

@@ -20,7 +20,6 @@ dotenv.config();
 export class ExtendedClient extends Client {
     public onwerID: string;
     public mainGuildID: string;
-    public nodeCron = cron;
     public commands: Collection<String, CommandType> = new Collection();
     public buttons: ComponentsButton = new Collection();
     public selects: ComponentsSelect = new Collection();

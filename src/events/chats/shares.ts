@@ -7,7 +7,7 @@ const playerColl = new Firestore("players");
 
 export default new Event({name: "messageCreate", async run(message){
     if (message.channel.type != ChannelType.GuildText ||
-        message.channel.name != config.dcGuild.channels.shares ||
+        message.channel.name != config.guild.channels.shares ||
         message.guild?.id != client.mainGuildID ||
         !message.member || message.member.user.bot
     ) return;

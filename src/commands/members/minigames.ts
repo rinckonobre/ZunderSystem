@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 import { Command } from "../../structs";
 import { toHexColor, waitButton, wait, logger } from "../../functions";
-import { bold, config } from "../..";
+import { config } from "../..";
 
 export default new Command({
     name: "minigame",

@@ -15,10 +15,10 @@ export default new Schedule({
         const guild = client.guilds.cache.get(client.mainGuildID);
         if (!guild) return;
 
-        const cAudit = ServerManager.findChannel(guild, config.dcGuild.channels.audit) as TextChannel | undefined;
+        const cAudit = ServerManager.findChannel(guild, config.guild.channels.audit) as TextChannel | undefined;
         if (!cAudit) return;
 
-        const roleWork = ServerManager.findRole(guild, config.dcGuild.roles.functional.work);
+        const roleWork = ServerManager.findRole(guild, config.guild.roles.functional.work);
         if (!roleWork) return;
 
         const embeds: Array<EmbedBuilder> = [];

@@ -52,8 +52,8 @@ export const systemProfile = {
         ✉️ Mensagens enviadas: ${memberData.stats?.msg || 0}
         🎉 Eventos:  ${memberData.stats?.events || 0} `})
         // ===========
-        const roleShare = ServerManager.findRole(guild, config.dcGuild.roles.functional.share)!
-        const roleSupporter = ServerManager.findRole(guild, config.dcGuild.roles.functional.supporter)!
+        const roleShare = ServerManager.findRole(guild, config.guild.roles.functional.share)!
+        const roleSupporter = ServerManager.findRole(guild, config.guild.roles.functional.supporter)!
 
         if (member.roles.cache.has(roleSupporter.id)) {
             embed.addFields({ name: "Apoiador(a) Zunder", inline: true, value: 

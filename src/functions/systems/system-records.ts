@@ -16,7 +16,7 @@ interface RecordMessage {
 
 function send(guild: Guild, {system, details, staff, mention}: RecordMessage){
     const guildManager = new GuildManager(guild);
-    const cRecords = guildManager.findChannel<TextChannel>(config.dcGuild.channels.records, ChannelType.GuildText);
+    const cRecords = guildManager.findChannel<TextChannel>(config.guild.channels.records, ChannelType.GuildText);
 
     const embed = new EmbedBuilder()
     .setColor(system.color as ColorResolvable)

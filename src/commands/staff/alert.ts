@@ -18,7 +18,7 @@ export default new Command({
         const message = interaction.targetMessage;
         const mention = message.member;
 
-        const cTerms = ServerManager.findChannel(interaction.guild!, config.dcGuild.channels.terms) as TextChannel | undefined;
+        const cTerms = ServerManager.findChannel(interaction.guild!, config.guild.channels.terms) as TextChannel | undefined;
 
         const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
         if (!memberData || (memberData.registry?.level || 1) < 2) {

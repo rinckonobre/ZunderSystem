@@ -43,12 +43,12 @@ export default new Command({
             return;
         }
 
-        const cWork = ServerManager.findChannel(guild, config.dcGuild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
-        const cLogs = ServerManager.findChannel(guild, config.dcGuild.channels.logs, ChannelType.GuildText) as TextChannel | undefined;
+        const cWork = ServerManager.findChannel(guild, config.guild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
+        const cLogs = ServerManager.findChannel(guild, config.guild.channels.logs, ChannelType.GuildText) as TextChannel | undefined;
             
         const emojiWorkXp = ServerManager.findEmoji(guild, "workXp");
 
-        const roleWork = ServerManager.findRole(guild, config.dcGuild.roles.functional.work);
+        const roleWork = ServerManager.findRole(guild, config.guild.roles.functional.work);
 
         const memberData = await playersColl.getDocData(member.id) as DocPlayer | undefined;
         if (!memberData || !memberData.registry) {

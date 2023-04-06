@@ -129,8 +129,8 @@ export default new Command({
                 return;
             }
             case "informações": {
-                const cInfo = ServerManager.findChannel(guild, config.dcGuild.channels.info) as TextChannel | undefined;
-                const cTerms = ServerManager.findChannel(guild, config.dcGuild.channels.terms);
+                const cInfo = ServerManager.findChannel(guild, config.guild.channels.info) as TextChannel | undefined;
+                const cTerms = ServerManager.findChannel(guild, config.guild.channels.terms);
                 if (!cInfo || !cTerms) {
                     new Interruption(interaction, "O de informações não está configurado!");
                     return;
@@ -158,15 +158,15 @@ export default new Command({
                 cInfo.send({embeds: [embed], components: [row]});
             }
             case "registrar":{
-                const cRegister = ServerManager.findChannel(guild, config.dcGuild.channels.register, ChannelType.GuildText) as TextChannel | undefined;
+                const cRegister = ServerManager.findChannel(guild, config.guild.channels.register, ChannelType.GuildText) as TextChannel | undefined;
                 if (!cRegister) {
                     new Interruption(interaction, "Não foi possível localizar o chat de registro!");
                     return;
                 }
                 
-                const cGeneral = ServerManager.findChannel(guild, config.dcGuild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
-                const cInfo = ServerManager.findChannel(guild, config.dcGuild.channels.info, ChannelType.GuildText) as TextChannel | undefined;
-                const cTerms = ServerManager.findChannel(guild, config.dcGuild.channels.terms, ChannelType.GuildText) as TextChannel | undefined;
+                const cGeneral = ServerManager.findChannel(guild, config.guild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
+                const cInfo = ServerManager.findChannel(guild, config.guild.channels.info, ChannelType.GuildText) as TextChannel | undefined;
+                const cTerms = ServerManager.findChannel(guild, config.guild.channels.terms, ChannelType.GuildText) as TextChannel | undefined;
                 
                 if (!cInfo || !cTerms){
                     new Interruption(interaction, "Não foi possível localizar um dos chats: Informações ou Termos!");

@@ -104,7 +104,7 @@ export default new Command({
             ${device.instructions.staff}`)
                     .addFields({name: "ID do membro", value: member.id, inline: true});
 
-                const cManagement = ServerManager.findChannel(guild, config.dcGuild.channels.management, ChannelType.GuildText) as TextChannel | undefined;
+                const cManagement = ServerManager.findChannel(guild, config.guild.channels.management, ChannelType.GuildText) as TextChannel | undefined;
                 if (cManagement) {
                     cManagement.send({content: "||@everyone||", embeds: [embed], components: [row]});
                 }
@@ -255,7 +255,7 @@ export default new Command({
             const member = interaction.member as GuildMember;
             const nick = interaction.fields.getTextInputValue("register-member-nick-input"); 
             
-            const cGeneral = ServerManager.findChannel(guild, config.dcGuild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
+            const cGeneral = ServerManager.findChannel(guild, config.guild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
         
             //const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
             const memberData = await db.players.get(member.id) as DocPlayer | undefined;

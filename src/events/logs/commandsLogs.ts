@@ -7,7 +7,7 @@ export default new Event({name: "interactionCreate", async run(interaction){
     if (!guild) return;
 
     const guildManager = new GuildManager(guild);
-    const cLogs = guildManager.findChannel<TextChannel>(config.dcGuild.channels.logs, ChannelType.GuildText);
+    const cLogs = guildManager.findChannel<TextChannel>(config.guild.channels.logs, ChannelType.GuildText);
     if (!cLogs) return;
 
     const time = `<t:${~~(Date.now() / 1000)}:t>`;

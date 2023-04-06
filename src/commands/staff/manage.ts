@@ -48,7 +48,6 @@ export default new Command({
         if (!(interaction instanceof ChatInputCommandInteraction)) return;
         const member = interaction.member as GuildMember;
         const guild = interaction.guild!;
-        const ServerManager = new GuildManager(guild);
 
         if (guild.id != client.mainGuildID) {
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
