@@ -1,0 +1,42 @@
+[
+    {
+        "id":"minecraft",
+        "name":"Minecraft",
+        "instructions":{
+            "member":"Vincule sua conta do discord ao seu perfil do NameMC. [Siga este tutorial](https://youtu.be/vSnULkz9ffU)",
+            "staff":"Acesse o [NameMC](https://pt.namemc.com) e verifique o nick do membro"
+        },
+        "declined":"- Sua conta do discord não está [vinculada ao NameMC](https://youtu.be/vSnULkz9ffU) \n- Seu nick não existe no NameMC",
+        "emoji":"minecraft"
+    },
+    {
+        "id":"steam",
+        "name":"Steam",
+        "instructions":{
+            "member":"A sua conta da Steam deve estar vinculada ao seu perfil do discord. \n> Para isso vá nas suas configurações, depois clique em conexões, procure a Steam então logue com a sua conta no navegador e autorize.",
+            "staff":"Veja se a conta Steam do membro está vinculada ao perfil, então acesse para verificar o nick"
+        },
+        "declined":"- Sua conta da Steam não está vinculada ao seu perfil do discord (conexões) \n- Você não está com Z_ no final do seu nome da Steam",
+        "emoji":"steam"
+    },
+    {
+        "id":"epicgames",
+        "name":"EpicGames",
+        "instructions":{
+            "member":"A sua conta da Epic Games deve estar vinculada ao seu perfil do discord. \n> Para isso vá nas suas configurações, depois clique em conexões, procure a EpicGames então logue com a sua conta no navegador e autorize.",
+            "staff":"Veja se a conta Epic Games do membro está vinculada ao perfil, então acesse para verificar o nick"
+        },
+        "declined":"- Sua conta da Epic Games não está vinculada ao seu perfil do discord (conexões) \n- Você não está com Z_ no final do seu nome da Epic Games",
+        "emoji":"epicgames"
+    },
+    {
+        "id":"discord",
+        "name":"Discord",
+        "instructions":{
+            "member":"",
+            "staff":""
+        },
+        "declined":"",
+        "emoji":"discord"
+    }
+]

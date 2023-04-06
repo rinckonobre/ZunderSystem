@@ -1,0 +1,152 @@
+[
+    {
+      "id": "minecraft",
+      "image":"https://i.imgur.com/QdfeIkg.png",
+      "emoji": "minecraft",
+      "game": "Minecraft",
+      "professions": [
+        {
+          "name": "Guerreiro do skywars",
+          "mode": "Skywars",
+          "emoji": "⚔️",
+          "id": "minecraft-skywars",
+          "salary": 30,
+          "exp": 10,
+          "servers": [ "Hypixel", "Hylex", "Mineplex", "MushMc" ]
+        },
+        {
+          "name": "Destruidor de camas",
+          "mode": "Bedwars",
+          "emoji": "🛏️",
+          "id": "minecraft-bedwars",
+          "salary": 120,
+          "exp": 40,
+          "servers": [ "Hypixel", "Hylex", "MushMc" ]
+        },
+        {
+          "name": "Bárbaro agressivo",
+          "mode": "Tnt Games",
+          "emoji": "💥",
+          "id": "minecraft-tntgames",
+          "salary": 80,
+          "exp": 25,
+          "servers": [ "Hypixel" ]
+        },
+        {
+          "name": "Vândalo impiedoso",
+          "mode": "Arcade",
+          "emoji": "👽",
+          "id": "minecraft-arcade",
+          "salary": 75,
+          "exp": 30,
+          "servers": [ "Hypixel", "Mineplex" ]
+        },
+        {
+          "name": "Gladiador bruto",
+          "mode": "Duels",
+          "emoji": "🪓",
+          "id": "minecraft-duels",
+          "salary": 20,
+          "exp": 15,
+          "servers": [ "Hypixel", "Hylex", "MushMc" ]
+        },
+        {
+          "name": "Combatente destemido",
+          "mode": "Coops and Crims",
+          "emoji": "☠️",
+          "id": "minecraft-coopsandcrims",
+          "salary": 200,
+          "exp": 220,
+          "servers": [ "Hypixel" ]
+        },
+        {
+          "name": "Construtor perseverante",
+          "mode": "Build Battle",
+          "emoji": "🔨",
+          "id": "minecraft-buildbattle",
+          "salary": 170,
+          "exp": 180,
+          "servers": [ "Hypixel" ]
+        },
+        {
+          "name": "Guerreiro Voraz",
+          "mode": "Hardcore Games",
+          "emoji": "🍄",
+          "id": "minecraft-hardcoregames",
+          "salary": 240,
+          "exp": 280,
+          "servers": [ "Hylex", "Mush", "Flame" ]
+        }
+      ]
+    },
+    {
+      "id": "rogue-company",
+      "image":"https://i.imgur.com/Zuo7THy.png",
+      "emoji": "roguecompany",
+      "game": "Rogue Company",
+      "professions": [
+        {
+          "name": "Assassino de aluguel",
+          "mode": "Mata-mata",
+          "emoji": "😎",
+          "id": "roguecompany-deathmatch",
+          "salary": 80,
+          "exp": 30,
+          "servers": [ "Brazil", "America do Norte" ]
+        },
+        {
+          "name": "Agente especial",
+          "mode": "Investida",
+          "emoji": "🤵",
+          "id": "roguecompany-strikeout",
+          "salary": 60,
+          "exp": 20,
+          "servers": [ "Brazil", "America do Norte" ]
+        },
+        {
+          "name": "Agente secreto",
+          "mode": "Demolição",
+          "emoji": "🕵️‍♂️",
+          "id": "roguecompany-demolition",
+          "salary": 90,
+          "exp": 60,
+          "servers": [ "Brazil", "America do Norte" ]
+        }
+      ]
+    },
+    {
+      "id": "valorant",
+      "image": "https://i.imgur.com/QYiWWVg.png",
+      "emoji": "valorant",
+      "game": "Valorant",
+      "professions": [
+        {
+          "name": "Atirador de elite",
+          "mode": "Competitivo",
+          "emoji": "🔫",
+          "id": "valorant-ranked",
+          "salary": 160,
+          "exp": 120,
+          "servers": [ "Brazil" ]
+        },
+        {
+          "name": "Jogador casual",
+          "mode": "Disputa da spike",
+          "emoji": "💣",
+          "id": "valorant-spikerush",
+          "salary": 80,
+          "exp": 60,
+          "servers": [ "Brazil" ]
+        },
+        {
+          "name": "Assassino profissional",
+          "mode": "Mata-mata",
+          "emoji": "🗡️",
+          "id": "valorant-deathmatch",
+          "salary": 90,
+          "exp": 50,
+          "servers": [ "Brazil" ]
+        }
+      ]
+    }
+  ]

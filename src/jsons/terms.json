@@ -1,0 +1,63 @@
+[
+  {
+    "category": "discord",
+    "title": "Discord",
+    "description": "Termos do grupo no Discord",
+    "prefix": "d",
+    "terms": [
+      "Proibido discussões, desavenças, brigas, intrigas, ofensas, insultos, provocações e deboches nos chats e calls.",
+      "Respeitar a todos. Zoar apenas com aqueles que permitiram, caso a pessoa não queira, não insista.",
+      "Proibido correntes e flood de emojis, imagens, mensagens, comandos ou até mesmo flood em call.",
+      "Proibido qualquer tipo de comércio, divulgação, venda ou troca de contas ou qualquer produto nos chats ou calls.",
+      "Proibido perturbação da paz (Estourar microfone nas calls, marcar sem motivo no chat, atrapalhar conversas, incomodar pessoas.)",
+      "Divulgações em geral são permitidas apenas para aqueles que entraram no grupo de compartilhamento da Zunder.",
+      "Não é permitido assuntos e imagens: pornográficas, violentas, macabras, nojentas, políticas, religiosas e ofensivas nos chats.",
+      "Proibido sons estourados no bot. Playlists e sons muito longos apenas com poucas pessoas na call.",
+      "Utilizar os chats conforme suas finalidades (suporte: ajuda e solução de problemas, bate-papo: conversar, interweb: memes e links, instaplay: imagens de gameplay e design, comandos: comandos.)"
+    ]
+  },
+  {
+    "category": "zunder",
+    "title": "Zunder",
+    "description": "Termos para Membros Zunder",
+    "prefix": "z",
+    "terms": [
+      "É totalmente proibido demonstrar caráter tóxico perante outros jogadores, como xingar, insultar, provocar, zombar, rebaixar, menosprezar ou se vangloriar.",
+      "Proibido o uso de qualquer tipo de trapaça em jogos online.",
+      "Proibido desrespeitar quaisquer regras de outros lugares."
+    ]
+  },
+  {
+    "category": "resources",
+    "title": "Recursos",
+    "description": "Termos do sistema Recursos",
+    "prefix": "r",
+    "terms": [
+      "Proibido compartilhamento de arquivos fora do contexto inicial, que é jogos e programas.",
+      "Proibido compartilhar sem deixar os créditos da fonte.",
+      "Proibido compartilhar qualquer tipo de trapaça ou hack.",
+      "Permitido compartilhar arquivos crackeados, contanto que tenha certeza que não trará nenhum dano a ninguém."
+    ]
+  },
+  {
+    "category": "share",
+    "title": "Compartilhamento",
+    "description": "Termos do Compartilhamento",
+    "prefix": "s",
+    "terms": [
+      "Proibido divulgações de conteúdos +18.",
+      "Proibido enviar divulgações repetidas."
+    ]
+  },
+  {
+    "category": "cinema",
+    "title": "Cinema",
+    "description": "Termos do Cinema Zunder",
+    "prefix": "c",
+    "terms": [
+      "Proibido qualquer tipo de spoiler, seja contanto o final ou até mesmo comentários indiretos sobre o decorrer do filme.",
+      "Proibido conversar durante momentos que atrapalhe a entender o filme",
+      "Silenciar o microfone caso haja barulho do seu lado."
+    ]
+  }
+]

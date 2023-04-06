@@ -1,0 +1,76 @@
+{
+    "zunder":[
+        {
+            "name":"Membro Zunder",
+            "color":"#e9a81f",
+            "level":1,
+            "emoji":"register_zunder_member",
+            "dependency": null
+        },
+        {
+            "name":"Ajudante",
+            "color":"#ed6dff",
+            "level":2,
+            "emoji":"register_helper",
+            "dependency":"Staff Zunder"
+        },
+        {
+            "name":"Mod",
+            "color":"#318a54",
+            "level":3,
+            "emoji":"register_mod",
+            "dependency":"Staff Zunder"
+        },
+        {
+            "name":"Admin",
+            "color":"#d63232",
+            "level":4,
+            "emoji":"register_admin",
+            "dependency":"Staff Zunder"
+        },
+        {
+            "name":"Líder",
+            "color":"#15a6d8",
+            "level":5,
+            "emoji":"register_leader",
+            "dependency":"Staff Zunder"
+        }
+    ],
+    "discord":[
+        {
+            "name":"Membro Discord",
+            "color":"#277ecd",
+            "level":1,
+            "emoji":"register_discord_member",
+            "dependency":null
+        },
+        {
+            "name":"Ajudante",
+            "color":"#ed6dff",
+            "level":2,
+            "emoji":"register_helper",
+            "dependency":"Staff Discord"
+        },
+        {
+            "name":"Mod",
+            "color":"#26a539",
+            "level":3,
+            "emoji":"register_mod",
+            "dependency":"Staff Discord"
+        },
+        {
+            "name":"Admin",
+            "color":"#d63232",
+            "level":4,
+            "emoji":"register_admin",
+            "dependency":"Staff Discord"
+        },
+        {
+            "name":"Líder",
+            "color":"#15a6d8",
+            "level":5,
+            "emoji":"register_leader",
+            "dependency":"Staff Discord"
+        }
+    ]
+}

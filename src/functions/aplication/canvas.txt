@@ -1,0 +1,207 @@
+import { CanvasGradient, CanvasPattern, CanvasRenderingContext2D, CanvasTextAlign, CanvasTextBaseline, Image } from "canvas";
+import { maxHeaderSize } from "http";
+
+type CanvasColor = string | CanvasGradient | CanvasPattern;
+
+interface CanvasCoords {
+    x: number;
+    y: number;
+}
+interface CanvasSizes {
+    width: number;
+    height: number;
+}
+interface CanvasDrawOptions {
+    method: "fill" | "stroke";
+    color?: CanvasColor;
+}
+type CanvasGradientOptions = { 
+    start: CanvasCoords, 
+    end: CanvasCoords, 
+    startColor: string, 
+    endColor: string 
+};
+
+interface CanvasFontOptions {
+    size?: number;
+    family?: string;
+    style?: string;
+}
+
+type CanvasDrawRectOptions = CanvasCoords & CanvasSizes & CanvasDrawOptions & { radius: number; lineWidth?: number; };
+export function drawRect(ctx: CanvasRenderingContext2D, options: CanvasDrawRectOptions) {
+    const { x, y, width, height, radius, method, color, lineWidth } = options;
+    const cornerRadius = { upperLeft: 0, upperRight: 0, lowerLeft: 0, lowerRight: 0 };
+    cornerRadius.upperLeft = cornerRadius.upperRight = cornerRadius.lowerLeft = cornerRadius.lowerRight = radius;
+
+    ctx.save();
+
+    if (color) {
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+    }
+
+    if (lineWidth) ctx.lineWidth = lineWidth;
+
+    ctx.beginPath();
+    ctx.moveTo(x + cornerRadius.upperLeft, y);
+    ctx.lineTo(x + width - cornerRadius.upperRight, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + cornerRadius.upperRight);
+    ctx.lineTo(x + width, y + height - cornerRadius.lowerRight);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - cornerRadius.lowerRight, y + height);
+    ctx.lineTo(x + cornerRadius.lowerLeft, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - cornerRadius.lowerLeft);
+    ctx.lineTo(x, y + cornerRadius.upperLeft);
+    ctx.quadraticCurveTo(x, y, x + cornerRadius.upperLeft, y);
+    ctx.closePath();
+
+    switch (method) {
+        case "fill": ctx.fill();
+            break;
+        case "stroke": ctx.stroke();
+            break;
+    }
+    ctx.restore();
+}
+type CanvasDrawImageOptions = CanvasCoords & { radius?: number, image: Image };
+export function drawImage(ctx: CanvasRenderingContext2D, options: CanvasDrawImageOptions) {
+    const { x, y, radius = 0, image } = options;
+
+    const imgWidth = image.width;
+    const imgHeight = image.height;
+    const aspectRatio = imgWidth / imgHeight;
+    
+    ctx.save();
+    if (radius > 0) {
+        ctx.beginPath();
+        ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(image, x, y, radius * 2 * aspectRatio, radius * 2);
+    } else {
+        ctx.drawImage(image, x, y);
+    }
+    ctx.restore();
+}
+export function createGradiente(ctx: CanvasRenderingContext2D, gradient: CanvasGradientOptions){
+    const { start, end, startColor, endColor } = gradient;
+    const grd = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
+    grd.addColorStop(0, startColor);
+    grd.addColorStop(1, endColor);
+    return grd
+}
+type CanvasDrawCircleOptions = CanvasCoords & CanvasDrawOptions & { 
+    radius: number, center?: boolean, lineWidth?: number;
+};
+export function drawCircle(ctx: CanvasRenderingContext2D, options: CanvasDrawCircleOptions) {
+    const { x, y, radius, color, center, lineWidth, method } = options;
+    ctx.beginPath();
+    if (center) {
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    } else {
+        ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI);
+    }
+
+    if (color) {
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+    }
+
+    if (lineWidth) ctx.lineWidth = lineWidth;
+
+    switch (method) {
+        case "fill": ctx.fill();
+            break;
+        case "stroke": ctx.stroke();
+            break;
+    }
+    ctx.closePath();
+}
+
+type CanvasDrawTextOptions = CanvasCoords & CanvasDrawOptions & { 
+    text: string, maxWidth?: number, font?: CanvasFontOptions,
+    textAlign?: CanvasTextAlign;
+    textBaseline?: CanvasTextBaseline;
+}
+export function drawText(ctx: CanvasRenderingContext2D, options: CanvasDrawTextOptions) {
+    const { x, y, text, color, method, maxWidth, textAlign, textBaseline, font = { family: "Arial", size: "12", style: "regular" } } = options;
+
+    ctx.save();
+
+    if (color) {
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+    }
+
+    const { style, size, family } = font;
+
+    ctx.font = `${style} ${size}px ${family}`;
+    if (textAlign) ctx.textAlign = textAlign;
+    if (textBaseline) ctx.textBaseline = textBaseline;
+
+    switch(method){
+        case "fill": ctx.fillText(text, x, y, maxWidth);
+            break;
+        case "stroke": ctx.strokeText(text, x, y, maxWidth);
+            break;
+    }
+    ctx.restore();
+}
+
+export function getTextWidth(ctx: CanvasRenderingContext2D, text: string, font: string) {
+    ctx.save();
+    ctx.font = font;
+    const metrics = ctx.measureText(text);
+    console.log(metrics.width)
+    ctx.restore();
+    console.log(metrics.width)
+    return metrics.width;
+  }
+// interface CanvasDrawTextOptions {
+//     text: string;
+//     x: number;
+//     y: number;
+//     color?: CanvasColor;
+//     maxWidth?: number;
+//     fontSize?: number;
+//     fontFamily?: string;
+//     fontStyle?: string;
+//     textAlign?: CanvasTextAlign;
+//     textBaseline?: CanvasTextBaseline;
+// }
+// export function drawText(ctx: CanvasRenderingContext2D, options: CanvasDrawTextOptions) {
+//     const {  text,  x,  color,  maxWidth = 300,  fontSize = 20,  fontFamily = "Arial", 
+//         fontStyle = "normal",  textAlign = "left",  textBaseline = "top"
+//     } = options;
+
+//     let { y } = options;
+
+//     ctx.save();
+
+//     if (color) ctx.fillStyle = color;
+
+//     ctx.font = `${fontStyle} ${fontSize}px ${fontFamily}`;
+//     ctx.textAlign = textAlign;
+//     ctx.textBaseline = textBaseline;
+
+//     let words = text.split(" ");
+//     let line = "";
+
+//     for (let n = 0; n < words.length; n++) {
+//         let testLine = line + words[n] + " ";
+//         let metrics = ctx.measureText(testLine);
+//         let testWidth = metrics.width;
+
+//         if (testWidth > maxWidth) {
+//             ctx.fillText(line, x, y);
+//             line = words[n] + " ";
+//             y += fontSize;
+//         } else {
+//             line = testLine;
+//         }
+//     }
+
+//     ctx.fillText(line, x, y);
+
+//     ctx.restore();
+// }

@@ -1,0 +1,108 @@
+{
+  "title": "Informações",
+  "image": null,
+  "thumbnail": null,
+  "description": "Zunder - O que somos?\n> Um grupo de jogadores que busca diversão todos os dias e tenta aproximar pessoas de todos os tipos de jogos, para que possamos criar uma comunidade saudável, livre de toxidade.\n\nTodos aqui são bem vindos, não importa de onde você veio, apenas pedimos que siga os <#898686444984475720> do grupo para que não haja nenhum conflito ou desavença entre os membros.\n\n<:discord:947965023798591559> Convite para o discord:\n> http://discord.gg/tTu8dGN\n\nRedes sociais\n- :twitter: Twitter: https://twitter.com/zundergroup\n- :instagram: Instagram: https://www.instagram.com/zundergroup/\n- :youtube: Youtube: https://www.youtube.com/c/ZunderOficial\n- :tiktok:Tik Tok: https://www.tiktok.com/@zundergroup\n\nClique nos botões abaixo para entender um pouco mais sobre o nosso grupo",
+  "footer": {
+    "text":"Grupo, servidor e bot desenvolvidos por RinckoZ_"
+  },
+  "categories": [
+    {
+      "id": "register",
+      "title": "Sistema de registro",
+      "description": "📋 O grupo conta com um sistema de registro de membros para melhor organização e definir permissões para os comandos do bot.\n\n- Para poder interagir no servidor você precisa **se registrar**.\n\n✏️ Ao entrar no servidor pela primeira vez você verá o chat <#681229112899141706>, é nele onde você envia o nick que você utiliza em jogo. Fazendo isso, receberá o cargo <@&1006701824121770125>, assim desbloqueando todos os canais comuns para membros.\n\nCaso queira se tornar um <@&1006702023556747314>, você precisará adicionar `Z_` no final do seu nick da sua conta de <:minecraft:891353390767042621> minecraft original e utilizar o comando `/registrar [nick]`. [Confira mais detalhes clicando aqui](https://youtu.be/B97T7ziuQtk?t=32)\n\nOs cargos de equipe são <@&1026946600188256256>, <@&620061582747238400>, <@&620061097654747136> e <@&537818031728885771>.\nExiste a <@&694350304438648903> que é responsável pela área do grupo em si e dos membros da Zunder e existe a <@&1021416344484335656> que é responsável apenas pelo servidor do discord e o gerenciamento dos usuários aqui.\n\nComo se tornar staff: `Em breve...`",
+      "color": "#5865f2",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-register",
+        "emoji": "📋",
+        "label": "Registro",
+        "style": 1
+      }
+    },
+    {
+      "id": "economy",
+      "title": "Economia do grupo",
+      "description": "😺 O grupo conta com um sistema de economia baseado em interação. \nQuanto mais você interagir no grupo, mais você ganha xp e moedas. \n\n**Interação** \n> O elemento principal é o :interactionLevel: **nível de interação**. Você pode subir seu nível ganhando :interactionXp: xp de interação, que pode ser obtido 💬  `conversando nos chats`, 🔊 `entrando em calls`, participando de 🎉 eventos, enviando 💡**sugestões** e o mais legal, participando do sistema de 💼 **trabalhos**. \n\n**Moedas** \nVocê ganha :coins: **moedas** a cada nível que você sobe. :coins: **Moedas** podem ser obtidas da mesma maneira que o :interactionXp: **xp de interação**. Com elas você pode comprar coisas na <#:🛒loja:>, trocar com outros membros e usar em 🎉 **eventos especiais.**",
+      "color": "#2DAD3A",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-economy",
+        "emoji": "💸",
+        "label": "Economia",
+        "style": 3
+      }
+    },
+    {
+      "id": "resources",
+      "title": "Recursos Zunder",
+      "description": "📁 O sistema de recursos facilita aos membros compartilhar coisas que eles gostam:\nJogos, texturas, mods, plugins, pacotes, programas e muito mais.\n\n🔗 **Como obter recursos**\n> No chat <#1077585797882060830> é possível encontrar todas as categorias de recursos disponíveis, então basta clicar na que você desejar, por exemplo <#1077309187207467088> e você verá todos os recursos que já foram enviados nessa categoria. Caso queira fazer download do recurso, só precisa clicar no botão \"Acessar\" do recurso e você será redirecionado para o download direto sem anúncios.\n\n📁 Como enviar recursos\n- Antes de enviar qualquer recurso, leia os **termos dos recursos** no chat <#621719654892830722>.\n\n> Para enviar um recurso você deve utilizar o comando `/recursos enviar` no chat <#669518319304310784>, é opcional adicionar **thumbnail** e/ou **banner** no comando. Após executar um formulário pedindo **título**, **descrição** e **link para download** será exibido na sua tela, depois de preencher tudo e enviar, você deverá escolher a categoria e a sub categoria do recurso, que é para qual chat ele será enviado, então clique no botão de confirmar e o recurso já estará disponível para todos.\n\n✏️ Como editar um recurso já enviado\n- É possível editar apenas informações e imagens do recurso, não é possível alterar categoria e sub categoria.\n\n> Para editar um recurso já enviado você deve utilizar o comando `/recursos editar` no chat <#669518319304310784>,",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-resources",
+        "emoji": "📁",
+        "label": "Recursos",
+        "style": 3
+      }
+    },
+    {
+      "id": "works",
+      "title": "Trabalhos",
+      "description": "💼 O sistema de trabalhos da Zunder é uma forma de fazer você se divertir ainda mais enquanto joga os seus mini games favoritos no :minecraft: minecraft \n\n**Como começar** \nEscolha uma profissão utilizando o comando `/trabalho profissão`. Você verá todos os detalhes da sua profissão no painel que será exibido ao usar o comando! \n\n**Como funciona** \nSempre que você ganhar uma partida do **modo** escolhido, tire print da tela inteira e envie no chat <#:💼trabalho:> para que a nossa equipe analise, então seu trabalho pode ser aprovado ou recusado. \n> Ao ser aprovado você ganha :workXp: xp de trabalho que subirá o seu :workLevel: nível de trabalho, você pode ver mais detalhes em seu **Perfil Zunder** `(User/Apps/Perfil Zunder)` ou utilizando o comando `/perfil` \n\n**Para que serve** \n> Você recebe uma 💳 pontuação salarial que é convertida em :coins: moedas pra você toda semana.\nAlguns itens na <#:🛒loja:>, 🎉 eventos no grupo e outras coisas requerem :workLevel: nível de trabalho.\nVocê pode competir no grupo pra ser o membro com mais :check: **trabalhos concluídos**.",
+      "color": "#d67a49",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-work",
+        "emoji": "💼",
+        "label": "Trabalho",
+        "style": 2
+      }
+    },
+    {
+      "id": "support",
+      "title": "Suporte",
+      "description": "🔍Nosso grupo conta com um sistema de suporte para ajudar a todos com qualquer problema ou dúvida. \n\nUtilize o chat <#:dúvidas:> para obter ajuda rapidamente. \nVocê pode utilizar o fórum suporte para criar uma postagem para obter ajuda mais específica. \n\nQue tipo de questões podem ser tratadas no sistema de suporte? \n> Literalmente qualquer coisa que você precise. Erros em jogos, aplicativos, programas. Dúvidas sobre qualquer assunto, jogos, atividades de escola, como usar programas, dúvidas sobre programação, discord da Zunder, discord em si, qualquer coisa mesmo. \n\nSeu tópico pode ser deletado caso ele não seja levado com seriedade",
+      "color": "#2F3136",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-support",
+        "emoji": "🔍",
+        "label": "Suporte",
+        "style": 2
+      }
+    },
+    {
+      "id": "suggests",
+      "title": "Fórum de sugestões",
+      "description": "Fórum de sugestões\n💡 Ajude o grupo a evoluir a cada dia mais dando sugestões\n\nO fórum de sugestões funciona da seguinte forma:\n- Clique em nova postagem\n- Escreva um título e em seguida sua sugestão (Leia as diretrizes do fórum)\n- Defina o tema da sua sugestões através das tags na postagem\n- Sua sugestão será analisada pela staff e receberá uma status\n- Existem 5 status na sugestão: aceita, existente, recusada, em análise, respondida",
+      "color": "#e9a81f",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-suggests",
+        "emoji": "💡",
+        "label": "Sugestões",
+        "style": 2
+      }
+    },
+    {
+      "id": "share",
+      "title": "Compartilhamento",
+      "description": "🔁 O sistema de compartilhamento foi criado para que qualquer um divulgue seus conteúdos. \n\n> Envie seu vídeo, live stream, post do twitter ou qualquer coisa que divulgue o seu conteúdo no chat <#:🔁compartilhamento:>, você só precisa solicitar e permissão com algum staff do grupo. \n\nSó pedimos que siga os termos do compartilhamento no chat <#:📜termos:>",
+      "color": "#2E70D9",
+      "image": null,
+      "thumbnail": null,
+      "button": {
+        "customId": "information-share",
+        "emoji": "🔁",
+        "label": "Compartilhamento",
+        "style": 2
+      }
+    }
+  ]
+}

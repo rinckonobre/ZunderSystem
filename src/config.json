@@ -1,0 +1,308 @@
+{
+    "guild": {
+        "channels": {
+            "info": "📑informações",
+            "dev": "desenvolvimento",
+            "logs": "logs",
+            "general": "➜bate-papo",
+            "register": "registrar",
+            "global": "🌎global",
+            "audit": "📋auditoria",
+            "work": "💼trabalho",
+            "bank": "💵banco",
+            "records": "📋registros",
+            "terms": "📜termos",
+            "instaplay": "📷instaplay",
+            "shares": "🔁compartilhamento",
+            "staff": "👥staff",
+            "management": "🧰gerenciamento",
+            "suggests":"💡sugestões"
+        },
+        "roles": {
+            "registers": {
+                "leader": "Líder",
+                "admin": "Admin",
+                "mod": "Mod",
+                "helper": "Ajudante",
+                "member-discord": "Membro Discord",
+                "member-zunder": "Membro Zunder"
+            },
+            "functional": {
+                "work": "💼Trabalho",
+                "staffZunder": "Staff Zunder",
+                "staffDiscord": "Staff Discord",
+                "share": "🔗Compartilhamento",
+                "supporter": "Apoiador"
+            }
+        }
+    },
+    "resources": {
+        "title": "📁recursos",
+        "categories": [
+            {
+                "name": "minecraft",
+                "description": "Relacionado a minecraft",
+                "role": "Notificações - Recursos - Minecraft",
+                "subCategories": [
+                    "texturas",
+                    "mods",
+                    "maps",
+                    "outros"
+                ]
+            },
+            {
+                "name": "desktop",
+                "description": "Relacionado a desktop",
+                "role": "Notificações - Recursos - Desktop",
+                "subCategories": [
+                    "programas",
+                    "jogos",
+                    "outros"
+                ]
+            },
+            {
+                "name": "mobile",
+                "description": "Relacionado a mobile",
+                "role": "Notificações - Recursos - Mobile",
+                "subCategories": [
+                    "apps",
+                    "jogos",
+                    "outros"
+                ]
+            },
+            {
+                "name": "design",
+                "description": "Relacionado a design",
+                "role": "Notificações - Recursos - Design",
+                "subCategories": [
+                    "geral"
+                ]
+            },
+            {
+                "name": "programming",
+                "description": "Relacionado a programação",
+                "role": "Notificações - Recursos - Programming",
+                "subCategories": [
+                    "geral"
+                ]
+            }
+        ]
+    },
+    "colors": {
+        "white": "#FFFFFF",
+        "black": "#000000",
+        "default": "#2F3136",
+        "joinGreen": "#34FF79",
+        "leaveRed": "#FF4343",
+        "primary": "#5865f2",
+        "secondary": "#4f545c",
+        "danger": "#ED4245",
+        "success": "#3BA55D",
+        "zunder": "#e9a81f",
+        "systems": {
+            "interaction": "#DB149C",
+            "economy": "#2DAD3A",
+            "resources": "#2078cb",
+            "instaplay": "#c94f82",
+            "work": "#d67a49",
+            "cinema": "3C8544",
+            "announcments": "#ff576d",
+            "share": "#2E70D9",
+            "updates": "#42ddf5"
+        },
+        "status": {
+            "idle": "#8b8b8b",
+            "accepted": "#33ff4b",
+            "refused": "#ff3333",
+            "analysis": "#ebff33",
+            "existing": "#3377ff",
+            "answered": "#33ffda"
+        },
+        "progress": {
+            "red": "#FF4444",
+            "orange": "#FFB444",
+            "yellow": "#FFEC44",
+            "green": "#44FF57"
+        },
+        "defaults": {
+            "red-default":"#db3425",
+            "red-IndianRed": "#CD5C5C",
+            "red-LightCoral": "#F08080",
+            "red-Salmon": "#FA8072",
+            "red-DarkSalmon": "#E9967A",
+            "red-LightSalmon": "#FFA07A",
+            "red-Crimson": "#DC143C",
+            "red-Red": "#FF0000",
+            "red-FireBrick": "#B22222",
+            "red-DarkRed": "#8B0000",
+            "pink-default":"#db2589",
+            "pink-Pink": "#FFC0CB",
+            "pink-LightPink": "#FFB6C1",
+            "pink-HotPink": "#FF69B4",
+            "pink-DeepPink": "#FF1493",
+            "pink-MediumVioletRed": "#C71585",
+            "pink-PaleVioletRed": "#DB7093",
+            "orange-default":"#db6e25",
+            "orange-LightSalmon": "#FFA07A",
+            "orange-Coral": "#FF7F50",
+            "orange-Tomato": "#FF6347",
+            "orange-OrangeRed": "#FF4500",
+            "orange-DarkOrange": "#FF8C00",
+            "orange-Orange": "#FFA500",
+            "yellow-default":"#dbba25",
+            "yellow-Gold": "#FFD700",
+            "yellow-Yellow": "#FFFF00",
+            "yellow-LightYellow": "#FFFFE0",
+            "yellow-LemonChiffon": "#FFFACD",
+            "yellow-LightGoldenrod": "#FAFAD2",
+            "yellow-PapayaWhip": "#FFEFD5",
+            "yellow-Moccasin": "#FFE4B5",
+            "yellow-PeachPuff": "#FFDAB9",
+            "yellow-PaleGoldenrod": "#EEE8AA",
+            "yellow-Khaki": "#F0E68C",
+            "yellow-DarkKhaki": "#BDB76B",
+            "purple-default":"#8c25db",
+            "purple-Lavender": "#E6E6FA",
+            "purple-Thistle": "#D8BFD8",
+            "purple-Plum": "#DDA0DD",
+            "purple-Violet": "#EE82EE",
+            "purple-Orchid": "#DA70D6",
+            "purple-Fuchsia": "#FF00FF",
+            "purple-Magenta": "#FF00FF",
+            "purple-MediumOrchid": "#BA55D3",
+            "purple-MediumPurple": "#9370DB",
+            "purple-RebeccaPurple": "#663399",
+            "purple-BlueViolet": "#8A2BE2",
+            "purple-DarkViolet": "#9400D3",
+            "purple-DarkOrchid": "#9932CC",
+            "purple-DarkMagenta": "#8B008B",
+            "purple-Purple": "#800080",
+            "purple-Indigo": "#4B0082",
+            "purple-SlateBlue": "#6A5ACD",
+            "purple-DarkSlateBlue": "#483D8B",
+            "purple-MediumSlateBlue": "#7B68EE",
+            "green-default":"#50db25",
+            "green-GreenYellow": "#ADFF2F",
+            "green-Chartreuse": "#7FFF00",
+            "green-LawnGreen": "#7CFC00",
+            "green-Lime": "#00FF00",
+            "green-LimeGreen": "#32CD32",
+            "green-PaleGreen": "#98FB98",
+            "green-LightGreen": "#90EE90",
+            "green-MediumSpringGreen": "#00FA9A",
+            "green-SpringGreen": "#00FF7F",
+            "green-MediumSeaGreen": "#3CB371",
+            "green-SeaGreen": "#2E8B57",
+            "green-ForestGreen": "#228B22",
+            "green-Green": "#008000",
+            "green-DarkGreen": "#006400",
+            "green-YellowGreen": "#9ACD32",
+            "green-OliveDrab": "#6B8E23",
+            "green-Olive": "#808000",
+            "green-DarkOliveGreen": "#556B2F",
+            "green-MediumAquamarine": "#66CDAA",
+            "green-DarkSeaGreen": "#8FBC8B",
+            "green-LightSeaGreen": "#20B2AA",
+            "green-DarkCyan": "#008B8B",
+            "green-Teal": "#008080",
+            "blue-default":"#2568db",
+            "blue-Aqua": "#00FFFF",
+            "blue-Cyan": "#00FFFF",
+            "blue-LightCyan": "#E0FFFF",
+            "blue-PaleTurquoise": "#AFEEEE",
+            "blue-Aquamarine": "#7FFFD4",
+            "blue-Turquoise": "#40E0D0",
+            "blue-MediumTurquoise": "#48D1CC",
+            "blue-DarkTurquoise": "#00CED1",
+            "blue-CadetBlue": "#5F9EA0",
+            "blue-SteelBlue": "#4682B4",
+            "blue-LightSteelBlue": "#B0C4DE",
+            "blue-PowderBlue": "#B0E0E6",
+            "blue-LightBlue": "#ADD8E6",
+            "blue-SkyBlue": "#87CEEB",
+            "blue-LightSkyBlue": "#87CEFA",
+            "blue-DeepSkyBlue": "#00BFFF",
+            "blue-DodgerBlue": "#1E90FF",
+            "blue-CornflowerBlue": "#6495ED",
+            "blue-MediumSlateBlue": "#7B68EE",
+            "blue-RoyalBlue": "#4169E1",
+            "blue-Blue": "#0000FF",
+            "blue-MediumBlue": "#0000CD",
+            "blue-DarkBlue": "#00008B",
+            "blue-Navy": "#000080",
+            "blue-MidnightBlue": "#191970",
+            "brown-default":"#82561d",
+            "brown-Cornsilk": "#FFF8DC",
+            "brown-BlanchedAlmond": "#FFEBCD",
+            "brown-Bisque": "#FFE4C4",
+            "brown-NavajoWhite": "#FFDEAD",
+            "brown-Wheat": "#F5DEB3",
+            "brown-BurlyWood": "#DEB887",
+            "brown-Tan": "#D2B48C",
+            "brown-RosyBrown": "#BC8F8F",
+            "brown-SandyBrown": "#F4A460",
+            "brown-Goldenrod": "#DAA520",
+            "brown-DarkGoldenrod": "#B8860B",
+            "brown-Peru": "#CD853F",
+            "brown-Chocolate": "#D2691E",
+            "brown-SaddleBrown": "#8B4513",
+            "brown-Sienna": "#A0522D",
+            "brown-Brown": "#A52A2A",
+            "brown-Maroon": "#800000",
+            "white-default": "#FFFFFF",
+            "white-Snow": "#FFFAFA",
+            "white-HoneyDew": "#F0FFF0",
+            "white-MintCream": "#F5FFFA",
+            "white-Azure": "#F0FFFF",
+            "white-AliceBlue": "#F0F8FF",
+            "white-GhostWhite": "#F8F8FF",
+            "white-WhiteSmoke": "#F5F5F5",
+            "white-SeaShell": "#FFF5EE",
+            "white-Beige": "#F5F5DC",
+            "white-OldLace": "#FDF5E6",
+            "white-FloralWhite": "#FFFAF0",
+            "white-Ivory": "#FFFFF0",
+            "white-AntiqueWhite": "#FAEBD7",
+            "white-Linen": "#FAF0E6",
+            "white-LavenderBlush": "#FFF0F5",
+            "white-MistyRose": "#FFE4E1",
+            "black-default": "#000000",
+            "black-Gainsboro": "#DCDCDC",
+            "black-LightGray": "#D3D3D3",
+            "black-Silver": "#C0C0C0",
+            "black-DarkGray": "#A9A9A9",
+            "black-Gray": "#808080",
+            "black-DimGray": "#696969",
+            "black-LightSlateGray": "#778899",
+            "black-SlateGray": "#708090",
+            "black-DarkSlateGray": "#2F4F4F"
+        }
+    },
+    "images": {
+        "resolutions":{
+            "1024-260":[
+                "https://i.imgur.com/YUg1031.png"
+            ],
+            "1920-1080":[]
+        },
+        "text": {
+            "register": "https://i.imgur.com/8mlHvF6.png"
+        },
+        "backgrounds": [
+            "https://i.imgur.com/YUg1031.png"
+        ],
+        "icons": {
+            "join-plus": "https://i.imgur.com/UhO2mMi.png",
+            "leave-minus": "https://i.imgur.com/N7fSBbM.png"
+        },
+        "status": {
+            "idle": "https://i.imgur.com/UWuJdwp.png",
+            "accepted": "https://i.imgur.com/CbmyMrH.png",
+            "refused": "https://i.imgur.com/KA0vH3x.png",
+            "analisys": "https://i.imgur.com/St5JXFE.png",
+            "existing": "https://i.imgur.com/U5MBAV8.png",
+            "response": "https://i.imgur.com/8UlNFr2.png",
+            "blank": "https://i.imgur.com/qORqS7h.png"
+        }
+    }
+}
