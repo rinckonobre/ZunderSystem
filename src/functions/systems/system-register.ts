@@ -1,6 +1,6 @@
 import { GuildMember } from "discord.js";
 import { db } from "../..";
-import { DocPlayer } from "../../structs";
+import { DocumentPlayer } from "../../structs";
 
 //const playerColl = new Firestore("players");
 
@@ -14,7 +14,7 @@ export const systemRegister = {
     */
     async create(member: GuildMember, nick?: string, device?: string, type?: "discord" | "zunder"){
 
-        const data: DocPlayer = {registry: {
+        const data: DocumentPlayer = {registry: {
             nick: nick || member.displayName,
             device: device || "discord",
             type: type || "discord",
@@ -28,6 +28,6 @@ export const systemRegister = {
         //     device: finalDevice,
         //     type: finalType,
         //     level: 1
-        // }} as DocPlayer)
+        // }} as DocumentPlayer)
     }
 } 

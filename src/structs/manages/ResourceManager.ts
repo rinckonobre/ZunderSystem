@@ -1,19 +1,10 @@
-import { ActionRowBuilder, Attachment, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel, User } from "discord.js";
+import { ActionRowBuilder, Attachment, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
 
-import { resources } from "../../config.json"
-import { DocPlayer, DocResource, Firestore, GuildManager, ServerManager } from "..";
-import { ZunderResourceUploadProps, ZunderResourceEditProps } from "../interfaces/ZunderResource";
+import { DocPlayer, DocResource, GuildManager, ServerManager } from "..";
 import { db } from "../..";
-
-const resourcesColl = new Firestore("resources");
-
+import { resources } from "../../config.json";
+import { ZunderResourceEditProps, ZunderResourceUploadProps } from "../interfaces/ZunderResource";
 export class ResourceManager {
-    // public static temp = {
-    //     upload: new Map() as Map<string, ResourceBuilder>,
-    //     edit: new Map() as Map<string, string>,
-    //     report: new Map() as Map<string, string>
-    // }
-
     public static tempUpload: Map<string, ZunderResourceUploadProps> = new Map();
     public static tempEdit: Map<string, ZunderResourceEditProps> = new Map();
     public static tempReport: Map<string, string> = new Map();

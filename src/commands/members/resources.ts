@@ -2,8 +2,7 @@ import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType,
 import { config, db } from "../..";
 import { logger, wait } from "../../functions";
 import { toHexColor } from "../../functions/aplication/convert";
-import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocPlayer, DocResource, EmbedMenuBuilder, Files, ResourceManager, ServerManager } from "../../structs";
-import { ZunderResourceUploadProps } from "../../structs/interfaces/ZunderResource";
+import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, EmbedMenuBuilder, Files, ResourceManager, ServerManager, ZunderResourceUploadProps } from "../../structs";
 
 export default new Command({
     name: "resources",
@@ -123,7 +122,7 @@ export default new Command({
             case "title": {
                 const collection = await db.resources.collection.get()
                 const choices = collection.docs.map(doc => {
-                    const resource = doc.data() as DocResource;
+                    const resource = doc.data() as DocumentResource;
                     return {name: resource.title.slice(0, 80), value: doc.id }
                 })
                 let filtered = choices.filter(c => c.name.startsWith(focusedValue.value));
@@ -154,7 +153,7 @@ export default new Command({
             return;
         }
         
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry){
             new BreakInteraction(interaction, "Apenas membros registrados podem utilizar este comando!");
             return;
@@ -243,7 +242,7 @@ export default new Command({
                 // }
 
                 const mention = options.getMember("membro") as GuildMember || member;
-                const mentionData = await db.players.get(mention.id) as DocPlayer | undefined;
+                const mentionData = await db.players.get(mention.id) as DocumentPlayer | undefined;
 
                 if (!mentionData || !mentionData.registry) {
                     new BreakInteraction(interaction, `${mention} não está registrado`);
@@ -258,7 +257,7 @@ export default new Command({
 
                 new EmbedMenuBuilder({ title: "📁 Lista de recursos", maxItems: 6, type: "BLOCK_LIST" })
                 .setItems(snapshot.docs.map(doc => {
-                    const resource = doc.data() as DocResource;
+                    const resource = doc.data() as DocumentResource;
                     
                     return {
                         title: resource.title,
@@ -279,7 +278,7 @@ export default new Command({
             }
             case "edit": {
                 const id = options.getString("id", true).trim();
-                const resource = await db.resources.get(id) as DocResource | undefined;
+                const resource = await db.resources.get(id) as DocumentResource | undefined;
                 if (!resource) {
                     new BreakInteraction(interaction, `Não foi encontrado nenhum recurso com o id: \`${id}\`!` +
                     "\nVerifique se você digitou o id corretamente");
@@ -592,7 +591,7 @@ export default new Command({
                 //     return;
                 // }
                 const id = options.getString("id", true).trim();
-                const resource = await db.resources.get(id) as DocResource | undefined;
+                const resource = await db.resources.get(id) as DocumentResource | undefined;
                 if (!resource) {
                     new BreakInteraction(interaction, `Não foi encontrado nenhum recurso com o id: \`${id}\`!` +
                     "\nVerifique se você digitou o id corretamente");
@@ -634,7 +633,7 @@ export default new Command({
             case "search":{
                 const id = options.getString("title", true);
 
-                const resource = await db.resources.get(id) as DocResource | undefined;
+                const resource = await db.resources.get(id) as DocumentResource | undefined;
                 if (!resource) {
                     new BreakInteraction(interaction, "O recurso não foi encontrado!");
                     return;
@@ -652,7 +651,7 @@ export default new Command({
             case "fetch": {
                 const id = options.getString("id", true)
 
-                const resource = await db.resources.get(id) as DocResource | undefined;
+                const resource = await db.resources.get(id) as DocumentResource | undefined;
                 if (!resource) {
                     new BreakInteraction(interaction, "O recurso não foi encontrado! \nTalvez o id tenha sido digitado incorretamente!");
                     return;

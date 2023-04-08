@@ -16,7 +16,9 @@ export * from "./classes/Firestore"
 export * from "./classes/MessageUtils"
 export * from "./classes/ReplyBuilder"
 
-export * from "./interfaces/FirestoreDocuments"
+export * from "./interfaces/DocumentGuild"
+export * from "./interfaces/DocumentResource"
+export * from "./interfaces/DocumentPlayer"
 
 export * from "./manages/GuildManager"
 export * from "./manages/MemberManager"

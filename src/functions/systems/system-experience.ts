@@ -1,15 +1,15 @@
 import { ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
 import { config, db } from "../..";
 
-import { DocPlayer, ServerManager } from "../../structs";
+import { DocumentPlayer, ServerManager } from "../../structs";
 
 export const systemExperience = {
     getRequiredXp(level: number) {
         return (level > 0) ? level * 982 : 440;
     },
     async give(member: GuildMember, value: number, type: "interaction" | "work") {
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
-        //playersColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
+        //playersColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (!memberData) return false;
 
         if (!memberData[type] && type == "work") return false;

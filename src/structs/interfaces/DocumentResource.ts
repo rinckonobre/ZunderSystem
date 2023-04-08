@@ -1,3 +1,23 @@
+export interface DocumentResource {
+    title: string;
+    description: string;
+    acessURL: string;
+    thumbURL?: string;
+    bannerURL?: string;
+    messageURL: string;
+    guildID: string;
+    reports: Array<{
+        id: string,
+        reason: string;
+    }>;
+    category: {
+        name: string;
+        subCategory: string; 
+    };
+    messageID: string;
+    authorID: string;
+}
+
 import { Attachment } from "discord.js";
 
 export interface ZunderResourceUploadProps {
@@ -12,10 +32,7 @@ export interface ZunderResourceUploadProps {
     thumbURL?: string;
     bannerURL?: string;
     messageURL?: string;
-    reports: Array<{
-        id: string;
-        reason: string;
-    }>
+    reports: Array<{ id: string; reason: string; }>
     category?: {
         name: string;
         subCategory: string; 

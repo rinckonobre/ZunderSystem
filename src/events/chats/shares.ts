@@ -1,7 +1,7 @@
 import { ChannelType } from "discord.js";
 import { client, config } from "../..";
 
-import { BreakInteraction, DocPlayer, Event, Firestore } from "../../structs";
+import { BreakInteraction, DocumentPlayer, Event, Firestore } from "../../structs";
 
 const playerColl = new Firestore("players");
 
@@ -14,7 +14,7 @@ export default new Event({name: "messageCreate", async run(message){
     
     const { content, attachments, member } = message;
 
-    const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
+    const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
     if (!memberData) {
         new BreakInteraction(message, "Apenas membros registrados podem divulgar conteúdos aqui!")
         return;

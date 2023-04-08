@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, TextChannel 
 import { client, config } from "../..";
 import { systemWork } from "../../functions/systems/system-work";
 import { works } from "../../jsons";
-import { DocPlayer, Event, Firestore, ServerManager } from "../../structs";
+import { DocumentPlayer, Event, Firestore, ServerManager } from "../../structs";
 
 const playersColl = new Firestore("players");
 
@@ -31,7 +31,7 @@ export default new Event({name: "messageCreate", async run(message){
         return;
     };
 
-    const memberData = await playersColl.getDocData(message.member.id) as DocPlayer | undefined;
+    const memberData = await playersColl.getDocData(message.member.id) as DocumentPlayer | undefined;
     if (!memberData || !memberData.work) {
         message.delete().catch(() => {})
         return;

@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 import { config, db } from "../..";
-import { systemRecords } from "../../functions";
-import { BreakInteraction, Command, DiscordTools, DocPlayer, ServerManager } from "../../structs";
+import { buttonCollector, stringSelectCollector, systemRecords } from "../../functions";
+import { BreakInteraction, Command, DiscordTools, DocumentPlayer, ServerManager } from "../../structs";
 
 export default new Command({
     name: "Member Tools",
@@ -9,29 +9,36 @@ export default new Command({
     type: ApplicationCommandType.User,
     visibility: "staff",
     async run({interaction}) {
-        if (!interaction.isUserContextMenuCommand()) return;
+        if (!interaction.isUserContextMenuCommand() || !interaction.inCachedGuild()) return;
 
-        const guild = interaction.guild!;
-
-        const member = interaction.member as GuildMember;
-        const target = interaction.targetMember as GuildMember;
+        const { member, guild, targetMember: target } = interaction;
 
         if (target.user.bot){
             new BreakInteraction(interaction, "Não é possível utilizar as ferramentas de membro com bots!");
             return;
         }
 
-        const memberData: DocPlayer | undefined = await db.players.get(member.id);
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry){
             new BreakInteraction(interaction, "Apenas staffs podem usar este comando!")
             return;
         }
 
-        const rowTools = new ActionRowBuilder<StringSelectMenuBuilder>({components: [
-            new StringSelectMenuBuilder({customId: "member-tools-select", placeholder: "Selecione o que deseja fazer", options: [
-                {label: "Compartilhamento", value: "share", description: "Definir/Remover tag compartilhamento", emoji: "🔁"},
-            ]})
-        ]})
+        const rows = [
+            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>()
+        ]
+
+        const selectTools = new StringSelectMenuBuilder({
+            customId: "member-tools-select", placeholder: "Selecione o que deseja fazer", 
+            options: [
+                {
+                    label: "Compartilhamento", value: "share", emoji: "🔁",
+                    description: "Definir/Remover tag compartilhamento", 
+                },
+            ]
+        })
+
+        rows[0].setComponents(selectTools)
 
         // Cargos
         const roleShare = ServerManager.findRole(guild, config.guild.roles.functional.share);
@@ -40,9 +47,9 @@ export default new Command({
 
         let selectedTool: MemberTool;
 
-        const msg = await interaction.reply({ephemeral: true, components: [rowTools], fetchReply: true});
+        const message = await interaction.reply({ephemeral: true, components: [rows[0]], fetchReply: true});
 
-        DiscordTools.selectCollector({source: msg, async collect(subInteraction){
+        stringSelectCollector(message).on("collect", async (subInteraction) => {
             selectedTool = subInteraction.values[0] as MemberTool;
 
             const confirmButton = new ButtonBuilder({customId: "confirm-button", label: "Confirmar", style: ButtonStyle.Success})
@@ -67,8 +74,9 @@ export default new Command({
                     return;
                 }
             }
-        }})
-        DiscordTools.buttonCollector({source: msg, async collect(subInteraction) {
+        })
+
+        buttonCollector(message).on("collect", async (subInteraction) => {
             const { customId } = subInteraction;
 
             switch (selectedTool){
@@ -91,9 +99,7 @@ export default new Command({
                     return;
                 }
             }
-
-            
-        }})
+        })
 
     },
 })

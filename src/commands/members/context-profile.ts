@@ -1,7 +1,7 @@
 import { ApplicationCommandType, GuildMember } from "discord.js";
 import { db } from "../..";
 import { systemProfile } from "../../functions";
-import { BreakInteraction, Command, DocPlayer } from "../../structs";
+import { BreakInteraction, Command, DocumentPlayer } from "../../structs";
 
 export default new Command({
     name: "Zunder Profile",
@@ -18,7 +18,7 @@ export default new Command({
             return;
         }
 
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
 
         if (!memberData || !memberData.registry) {
             new BreakInteraction(interaction, "O membro mencionadonão está registrado no servidor e não pode ter um perfil");

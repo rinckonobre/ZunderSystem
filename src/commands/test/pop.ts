@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, Collection, ComponentType, EmbedBuilder, Message } from 'discord.js';
+import { ApplicationCommandType } from 'discord.js';
 import { Command } from "../../structs";
 
 export default new Command({
@@ -13,7 +13,7 @@ export default new Command({
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { guild, member } = interaction;
 
-        const msg = await interaction.reply({ ephemeral: true, content: "any...", fetchReply: true });
+        interaction.reply({ ephemeral: true, content: "any...", fetchReply: true });
 
     },
 });

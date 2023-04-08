@@ -1,7 +1,7 @@
 
 import { AttachmentBuilder, ChannelType } from "discord.js";
 import { client, config, db } from "../..";
-import { DocPlayer, Event, ServerManager } from "../../structs";
+import { DocumentPlayer, Event, ServerManager } from "../../structs";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { canvasDrawImage, canvasDrawRect, canvasDrawText, canvasSetFont } from "../../functions";
 import { registers } from "../../jsons";
@@ -12,7 +12,7 @@ export default new Event({name: 'guildMemberAdd', async run(member){
     const cGlobal = member.guild.channels.cache.find(c => c.name == config.guild.channels.global);
     if (!cGlobal || cGlobal.type != ChannelType.GuildText) return;
 
-    const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+    const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
 
     const canvas = createCanvas(1024, 260);
     const ctx = canvas.getContext("2d");

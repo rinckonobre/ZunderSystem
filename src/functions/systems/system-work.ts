@@ -1,13 +1,13 @@
 import { Attachment, ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
 import { config, db } from "../..";
 import { works } from "../../jsons";
-import { DocPlayer, Firestore, ServerManager } from "../../structs";
+import { DocumentPlayer, Firestore, ServerManager } from "../../structs";
 import { systemExperience } from "./system-experience";
 
 const playersColl = new Firestore("players");
 
 export const systemWork = {
-    async accept(member: GuildMember, image: Attachment, memberData: DocPlayer){
+    async accept(member: GuildMember, image: Attachment, memberData: DocumentPlayer){
         const guild = member.guild
         const cWork = ServerManager.findChannel(guild, config.guild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
         if (!cWork) return;

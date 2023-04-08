@@ -1,7 +1,7 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
-import { Command } from "../../structs";
-import { toHexColor, waitButton, wait, logger } from "../../functions";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 import { config } from "../..";
+import { logger, toHexColor, wait, waitButton } from "../../functions";
+import { Command } from "../../structs";
 
 export default new Command({
     name: "minigame",
@@ -54,9 +54,9 @@ export default new Command({
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { guild, member, channel } = interaction;
 
-        const rows = {
-            first: new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
-        }
+        const rows = [
+            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
+        ]
 
         const buttons = {
             accept: new ButtonBuilder({customId: "minigame-accept-button", label: "Aceitar", style: ButtonStyle.Success}),
@@ -81,10 +81,10 @@ export default new Command({
                             thumbnail: { url: member.displayAvatarURL() }
                         })
 
-                        rows.first.setComponents(buttons.accept, buttons.recuse);
+                        rows[0].setComponents(buttons.accept, buttons.recuse);
                         const message = await interaction.reply({
                             content: `||${mention}||`, embeds: [embed], 
-                            components: [rows.first], fetchReply: true,
+                            components: [rows[0]], fetchReply: true,
                         })
 
                         const buttonResponse = await waitButton(message, {time, filter(subInteraction){
@@ -122,89 +122,10 @@ export default new Command({
                             scissors: new ButtonBuilder({customId: "jokenpo-scissors-button", label: "Tesoura", emoji: "✂️", style: ButtonStyle.Secondary})
                         }
 
-                        const playerA: JokenpoPlayer = {
-                            choose: false, object: "paper", roundWins: 0,
-                        }
-                        const playerB: JokenpoPlayer = {
-                            choose: false, object: "paper", roundWins: 0,
-                        }
+                        rows[0].setComponents(minigameButtons.rock, minigameButtons.paper, minigameButtons.scissors)
+                        interaction.editReply({embeds: [embed], components: [rows[0]]})
 
-                        const currents = {
-                            round: 0
-                        }
-
-                        const objects = {
-                            rock: "🪨",
-                            paper: "📄",
-                            scissors: "✂️"
-                        }
-
-                        embed
-                        .setThumbnail(null)
-                        .setDescription(`O desafio Jokenpô de ${member} foi aceito! \nPreparem-se...`);
-
-                        await interaction.editReply({embeds: [embed], components: []})
-                        await wait(4000)
-
-                        embed
-                        .setDescription(`${member} vs ${mention} \nRound ${currents.round + 1}`)
-                        .addFields(
-                            {name: "\u200b", value: `${member} ainda não jogou | ${mention} ainda não jogou`},
-                        );
-
-                        function roundUpdate(reveal: boolean = false){
-                            const { fields } = embed.data;
-                            if (!fields) return;
-
-                            const text = {
-                                playerA: ``,
-                                playerB: ``
-                            }
-
-                            if (playerA.choose) {
-                                text.playerA = `${member} jogou ` + (reveal) ? `${objects[playerA.object]}!` : `!`
-                            } else text.playerA = `${member} ainda não jogou!` 
-                            
-                            if (playerA.choose) {
-                                text.playerB = `${mention} jogou ` + (reveal) ? `${objects[playerB.object]}!` : `!`
-                            } else text.playerB = `${mention} ainda não jogou!`;
-
-                            fields[currents.round].value = `${text.playerA} | ${text.playerB}`
-
-                            if (reveal){
-                                interaction.editReply({embeds: [embed], components: []})
-                            } else {
-                                interaction.editReply({embeds: [embed]})
-                            }
-                        }
-
-                        rows.first.setComponents(minigameButtons.rock, minigameButtons.paper, minigameButtons.scissors)
-                        interaction.editReply({embeds: [embed], components: [rows.first]})
-
-                        message.createMessageComponentCollector({componentType: ComponentType.Button, filter(i){
-                            i.deferUpdate();
-                            return i.user.id == member.id || i.user.id == mention.id;
-                        }})
-                        .on("collect", async (subInteraction) => {
-                            const { user: UserButton, customId } = subInteraction;
-
-                            const object = customId.replace("jokenpo-", "").replace("-button", "") as JokenpoObject;
-
-                            console.log(object)
-
-                            if (UserButton.id == member.id){
-                                playerA.object = object;
-                            } else {
-                                playerB.object = object;
-                            }
-
-                            if (playerA.choose && playerB.choose) {
-                                roundUpdate(true);
-                                return;
-                            }
-                            roundUpdate()
-
-                        })
+                        
 
                         return;
                     }

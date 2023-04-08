@@ -4,9 +4,11 @@ export * from "./systems/system-records";
 export * from "./systems/system-register";
 export * from "./systems/system-profile";
 
+export * from "./discord/components";
+export * from "./discord/collectors";
+
 export * from "./aplication/logger";
 export * from "./aplication/wait";
-export * from "./aplication/components";
 export * from "./aplication/convert";
 export * from "./aplication/canvas";
 

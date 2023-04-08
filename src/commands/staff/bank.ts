@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
 
 import { systemRegister } from "../../functions";
-import { BreakInteraction, Command, DiscordCreate, DocGuild, DocPlayer, Firestore, GuildManager } from "../../structs";
+import { BreakInteraction, Command, DiscordCreate, DocumentGuild, DocumentPlayer, Firestore, GuildManager } from "../../structs";
 import { config } from "../..";
 
 const playersColl = new Firestore("players");
@@ -72,13 +72,13 @@ export default new Command({
             return;
         };
 
-        const memberData = await playersColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (!memberData || (memberData.registry?.level || 1) < 5) {
             new BreakInteraction(interaction, "Apenas líderes podem utilizar este comando!");
             return;
         }
 
-        const guildData = await guildsColl.getDocData(guild.id) as DocGuild | undefined;
+        const guildData = await guildsColl.getDocData(guild.id) as DocumentGuild | undefined;
         if (!guildData) {
             interaction.reply({ ephemeral: true, content: "Os dados deste servidor não estavam configurados, utilize o comando novamente!" });
             guildsColl.createDoc(guild.id, {
@@ -130,7 +130,7 @@ export default new Command({
                         .catch(() => { });
                 }
 
-                const mentionData = await playersColl.getDocData(mention.id) as DocPlayer | undefined;
+                const mentionData = await playersColl.getDocData(mention.id) as DocumentPlayer | undefined;
                 if (!mentionData || !mentionData.registry) {
                     systemRegister.create(mention);
                     playersColl.getDocManager(mention.id).set("stats.donated", value);

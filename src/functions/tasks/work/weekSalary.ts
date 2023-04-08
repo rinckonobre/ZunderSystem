@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { TextChannel } from "discord.js";
 import { client, config } from "../../..";
-import { DiscordCreate, DocPlayer, Firestore, Schedule, ServerManager } from "../../../structs";
+import { DiscordCreate, DocumentPlayer, Firestore, Schedule, ServerManager } from "../../../structs";
 
 const playersColl = new Firestore("players");
 
@@ -24,7 +24,7 @@ export default new Schedule({
         const embeds: Array<EmbedBuilder> = [];
 
         roleWork.members.forEach(async member => {
-            const memberData = await playersColl.getDocData(member.id) as DocPlayer | undefined
+            const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined
 
             const registry = memberData?.registry
             const inventory = memberData?.inventory

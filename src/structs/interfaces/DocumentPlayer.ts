@@ -1,4 +1,4 @@
-export interface DocPlayerCooldowns {
+interface DocumentPlayerCooldowns {
     commands?: {
         resources?: {
             upload?: number,
@@ -12,33 +12,37 @@ export interface DocPlayerCooldowns {
     }
 }
 
-export interface DocPlayerInteraction {
-    /** Nível atual do jogador */
+interface DocumentPlayerInteraction {
+    /** Current player level */
     level?: number;
-    /** Experiência atual do jogador */
+    /** Current player exp */
     xp?: number;
 }
-export interface DocPlayerInventory {
+interface DocumentPlayerInventory {
     /**
-     * Total de moedas do jogador
+     * Player's total coins
      */
     coins: number;
-    /** Nível do amplificador de moedas do jogador*/
+    /** Player's amplifier level */
     amplifier: number;
 }
 
-export interface DocPlayerWallet {
-    /** Total de moedas do jogador*/
+interface DocumentPlayerWallet {
+    /** Player's total coins */
     coins: number;
 }
 
-export interface DocPlayerRegistry {
+interface DocumentPlayerRegistry {
+    /** Player's registry level */
     level: number;
+    /** Player's nick */
     nick: string;
+    /** Player's registry type */
     type: "zunder" | "discord";
+    /** Player's registry decive */
     device: string;
 }
-export interface DocPlayerRequests {
+interface DocumentPlayerRequests {
     zunder?: {
         /**
          * Nick utilizado para se registrar como membro Zunder
@@ -54,7 +58,7 @@ export interface DocPlayerRequests {
         device: string
     }
 }
-export interface DocPlayerStaff {
+interface DocumentPlayerStaff {
     daily: {
         check: boolean;
         messages: number;
@@ -64,7 +68,7 @@ export interface DocPlayerStaff {
     manages: number;
     score: number;
 }
-export interface DocPlayerStats {
+interface DocumentPlayerStats {
     /** Total de eventos participados */
     events?: number;
     /** Total de mensagens enviadas */
@@ -74,76 +78,45 @@ export interface DocPlayerStats {
     /** Total de dinheiro doado para o grupo */
     donated?: number;
 }
-export interface DocPlayerWorkDone {
+interface DocumentPlayerWorkDone {
     xpEarned: number;
     amount: number;
     gameID: string;
     professionID: string;
 }
-export interface DocPlayerWork {
+export interface DocumentPlayerWork {
     level: number;
     xp: number;
-    dones?: Array<DocPlayerWorkDone>
+    dones?: Array<DocumentPlayerWorkDone>
     gameID: string;
     profession: string;
     salary: number
 }
 
-export interface DocPlayerConfig {
+interface DocumentPlayerConfig {
     limits?: {
         coins?: number
     }
 }
 
-export interface DocPlayer {
+export interface DocumentPlayer {
     /** Cooldowns para utilizar comandos e funções */
-    cooldowns?: DocPlayerCooldowns;
+    cooldowns?: DocumentPlayerCooldowns;
     /** Interação */
-    interaction?: DocPlayerInteraction;
+    interaction?: DocumentPlayerInteraction;
     /** Inventário de itens*/
-    inventory?: DocPlayerInventory;
+    inventory?: DocumentPlayerInventory;
     /** Carteira do membro */
-    wallet?: DocPlayerWallet;
+    wallet?: DocumentPlayerWallet;
     /** Informações de registro */
-    registry?: DocPlayerRegistry;
+    registry?: DocumentPlayerRegistry;
     /** Pedidos */
-    requests?: DocPlayerRequests;
+    requests?: DocumentPlayerRequests;
     /** Lista de ids de recursos enviados */
     resources?: Array<{id: string}>;
-    staff?: DocPlayerStaff;
+    staff?: DocumentPlayerStaff;
     /** Estatisticas do membro */
-    stats?: DocPlayerStats;
-    work?: DocPlayerWork;
-    config?: DocPlayerConfig;
-}
-
-export interface DocGuild {
-    bank: {
-        total: number;
-    }
-    systems: {
-        interaction: boolean;
-        economy: boolean;
-        stats: boolean;
-        work: boolean
-    }
-}
-export interface DocResource {
-    title: string;
-    description: string;
-    acessURL: string;
-    thumbURL?: string;
-    bannerURL?: string;
-    messageURL: string;
-    guildID: string;
-    reports: Array<{
-        id: string,
-        reason: string;
-    }>;
-    category: {
-        name: string;
-        subCategory: string; 
-    };
-    messageID: string;
-    authorID: string;
+    stats?: DocumentPlayerStats;
+    work?: DocumentPlayerWork;
+    config?: DocumentPlayerConfig;
 }

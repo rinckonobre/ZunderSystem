@@ -1,13 +1,13 @@
 import { ButtonInteraction, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, Guild, GuildMember, UserContextMenuCommandInteraction } from "discord.js";
 import { config } from "../..";
 import { registers } from "../../jsons";
-import { DocPlayer, ServerManager, TextUtils } from "../../structs";
+import { DocumentPlayer, ServerManager, TextUtils } from "../../structs";
 
 function emoji(guild: Guild, name: string){
     return ServerManager.findEmoji(guild, name);
 }
 
-function setup(member: GuildMember, memberData: DocPlayer){
+function setup(member: GuildMember, memberData: DocumentPlayer){
     const register = registers[memberData.registry!.type].find(r => r.level == memberData.registry!.level)!;
 
     return new EmbedBuilder()
@@ -23,7 +23,7 @@ function setup(member: GuildMember, memberData: DocPlayer){
 type CommandTypes = ChatInputCommandInteraction | UserContextMenuCommandInteraction | ButtonInteraction
 
 export const systemProfile = {
-    showMember(interaction: CommandTypes, member: GuildMember, memberData: DocPlayer){
+    showMember(interaction: CommandTypes, member: GuildMember, memberData: DocumentPlayer){
 
         const embed = setup(member, memberData)
         const guild = member.guild

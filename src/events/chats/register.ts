@@ -3,7 +3,7 @@ import { client, config } from "../..";
 import { systemRecords, systemRegister } from "../../functions";
 
 import { registers } from "../../jsons";
-import { BreakInteraction, DocPlayer, Event, Firestore, ServerManager } from "../../structs";
+import { BreakInteraction, DocumentPlayer, Event, Firestore, ServerManager } from "../../structs";
 
 const playerColl = new Firestore("players");
 
@@ -44,7 +44,7 @@ export default new Event({
 
         message.delete().catch(() => {})
 
-        const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (memberData && memberData.registry) {
             client.emit("guildMemberAdd", member);
             return;

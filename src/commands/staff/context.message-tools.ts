@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ComponentType, StringSelectMenuBuilder } from "discord.js";
-import { BreakInteraction, Command, DocPlayer, TextUtils } from "../../structs";
+import { BreakInteraction, Command, DocumentPlayer, TextUtils } from "../../structs";
 import { db } from "../..";
 import fs from "fs";
 
@@ -11,7 +11,7 @@ export default new Command({
         if (!interaction.isMessageContextMenuCommand() || !interaction.inCachedGuild()) return;
         const { member, targetMessage, guild, channel } = interaction;
 
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry || memberData.registry.level < 3){
             new BreakInteraction(interaction, "Apenas Mods e superiores podem usar este comando!");
             return;

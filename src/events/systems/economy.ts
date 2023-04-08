@@ -4,7 +4,7 @@ import { systemExperience } from "../../functions";
 
 import { systemCoins } from '../../functions';
 import { wait } from '../../functions/aplication/wait';
-import { DocPlayer, Event, MemberCooldowns, NumberUtils } from "../../structs";
+import { DocumentPlayer, Event, MemberCooldowns, NumberUtils } from "../../structs";
 
 export default new Event({
     name: "messageCreate", async run(message) {
@@ -15,7 +15,7 @@ export default new Event({
 
         const member = message.member as GuildMember;
 
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData?.registry) return;
 
         db.players.update(member.id, "stats.msg", 1, "increment");

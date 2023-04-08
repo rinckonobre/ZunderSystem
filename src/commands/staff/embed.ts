@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, InteractionType, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputComponentData, TextInputStyle } from "discord.js";
 import { config, db } from "../..";
 import { toHexColor } from "../../functions/aplication/convert";
-import { BreakInteraction, Command, DocPlayer, MemberSaves, TextUtils } from "../../structs";
+import { BreakInteraction, Command, DocumentPlayer, MemberSaves, TextUtils } from "../../structs";
 
 export default new Command({
     name: "embed",
@@ -39,7 +39,7 @@ export default new Command({
         const { guild, channel, member } = interaction;
         
         // Checks
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry || memberData.registry.level < 3) {
             new BreakInteraction(interaction, "Apenas Mods e superiores podem utilizar este comando!");
             return;

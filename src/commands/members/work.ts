@@ -3,7 +3,7 @@ import { config } from "../..";
 import { systemExperience } from "../../functions";
 import { systemWork } from "../../functions/systems/system-work";
 import { works } from "../../jsons";
-import { Command, Cooldown, DiscordCreate, DocPlayer, EmbedMenu, Firestore, Interruption, ReplyBuilder, ServerManager, TextUtils } from "../../structs";
+import { Command, Cooldown, DiscordCreate, DocumentPlayer, EmbedMenu, Firestore, Interruption, ReplyBuilder, ServerManager, TextUtils } from "../../structs";
 
 const playersColl = new Firestore("players");
 
@@ -50,7 +50,7 @@ export default new Command({
 
         const roleWork = ServerManager.findRole(guild, config.guild.roles.functional.work);
 
-        const memberData = await playersColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry) {
             new Interruption(interaction, "Apenas membros registrados podem utilizar este comando!")
             return;
@@ -228,7 +228,7 @@ export default new Command({
             case "carreira": {
                 const workMember = options.getMember("membro") as GuildMember || member
 
-                const workMemberData = await playersColl.getDocData(workMember.id) as DocPlayer | undefined;
+                const workMemberData = await playersColl.getDocData(workMember.id) as DocumentPlayer | undefined;
 
                 if (!workMemberData || !workMemberData.registry) {
                     new Interruption(interaction, `${workMember} não está registrado!`)
@@ -277,7 +277,7 @@ export default new Command({
             
             buttonInteraction.deferUpdate()
 
-            const memberData = await playersColl.getDocData(member.id) as DocPlayer | undefined;
+            const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined;
             if (!memberData || !memberData.registry || (memberData.registry.level || 1) < 2) {
                 return;
             }
@@ -289,7 +289,7 @@ export default new Command({
                 return;
             }
             
-            const mentionData = await playersColl.getDocData(mention.id) as DocPlayer | undefined;
+            const mentionData = await playersColl.getDocData(mention.id) as DocumentPlayer | undefined;
             if (!mentionData || !mentionData.work || !mentionData.work.profession) {
                 message.delete().catch(() => {})
                 return;
@@ -310,7 +310,7 @@ export default new Command({
             
             await buttonInteraction.deferUpdate()
 
-            const memberData = await playersColl.getDocData(member.id) as DocPlayer | undefined;
+            const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined;
             if (!memberData || !memberData.registry || (memberData.registry.level || 1) < 2) return;
 
             buttonInteraction.message.delete().catch(() => {})

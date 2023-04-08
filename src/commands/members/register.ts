@@ -2,7 +2,7 @@ import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType,
 import { client, config, db } from "../..";
 import { systemRecords, systemRegister } from "../../functions";
 import { devices, registers } from "../../jsons";
-import { BreakInteraction, Command, DiscordCreate, DocPlayer, EmbedMenu, Firestore, GuildManager, ServerManager } from "../../structs";
+import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, EmbedMenu, Firestore, GuildManager, ServerManager } from "../../structs";
 
 const playerColl = new Firestore("players");
 
@@ -34,7 +34,7 @@ export default new Command({
 
         const nick = options.getString("nick", true);
 
-        const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (!memberData) {
             new BreakInteraction(interaction, "Você precisa ter se registrado antes no servidor!");
             return;
@@ -51,65 +51,65 @@ export default new Command({
         }
 
         const embed = new EmbedBuilder()
-            .setColor(config.colors.zunder as ColorResolvable)
-            .setDescription("Selecione o dispositivo para registrar");
+        .setColor(config.colors.zunder as ColorResolvable)
+        .setDescription("Selecione o dispositivo para registrar");
 
         new EmbedMenu(interaction, embed, 6, 1)
-            .setItems(devices.filter(d => d.id != "discord").map(device => {
-                return { title: device.name, content: device.instructions.member, label: device.name, value: device.id };
-            }))
-            .setExecution("Selecione o dispositivo para registrar", async (selectInteraction) => {
-                const deviceID = selectInteraction.values[0];
-                const device = devices.find(d => d.id == deviceID)!;
+        .setItems(devices.filter(d => d.id != "discord").map(device => {
+            return { title: device.name, content: device.instructions.member, label: device.name, value: device.id };
+        }))
+        .setExecution("Selecione o dispositivo para registrar", async (selectInteraction) => {
+            const deviceID = selectInteraction.values[0];
+            const device = devices.find(d => d.id == deviceID)!;
 
-                if (!memberData.requests){
-                    memberData.requests = {zunder: { device: deviceID, nick } };
-                } else {
-                    memberData.requests.zunder = { device: deviceID, nick };
-                }
+            if (!memberData.requests){
+                memberData.requests = {zunder: { device: deviceID, nick } };
+            } else {
+                memberData.requests.zunder = { device: deviceID, nick };
+            }
 
-                playerColl.saveDocData(member.id, memberData);
+            playerColl.saveDocData(member.id, memberData);
 
-                selectInteraction.update({
-                    embeds: [DiscordCreate.simpleEmbed(config.colors.zunder, `Você fez uma solicitação de registro Zunder com o nick: ${nick}`)], 
-                    components: []
-                });
+            selectInteraction.update({
+                embeds: [DiscordCreate.simpleEmbed(config.colors.zunder, `Você fez uma solicitação de registro Zunder com o nick: ${nick}`)], 
+                components: []
+            });
 
-                member.send({embeds: [DiscordCreate.simpleEmbed(config.colors.zunder, 
-                    `Você acabou de fazer uma solicitação de registro Zunder
-                Nick: ${nick}
-                
-                Aguarde a staff verificar e te dar uma resposta`)
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                ]}).catch(() => {});
-
-                const row = new ActionRowBuilder<StringSelectMenuBuilder>({components: [
-                    new StringSelectMenuBuilder({
-                        customId: "register-request-zunder-manage",
-                        placeholder: "Aprove ou recuse",
-                        options: [
-                            {label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: ServerManager.findEmoji(guild, "check")?.id}},
-                            {label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: ServerManager.findEmoji(guild, "cancel")?.id}}
-                        ]
-                    })
-                ]});
-
-                embed.setTitle("📝 Solicitação de registro Zunder");
-                embed.setFields()
-                    .setThumbnail(member.displayAvatarURL())
-                    .setDescription(`> Member: ${member} **${member.user.tag}**
-            Dispositivo: ${ServerManager.findEmoji(guild, device.emoji)} **${device.name}**
-            ✏️ Nick: \` ${nick} \`
+            member.send({embeds: [DiscordCreate.simpleEmbed(config.colors.zunder, 
+                `Você acabou de fazer uma solicitação de registro Zunder
+            Nick: ${nick}
             
-            ${device.instructions.staff}`)
-                    .addFields({name: "ID do membro", value: member.id, inline: true});
+            Aguarde a staff verificar e te dar uma resposta`)
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            ]}).catch(() => {});
 
-                const cManagement = ServerManager.findChannel(guild, config.guild.channels.management, ChannelType.GuildText) as TextChannel | undefined;
-                if (cManagement) {
-                    cManagement.send({content: "||@everyone||", embeds: [embed], components: [row]});
-                }
-            })
-            .display();
+            const row = new ActionRowBuilder<StringSelectMenuBuilder>({components: [
+                new StringSelectMenuBuilder({
+                    customId: "register-request-zunder-manage",
+                    placeholder: "Aprove ou recuse",
+                    options: [
+                        {label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: ServerManager.findEmoji(guild, "check")?.id}},
+                        {label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: ServerManager.findEmoji(guild, "cancel")?.id}}
+                    ]
+                })
+            ]});
+
+            embed.setTitle("📝 Solicitação de registro Zunder");
+            embed.setFields()
+                .setThumbnail(member.displayAvatarURL())
+                .setDescription(`> Member: ${member} **${member.user.tag}**
+        Dispositivo: ${ServerManager.findEmoji(guild, device.emoji)} **${device.name}**
+        ✏️ Nick: \` ${nick} \`
+        
+        ${device.instructions.staff}`)
+                .addFields({name: "ID do membro", value: member.id, inline: true});
+
+            const cManagement = ServerManager.findChannel(guild, config.guild.channels.management, ChannelType.GuildText) as TextChannel | undefined;
+            if (cManagement) {
+                cManagement.send({content: "||@everyone||", embeds: [embed], components: [row]});
+            }
+        })
+        .display();
     },
     selects: new Collection([
         ["register-request-zunder-manage", async (interaction) => {
@@ -120,12 +120,12 @@ export default new Command({
             const mentionID = embed.data.fields![0].value;
 
             const mention = await guild.members.fetch(mentionID).catch(() => undefined);
-            const mentionData = await playerColl.getDocData(mentionID) as DocPlayer | undefined;
+            const mentionData = await playerColl.getDocData(mentionID) as DocumentPlayer | undefined;
 
             function BreakInteraction(message: string){
                 embed.setColor(config.colors.danger as ColorResolvable)
-                    .setDescription(message)
-                    .setFields();
+                .setDescription(message)
+                .setFields();
                 interaction.update({embeds: [embed], components: []});
             }
 
@@ -257,8 +257,8 @@ export default new Command({
             
             const cGeneral = ServerManager.findChannel(guild, config.guild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
         
-            //const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
-            const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+            //const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
+            const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
             if (memberData && memberData.registry) {
                 client.emit("guildMemberAdd", member);
                 new BreakInteraction(interaction, `Você já está registrado! Acesse o chat ${cGeneral}`);

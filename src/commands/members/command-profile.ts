@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
 import { db } from "../..";
 import { systemProfile } from "../../functions";
-import { BreakInteraction, Command, DocPlayer } from "../../structs";
+import { BreakInteraction, Command, DocumentPlayer } from "../../structs";
 
 export default  new Command({
     name: "profile",
@@ -35,8 +35,8 @@ export default  new Command({
             return;
         }
 
-        const memberData = await db.players.get(profileMember.id) as DocPlayer | undefined;
-        //await playerColl.getDocData(profileMember.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(profileMember.id) as DocumentPlayer | undefined;
+        //await playerColl.getDocData(profileMember.id) as DocumentPlayer | undefined;
 
         if (!memberData || !memberData.registry) {
             const text = (profileMember.id == member.id) ? "Você" : "O membro mencionado";

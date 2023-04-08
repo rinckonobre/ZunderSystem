@@ -2,7 +2,7 @@ import { ApplicationCommandType, codeBlock, EmbedBuilder, GuildMember, MessageCo
 import { config } from "../..";
 import { toHexColor } from "../../functions/aplication/convert";
 import { terms } from "../../jsons";
-import { BreakInteraction, Command, DocPlayer, Firestore, ServerManager } from "../../structs";
+import { BreakInteraction, Command, DocumentPlayer, Firestore, ServerManager } from "../../structs";
 import { ReplyBuilder } from "../../structs/classes/ReplyBuilder";
 
 const playerColl = new Firestore("players");
@@ -20,7 +20,7 @@ export default new Command({
 
         const cTerms = ServerManager.findChannel(interaction.guild!, config.guild.channels.terms) as TextChannel | undefined;
 
-        const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (!memberData || (memberData.registry?.level || 1) < 2) {
             new BreakInteraction(interaction, "Apenas staffs podem utilizar este comando!");
             return;

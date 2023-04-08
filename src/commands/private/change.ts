@@ -3,7 +3,7 @@ import { config } from "../..";
 import { systemRegister } from "../../functions";
 import { toHexColor } from "../../functions/aplication/convert";
 import { devices, registers } from "../../jsons";
-import { Command, DiscordCreate, DocPlayer, Firestore, GuildManager, Interruption } from "../../structs";
+import { Command, DiscordCreate, DocumentPlayer, Firestore, GuildManager, Interruption } from "../../structs";
 
 const playerColl = new Firestore('players');
 
@@ -81,14 +81,14 @@ export default new Command({
         const guildManager = new GuildManager(interaction.guild!);
         
         const member = interaction.member as GuildMember;
-        const memberData = await playerColl.getDocData(member.id) as DocPlayer;
+        const memberData = await playerColl.getDocData(member.id) as DocumentPlayer;
         if (member.id != interaction.guild!.ownerId) {
             new Interruption(interaction, "Apenas Líderes podem usar este comando!");
             return;
         }
 
         const mention = options.getMember("membro") as GuildMember;
-        const mentionData = await playerColl.getDocData(mention.id) as DocPlayer;
+        const mentionData = await playerColl.getDocData(mention.id) as DocumentPlayer;
         const embed = new EmbedBuilder()
         .setColor(toHexColor(config.colors.default));
 

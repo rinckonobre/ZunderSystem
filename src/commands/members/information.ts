@@ -3,7 +3,7 @@ import { config, db } from "../..";
 import { informations, terms } from "../../jsons";
 
 import { toHexColor } from "../../functions/aplication/convert";
-import { Command, DiscordCreate, DocPlayer, EmbedMenuBuilder, Interruption, ReplyBuilder, TextUtils } from "../../structs";
+import { Command, DiscordCreate, DocumentPlayer, EmbedMenuBuilder, Interruption, ReplyBuilder, TextUtils } from "../../structs";
 
 export default new Command({
     name: "informações",
@@ -26,7 +26,7 @@ export default new Command({
         if (!interaction.isChatInputCommand()) return;
         const member = interaction.member as GuildMember;
 
-        const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         
         const subCommand: string = options.getSubcommand();
 

@@ -4,7 +4,7 @@ import { colors } from "../../config.json";
 import { systemRecords } from "../../functions";
 import { toHexColor } from "../../functions/aplication/convert";
 import { devices, registers } from "../../jsons";
-import { BreakInteraction, Command, DiscordCreate, DocPlayer, EmbedMenuBuilder, Firestore, GuildManager, ServerManager } from "../../structs";
+import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, EmbedMenuBuilder, Firestore, GuildManager, ServerManager } from "../../structs";
 
 const playerColl = new Firestore("players");
 
@@ -54,7 +54,7 @@ export default new Command({
             return;
         }
 
-        const memberData = await playerColl.getDocData(member.id) as DocPlayer | undefined;
+        const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry || memberData.registry.level < 2) {
             new BreakInteraction(interaction, "Apenas staffs podem usar este comando!");
             return;
@@ -80,7 +80,7 @@ export default new Command({
                 new EmbedMenuBuilder({title: "Nicks da Zunder", maxItems: 6, type: "GRID_3"})
                 .editEmbed((e) => e.setColor(colors.zunder as ColorResolvable))
                 .setItems(docs.map(doc => {
-                    const mentionData = doc.data() as DocPlayer;
+                    const mentionData = doc.data() as DocumentPlayer;
 
                     const mention = guild.members.cache.get(doc.id)
                     if (mention) {
@@ -147,7 +147,7 @@ export default new Command({
 
 async function manageMember(interaction: ChatInputCommandInteraction | StringSelectMenuInteraction, mention: GuildMember){
     const member = interaction.member as GuildMember;
-    const memberData = await db.players.get(member.id) as DocPlayer | undefined;
+    const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
     const guild = interaction.guild as Guild
 
     if (!memberData || !memberData.registry || memberData.registry.level < 2){
@@ -165,7 +165,7 @@ async function manageMember(interaction: ChatInputCommandInteraction | StringSel
         return;
     }
 
-    const mentionData = await playerColl.getDocData(mention.id) as DocPlayer | undefined;
+    const mentionData = await playerColl.getDocData(mention.id) as DocumentPlayer | undefined;
     if (!mentionData || !mentionData.registry) {
         new BreakInteraction(interaction, "O membro mencionado não está registrado!");
         return;
@@ -176,7 +176,7 @@ async function manageMember(interaction: ChatInputCommandInteraction | StringSel
         return;
     }
 
-    function updateInfos(mention: GuildMember, mentionData: DocPlayer){
+    function updateInfos(mention: GuildMember, mentionData: DocumentPlayer){
         const register = registers[mentionData.registry!.type].find(r => r.level === (mentionData.registry?.level || 1))!;
 
         const memberRegistry = memberData!.registry!;
