@@ -3,6 +3,8 @@ import { config } from "../..";
 import { logger, toHexColor, wait, waitButton } from "../../functions";
 import { Command } from "../../structs";
 
+const ephemeral = true;
+
 export default new Command({
     name: "minigame",
     description: "minigame command",

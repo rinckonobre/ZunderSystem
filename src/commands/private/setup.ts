@@ -5,6 +5,8 @@ import { resources } from "../../config.json";
 import { informations } from "../../jsons";
 import { Command, DiscordCreate, Interruption, ReplyBuilder, ServerManager, TextUtils } from "../../structs";
 
+const ephemeral = true;
+
 export default new Command({
     name: "setup",
     description: "Configurar sistemas e chats",

@@ -1,4 +1,4 @@
-import { ApplicationCommandType } from 'discord.js';
+import { ApplicationCommandType, Attachment, AttachmentBuilder } from 'discord.js';
 import { Command } from "../../structs";
 
 export default new Command({
@@ -12,8 +12,5 @@ export default new Command({
     async run({ client, interaction, options }) {
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { guild, member } = interaction;
-
-        interaction.reply({ ephemeral: true, content: "any...", fetchReply: true });
-
     },
 });

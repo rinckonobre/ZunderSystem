@@ -54,15 +54,19 @@ export default new Event({name: 'guildMemberAdd', async run(member){
         const { color, dependency, name } = register;
 
         
-        //ctx.fillText("Voltou no servidor".toUpperCase(), 262, yAjust(112))
-        canvasDrawText(ctx, {text: "Voltou no servidor".toUpperCase(), method: "fill", x: textGroupX + 44, y: textGroupY + 68, color: config.colors.joinGreen})
-        // ctx.font = `medium 26px Montserrat`;
-        // ctx.fillText("Como: ".toUpperCase(), 262+30, yAjust(112+32))        
+        canvasDrawText(ctx, {
+            text: "Voltou no servidor".toUpperCase(), method: "fill", 
+            x: textGroupX + 44, y: textGroupY + 68, 
+            color: config.colors.joinGreen
+        })
         canvasSetFont(ctx, {family: "Montserrat", size: 26, style: "medium", textBaseLine: "alphabetic"})
-        canvasDrawText(ctx, {text: "Como".toUpperCase(), method: "fill", x: textGroupX + 44, y: textGroupY + 100, color: config.colors.joinGreen})
         
-        // ctx.fillStyle = register.color
-        // ctx.fillText(register.name.toUpperCase(), 390, yAjust(112+32))
+        canvasDrawText(ctx, {
+            text: "Como".toUpperCase(), method: "fill", 
+            x: textGroupX + 44, y: textGroupY + 100, 
+            color: config.colors.joinGreen
+        })
+
         canvasDrawText(ctx, {text: name.toUpperCase(), method: "fill", x: textGroupX + 138, y: textGroupY + 100, color })
         
         const role = ServerManager.findRole(member.guild, name);
@@ -73,15 +77,7 @@ export default new Event({name: 'guildMemberAdd', async run(member){
             const roleDependency = ServerManager.findRole(member.guild, register.dependency);
             if (roleDependency) member.roles.add(roleDependency)
         }
-    // ctx.fillStyle = config.colors.white;
-    // ctx.fillText(username, 297, yAjust(58))
 
-    // ctx.font = "medium 30px Montserrat";
-    // ctx.fillText("#"+ discriminator, 300 + (username.length * 38), yAjust(44))
-    
-    // ctx.fillStyle = config.colors.joinGreen;
-    // ctx.font = `medium 40px Montserrat`;
-    
     }
     
     const buffer = canvas.toBuffer("image/png");

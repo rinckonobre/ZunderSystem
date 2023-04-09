@@ -12,22 +12,13 @@ export const systemRegister = {
      * @param device Dispositivo de registro
      * @param type Tipo de registro
     */
-    async create(member: GuildMember, nick?: string, device?: string, type?: "discord" | "zunder"){
+    async create(member: GuildMember, nick?: string, device: string = "discord", type: "discord" | "zunder" = "discord"){
 
         const data: DocumentPlayer = {registry: {
             nick: nick || member.displayName,
-            device: device || "discord",
-            type: type || "discord",
-            level: 1
+            device, type, level: 1
         }}
 
         db.players.create({id: member.id, data})
-
-        // playerColl.createDoc(member.id, {registry: {
-        //     nick: finalNick,
-        //     device: finalDevice,
-        //     type: finalType,
-        //     level: 1
-        // }} as DocumentPlayer)
     }
 } 

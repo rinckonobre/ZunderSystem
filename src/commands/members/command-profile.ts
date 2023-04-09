@@ -3,6 +3,8 @@ import { db } from "../..";
 import { systemProfile } from "../../functions";
 import { BreakInteraction, Command, DocumentPlayer } from "../../structs";
 
+const ephemeral = true;
+
 export default  new Command({
     name: "profile",
     nameLocalizations: {"pt-BR": "perfil"},

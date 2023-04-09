@@ -32,7 +32,7 @@ interface DocumentPlayerWallet {
     coins: number;
 }
 
-interface DocumentPlayerRegistry {
+export interface DocumentPlayerRegistry {
     /** Player's registry level */
     level: number;
     /** Player's nick */
@@ -100,6 +100,8 @@ interface DocumentPlayerConfig {
 }
 
 export interface DocumentPlayer {
+    /** Informações de registro */
+    registry: DocumentPlayerRegistry;
     /** Cooldowns para utilizar comandos e funções */
     cooldowns?: DocumentPlayerCooldowns;
     /** Interação */
@@ -108,8 +110,6 @@ export interface DocumentPlayer {
     inventory?: DocumentPlayerInventory;
     /** Carteira do membro */
     wallet?: DocumentPlayerWallet;
-    /** Informações de registro */
-    registry?: DocumentPlayerRegistry;
     /** Pedidos */
     requests?: DocumentPlayerRequests;
     /** Lista de ids de recursos enviados */

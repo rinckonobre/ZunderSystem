@@ -1,15 +1,14 @@
 import { ActionRowBuilder, Attachment, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
 
-import { DocPlayer, DocResource, GuildManager, ServerManager } from "..";
+import { DocumentPlayer, DocumentResource, GuildManager, ServerManager, ZunderResourceEditProps, ZunderResourceUploadProps } from "..";
 import { db } from "../..";
 import { resources } from "../../config.json";
-import { ZunderResourceEditProps, ZunderResourceUploadProps } from "../interfaces/ZunderResource";
 export class ResourceManager {
     public static tempUpload: Map<string, ZunderResourceUploadProps> = new Map();
     public static tempEdit: Map<string, ZunderResourceEditProps> = new Map();
     public static tempReport: Map<string, string> = new Map();
     
-    public static async findMessage(id: string, resource: DocResource, guild: Guild){
+    public static async findMessage(id: string, resource: DocumentResource, guild: Guild){
         const guildManager = new GuildManager(guild);
         const channelName = `${resource.category.name}-${resource.category.subCategory}`
         const channel = guildManager.findChannelInCategory(channelName, ChannelType.GuildText, resources.title) as TextChannel | undefined;
@@ -18,7 +17,7 @@ export class ResourceManager {
         return await channel.messages.fetch(id);
     }
     public static async edit(id: string, guild: Guild, props: ZunderResourceEditProps): Promise<{success: boolean, message: string}>{
-        const resourceData = await db.resources.get(id) as DocResource | undefined;
+        const resourceData = await db.resources.get(id) as DocumentResource | undefined;
         if (!resourceData) return {success: false, message: "O recurso não foi encontrado!"};
         
         const channelName = `${resourceData.category.name}-${resourceData.category.subCategory}`;
@@ -95,13 +94,13 @@ export class ResourceManager {
     }
     public static async delete(id: string, guild: Guild){
 
-        const resource = await db.resources.get(id) as DocResource | undefined;
+        const resource = await db.resources.get(id) as DocumentResource | undefined;
         if (!resource) return {success: false, message: "O recurso não foi encontrado!"};
         
         const msg = await ResourceManager.findMessage(id, resource, guild);
         if (!msg) return {success: false, message: "A mensagem não foi encontrada!"};
 
-        const memberData = await db.players.get(resource.authorID) as DocPlayer | undefined;
+        const memberData = await db.players.get(resource.authorID) as DocumentPlayer | undefined;
         if (memberData && memberData.resources) {
             const indexToDelete = memberData.resources.findIndex(item => item.id === id);
             if (indexToDelete !== -1) memberData.resources.splice(indexToDelete, 1);

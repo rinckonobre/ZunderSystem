@@ -4,6 +4,8 @@ import { logger, wait } from "../../functions";
 import { toHexColor } from "../../functions/aplication/convert";
 import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, EmbedMenuBuilder, Files, ResourceManager, ServerManager, ZunderResourceUploadProps } from "../../structs";
 
+const ephemeral = true;
+
 export default new Command({
     name: "resources",
     nameLocalizations: { "pt-BR": "recursos" },
