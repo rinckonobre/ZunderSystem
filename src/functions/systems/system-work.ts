@@ -61,14 +61,11 @@ export const systemWork = {
 
         db.players.update(member.id, "work.dones", dones);
         db.players.update(member.id, "work.salary", profession.salary, "increment");
-
-        //MemberDataManager.set("work.dones", dones);
-        //MemberDataManager.add("work.salary", profession.salary);
         
         memberData.work!.dones = dones;
         memberData.work!.salary = salary + profession.salary;
 
         systemExperience.give(member, xp, "work")
         
-    }
+    },
 }

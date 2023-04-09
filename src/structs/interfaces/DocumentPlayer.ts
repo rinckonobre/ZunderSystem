@@ -120,3 +120,12 @@ export interface DocumentPlayer {
     work?: DocumentPlayerWork;
     config?: DocumentPlayerConfig;
 }
+
+export type DocumentPlayerPaths = 
+"registry" | "registry.type" | "registry.level" | "registry.nick" | "registry.device" |
+"interaction" | "interaction.level" | "interaction.xp" |
+"wallet" | "wallet.coins" | 
+"requests" | "requests.zunder" | 
+"stats" | "stats.events" | "stats.msg" | "stats.shares" | "stats.donated" | 
+"work" | "work.level" | "work.xp" | "work.dones" | "work.gameID" | "work.profession" | "work.salary" |
+"config" | "config.limits" | "config.limits.coins"

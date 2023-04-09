@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 import { config } from "../..";
-import { logger, toHexColor, wait, waitButton } from "../../functions";
+import { logger, toHexColor, wait, awaitButton } from "../../functions";
 import { Command } from "../../structs";
 
 const ephemeral = true;
@@ -89,7 +89,7 @@ export default new Command({
                             components: [rows[0]], fetchReply: true,
                         })
 
-                        const buttonResponse = await waitButton(message, {time, filter(subInteraction){
+                        const buttonResponse = await awaitButton(message, {time, filter(subInteraction){
                             subInteraction.deferUpdate();
                             return subInteraction.user.id == mention.id;
                         }});

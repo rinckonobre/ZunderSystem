@@ -2,6 +2,7 @@ import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuil
 import { BreakInteraction, Command, DocumentPlayer, TextUtils } from "../../structs";
 import { db } from "../..";
 import fs from "fs";
+import { awaitButton, stringSelectCollector } from "../../functions";
 
 export default new Command({
     name: "Message Tools", nameLocalizations: {"pt-BR": "📩 Ferramentas de mensagem"},
@@ -17,31 +18,39 @@ export default new Command({
             return;
         }
 
+        const rows = [
+            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
+            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>()
+        ]
+
+        const buttons = {
+            confirm: new ButtonBuilder({customId: "message-tools-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
+            cancel: new ButtonBuilder({customId: "message-tools-cancel-button", label: "Cancelar", style: ButtonStyle.Danger}),
+        }
+
         const messageToolsSelect = new StringSelectMenuBuilder({
             customId: "message-tools-select",
             placeholder: "Selecione o que fazer a mensagem",
             options: [
                 {label: "Deletar", value: "delete", description: "Deletar a mensagem", emoji: "🗑️"},
+                {label: "Alertar", value: "alert", description: "Alterar membro usando a mensagem", emoji: "🚨"},
                 {label: "Json", value: "json", description: "Converter conteúdo em json", emoji: "📄"},
             ]
         })
-        const row = new ActionRowBuilder<StringSelectMenuBuilder>({components: [messageToolsSelect]});
-        const msg = await interaction.reply({ephemeral: true, components: [row], fetchReply: true});
+        rows[0].setComponents(messageToolsSelect);
+        const msg = await interaction.reply({ephemeral: true, components: [rows[0]], fetchReply: true});
 
-
-        msg.createMessageComponentCollector({componentType: ComponentType.StringSelect})
-        .on("collect", async (subInteraction) => {
+        stringSelectCollector(msg).on("collect", async (subInteraction) => {
             const selected = subInteraction.values[0];
 
             switch(selected){
                 case "delete":{
-                    const confirmButton = new ButtonBuilder({customId: "confirm-button", label: "Confirmar", style: ButtonStyle.Success})
-                    const cancelButton = new ButtonBuilder({customId: "cancel-button", label: "Cancelar", style: ButtonStyle.Danger})
-                    const row = new ActionRowBuilder<StringSelectMenuBuilder>({components: [confirmButton, cancelButton]});
-                    const msg = await subInteraction.update({components: [row]});
+                    rows[0].setComponents(buttons.confirm, buttons.cancel);
 
-                    const buttonInteraction = await msg.awaitMessageComponent({componentType: ComponentType.Button}).catch(() => null)
-                    if (buttonInteraction && buttonInteraction.customId == "confirm-button"){
+                    const msg = await subInteraction.update({components: [rows[0]] });
+
+                    const buttonInteraction = await awaitButton(msg);
+                    if (buttonInteraction?.customId == "message-tools-confirm-button"){
                         const success = await targetMessage.delete().then(() => true).catch(() => false);
                         
                         if (success) subInteraction.editReply({components: [], content: "A mensagem foi excluída!"});
@@ -67,11 +76,9 @@ export default new Command({
                     })
 
                     subInteraction.reply({ephemeral: true, content: "Arquivos", files})
-
                     return;
                 }
             }
-
         })
     },
 })
