@@ -2,7 +2,7 @@ import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType,
 import { config, db } from "../..";
 import { logger, wait } from "../../functions";
 import { toHexColor } from "../../functions/aplication/convert";
-import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, EmbedMenuBuilder, Files, ResourceManager, ServerManager, ZunderResourceUploadProps } from "../../structs";
+import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, oldEmbedMenuBuilder, Files, ResourceManager, ServerManager, ZunderResourceUploadProps } from "../../structs";
 
 const ephemeral = true;
 
@@ -118,7 +118,7 @@ export default new Command({
             ]
         }
     ],
-    async autcomplete({interaction, options}) {
+    async autocomplete({interaction, options}) {
         const focusedValue = options.getFocused(true);
         switch (focusedValue.name){
             case "title": {
@@ -257,7 +257,7 @@ export default new Command({
                     return;
                 }
 
-                new EmbedMenuBuilder({ title: "📁 Lista de recursos", maxItems: 6, type: "BLOCK_LIST" })
+                new oldEmbedMenuBuilder({ title: "📁 Lista de recursos", maxItems: 6, type: "BLOCK_LIST" })
                 .setItems(snapshot.docs.map(doc => {
                     const resource = doc.data() as DocumentResource;
                     

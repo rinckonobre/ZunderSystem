@@ -23,7 +23,7 @@ export default new Command({
             autocomplete: true,
         },
     ],
-    async autcomplete({ interaction, options }) {
+    async autocomplete({ interaction, options }) {
         const focusedValue = options.getFocused(true);
         switch (focusedValue.name) {
             case "color": {

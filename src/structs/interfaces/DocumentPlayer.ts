@@ -16,7 +16,7 @@ interface DocumentPlayerInteraction {
     /** Current player level */
     level?: number;
     /** Current player exp */
-    xp?: number;
+    xp: number;
 }
 interface DocumentPlayerInventory {
     /**

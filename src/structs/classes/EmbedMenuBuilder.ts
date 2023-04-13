@@ -29,7 +29,7 @@ interface EmbedMenuItem {
 
 type EmbedMenuFunction = (interaction: StringSelectMenuInteraction) => any;
 
-export class EmbedMenuBuilder {
+export class oldEmbedMenuBuilder {
     private items: Array<EmbedMenuItem> = new Array();
     private mainEmbed = new EmbedBuilder();
     private maxItemsPerPage: number;

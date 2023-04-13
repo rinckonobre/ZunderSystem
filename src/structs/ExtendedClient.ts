@@ -56,7 +56,7 @@ export class ExtendedClient extends Client {
                 .forEach(async (filename) => {
                     const schedule: ScheduleType = (await import(`../tasks/${local}/${filename}`))?.default;
 
-                    const { name, consoleDisplay, enable, frequency, execute } = schedule;
+                    const { name, display: consoleDisplay, enable, frequency, execute } = schedule;
 
                     if (enable) {
                         if (cron.validate(frequency)) {

@@ -7,7 +7,7 @@ const playersColl = new Firestore("players");
 
 export default new Schedule({
     name: "Salário de trabalho",
-    consoleDisplay: "Pagamendo de salário de trabalho todo sábado às 2:30".blue,
+    display: "Pagamendo de salário de trabalho todo sábado às 2:30".blue,
     enable: false,
     frequency: "30 2 * * 6",
     async execute() {

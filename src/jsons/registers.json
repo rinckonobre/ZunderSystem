@@ -5,6 +5,7 @@
             "color":"#e9a81f",
             "level":1,
             "emoji":"register_zunder_member",
+            "iconUrl":"https://i.imgur.com/kIuiAZk.png",
             "dependency": null
         },
         {
@@ -12,6 +13,7 @@
             "color":"#ed6dff",
             "level":2,
             "emoji":"register_helper",
+            "iconUrl":"https://i.imgur.com/tfyqhXC.png",
             "dependency":"Staff Zunder"
         },
         {
@@ -19,6 +21,7 @@
             "color":"#318a54",
             "level":3,
             "emoji":"register_mod",
+            "iconUrl":"https://i.imgur.com/IQlHDfA.png",
             "dependency":"Staff Zunder"
         },
         {
@@ -26,6 +29,7 @@
             "color":"#d63232",
             "level":4,
             "emoji":"register_admin",
+            "iconUrl":"https://i.imgur.com/eI8wXUZ.png",
             "dependency":"Staff Zunder"
         },
         {
@@ -33,6 +37,7 @@
             "color":"#15a6d8",
             "level":5,
             "emoji":"register_leader",
+            "iconUrl":"https://i.imgur.com/gBpr00f.png",
             "dependency":"Staff Zunder"
         }
     ],
@@ -42,6 +47,7 @@
             "color":"#277ecd",
             "level":1,
             "emoji":"register_discord_member",
+            "iconUrl":"https://i.imgur.com/2heo18y.png",
             "dependency":null
         },
         {
@@ -49,6 +55,7 @@
             "color":"#ed6dff",
             "level":2,
             "emoji":"register_helper",
+            "iconUrl":"https://i.imgur.com/tfyqhXC.png",
             "dependency":"Staff Discord"
         },
         {
@@ -56,6 +63,7 @@
             "color":"#26a539",
             "level":3,
             "emoji":"register_mod",
+            "iconUrl":"https://i.imgur.com/IQlHDfA.png",
             "dependency":"Staff Discord"
         },
         {
@@ -63,6 +71,7 @@
             "color":"#d63232",
             "level":4,
             "emoji":"register_admin",
+            "iconUrl":"https://i.imgur.com/eI8wXUZ.png",
             "dependency":"Staff Discord"
         },
         {
@@ -70,6 +79,7 @@
             "color":"#15a6d8",
             "level":5,
             "emoji":"register_leader",
+            "iconUrl":"https://i.imgur.com/gBpr00f.png",
             "dependency":"Staff Discord"
         }
     ]

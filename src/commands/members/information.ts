@@ -3,7 +3,7 @@ import { config, db } from "../..";
 import { informations, terms } from "../../jsons";
 
 import { toHexColor } from "../../functions/aplication/convert";
-import { Command, DiscordCreate, DocumentPlayer, EmbedMenuBuilder, Interruption, ReplyBuilder, TextUtils } from "../../structs";
+import { Command, DiscordCreate, DocumentPlayer, oldEmbedMenuBuilder, Interruption, ReplyBuilder, TextUtils } from "../../structs";
 
 const ephemeral = true;
 
@@ -34,7 +34,7 @@ export default new Command({
 
         switch (subCommand) {
         case "comandos": {
-            const commandInfoMenu = new EmbedMenuBuilder({title: "⌨️ Comandos", maxItems: 8, type: "GRID_2"})
+            const commandInfoMenu = new oldEmbedMenuBuilder({title: "⌨️ Comandos", maxItems: 8, type: "GRID_2"})
                 .editEmbed(embed => embed.setColor(toHexColor(config.colors.primary)));
             client.commands.forEach(command => {
 

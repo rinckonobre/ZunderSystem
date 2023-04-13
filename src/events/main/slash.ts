@@ -9,7 +9,7 @@ export default new Event({
             if (!command) return;
             const options = interaction.options as CommandInteractionOptionResolver
     
-            if (command.autcomplete) command.autcomplete({ client, interaction, options });
+            if (command.autocomplete) command.autocomplete({ client, interaction, options });
             return;
         }
 

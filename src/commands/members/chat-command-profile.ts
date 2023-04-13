@@ -1,9 +1,7 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, Collection, GuildMember } from "discord.js";
 import { db } from "../..";
-import { systemProfile } from "../../functions";
+import { logger, systemProfile } from "../../functions";
 import { BreakInteraction, Command, DocumentPlayer } from "../../structs";
-
-const ephemeral = true;
 
 export default  new Command({
     name: "profile",
@@ -49,4 +47,15 @@ export default  new Command({
         systemProfile.showMember(interaction, profileMember, memberData);
 
     },
+    buttons: new Collection([
+        ["profile-close-button", async (interaction) => {
+            if (!interaction.inCachedGuild()) return;
+            interaction.deferUpdate()
+            const { member, message: { content }} = interaction;
+            const UserProfileId = content.slice(4).slice(0, content.length - 5);
+            
+            if (UserProfileId != member.id) return;
+            interaction.message.delete().catch(logger)
+        }]
+    ])
 });

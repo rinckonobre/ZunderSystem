@@ -15,6 +15,8 @@ export * from "./classes/Files";
 export * from "./classes/Firestore";
 export * from "./classes/MessageUtils";
 export * from "./classes/ReplyBuilder";
+export * from "./classes/MenuBuilder";
+export * from "./classes/CanvasBuilder";
 
 export * from "./interfaces/DocumentGuild";
 export * from "./interfaces/DocumentResource";

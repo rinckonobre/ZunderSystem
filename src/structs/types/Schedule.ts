@@ -1,7 +1,7 @@
 export type ScheduleType = {
     name: string
     enable: boolean
-    consoleDisplay: string,
+    display: string,
     frequency: string,
     execute: () => any,
 }

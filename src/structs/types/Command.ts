@@ -29,7 +29,7 @@ export type CommandVisibility = "public" | "staff" | "private"
 
 export type CommandType = ApplicationCommandData & CommandComponents & {
     visibility: CommandVisibility
-    autcomplete?: (props: AutocompleteRunProps) => any;
+    autocomplete?: (props: AutocompleteRunProps) => any;
     run(props: ChatCommandRunProps): any;
 }
 
