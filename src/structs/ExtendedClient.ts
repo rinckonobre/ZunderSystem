@@ -48,13 +48,13 @@ export class ExtendedClient extends Client {
 
     private registerSchedules() {
 
-        const tasksPath = path.join(__dirname, '..', 'functions/tasks');
+        const tasksPath = path.join(__dirname, '..', 'tasks');
         fs.readdirSync(tasksPath).forEach(local => {
 
             fs.readdirSync(`${tasksPath}/${local}/`)
                 .filter(file => file.endsWith('.ts') || file.endsWith('.js'))
                 .forEach(async (filename) => {
-                    const schedule: ScheduleType = (await import(`../functions/tasks/${local}/${filename}`))?.default;
+                    const schedule: ScheduleType = (await import(`../tasks/${local}/${filename}`))?.default;
 
                     const { name, consoleDisplay, enable, frequency, execute } = schedule;
 
@@ -70,7 +70,6 @@ export class ExtendedClient extends Client {
                 });
         });
     }
-
     private registerCommands(commands: Array<ApplicationCommandDataResolvable>) {
         this.application?.commands.set(commands)
             .then(() => {
@@ -80,7 +79,6 @@ export class ExtendedClient extends Client {
                 console.log(`❌ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
             });
     }
-
     private async registerModules() {
         // Commands
         const slashCommands: Array<ApplicationCommandDataResolvable> = new Array();
@@ -109,7 +107,6 @@ export class ExtendedClient extends Client {
 
         this.on("ready", () => this.registerCommands(slashCommands));
     }
-
     private registerEvents() {
         const eventPath = path.join(__dirname, '..', 'events');
         fs.readdirSync(eventPath).forEach(local => {
@@ -128,7 +125,6 @@ export class ExtendedClient extends Client {
                 });
         });
     }
-
     private registerFonts() {
         const fontsFolder = path.resolve(__dirname, "../../assets/fonts/");
 

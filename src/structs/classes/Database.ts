@@ -16,7 +16,7 @@ export class Database {
     public async delete(id: string){
         return await this.collection.doc(id).delete();
     }
-    public async get(id:string, path?: string){
+    public async get(id:string, path?: string): Promise<any>{
         const doc = await this.collection.doc(id).get()
         const data = doc.data();
         if (path && data){

@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { TextChannel } from "discord.js";
-import { client, config } from "../../..";
-import { DiscordCreate, DocumentPlayer, Firestore, Schedule, ServerManager } from "../../../structs";
+import { client, config } from "../..";
+import { DiscordCreate, DocumentPlayer, Firestore, Schedule, ServerManager } from "../../structs";
 
 const playersColl = new Firestore("players");
 
