@@ -3,8 +3,32 @@ import { Event } from "../../structs";
 
 export default new Event({
 	name: 'interactionCreate', run(interaction) {
-		if (interaction.isModalSubmit()) client.modals.get(interaction.customId)?.(interaction);
-		if (interaction.isButton()) client.buttons.get(interaction.customId)?.(interaction);
-		if (interaction.isStringSelectMenu()) client.selects.get(interaction.customId)?.(interaction);
+		if (interaction.isModalSubmit()) {
+			const { customId } = interaction;
+
+			const clientModal = client.modals.get(customId);
+			if (clientModal){
+				clientModal(interaction);
+				return;
+			}
+		};
+
+		if (!interaction.isMessageComponent()) return;
+		const { customId } = interaction;
+	
+		if (interaction.isButton()){
+			const clientButton = client.buttons.get(customId);
+			if (clientButton) {
+				clientButton(interaction);
+				return;
+			};
+		}
+		if (interaction.isStringSelectMenu()){
+			const clientButton = client.selects.get(customId);
+			if (clientButton) {
+				clientButton(interaction);
+				return;
+			};
+		}
 	}
 })

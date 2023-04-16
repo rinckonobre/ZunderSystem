@@ -1,0 +1,168 @@
+{
+    "zunder":{
+        "display":"Zunder",
+        "iconUrl":"https://i.imgur.com/NanhCN9.png",
+        "colors":{
+            "main":"FFBC30",
+            "gradient":{
+                "start":"#FFCB5E",
+                "end":"#D18A00"
+            }
+        },
+        "roles":{
+            "1":{
+                "name":"Membro Zunder",
+                "colors":{
+                    "main":"#e9a81f",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 1,
+                "emojiName":"register_zunder_member",
+                "iconUrl":"https://i.imgur.com/kIuiAZk.png",
+                "dependency": null
+            },
+            "2":{
+                "name":"Ajudante",
+                "colors":{
+                    "main":"#ed6dff",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 2,
+                "emojiName":"register_helper",
+                "iconUrl":"https://i.imgur.com/tfyqhXC.png",
+                "dependency": "Staff Zunder"
+            },
+            "3":{
+                "name":"Mod",
+                "colors":{
+                    "main":"#26a539",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 3,
+                "emojiName":"register_mod",
+                "iconUrl":"https://i.imgur.com/IQlHDfA.png",
+                "dependency": "Staff Zunder"
+            },
+            "4":{
+                "name":"Admin",
+                "colors":{
+                    "main":"#d63232",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 4,
+                "emojiName":"register_admin",
+                "iconUrl":"https://i.imgur.com/eI8wXUZ.png",
+                "dependency": "Staff Zunder"
+            },
+            "5":{
+                "name":"Líder",
+                "colors":{
+                    "main":"#15a6d8",
+                    "gradient":{
+                        "start":"#5CD3FF",
+                        "end":"#003346"
+                    }
+                },
+                "level": 5,
+                "emojiName":"register_leader",
+                "iconUrl":"https://i.imgur.com/gBpr00f.png",
+                "dependency": "Staff Zunder"
+            }
+        }
+    },
+    "discord":{
+        "display":"Discord",
+        "iconUrl":"https://i.imgur.com/K9RNnV6.png",
+        "colors":{
+            "main":"#277ecd",
+            "gradient":{
+                "start":"#5865F2",
+                "end":"#252B67"
+            }
+        },
+        "roles":{
+            "1":{
+                "name":"Membro Discord",
+                "colors":{
+                    "main":"#277ecd",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 1,
+                "emojiName":"register_discord_member",
+                "iconUrl":"https://i.imgur.com/2heo18y.png",
+                "dependency": null
+            },
+            "2":{
+                "name":"Ajudante",
+                "colors":{
+                    "main":"#ed6dff",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 2,
+                "emojiName":"register_helper",
+                "iconUrl":"https://i.imgur.com/tfyqhXC.png",
+                "dependency": "Staff Zunder"
+            },
+            "3":{
+                "name":"Mod",
+                "colors":{
+                    "main":"#26a539",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 3,
+                "emojiName":"register_mod",
+                "iconUrl":"https://i.imgur.com/IQlHDfA.png",
+                "dependency": "Staff Zunder"
+            },
+            "4":{
+                "name":"Admin",
+                "colors":{
+                    "main":"#d63232",
+                    "gradient":{
+                        "start":"",
+                        "end":""
+                    }
+                },
+                "level": 4,
+                "emojiName":"register_admin",
+                "iconUrl":"https://i.imgur.com/eI8wXUZ.png",
+                "dependency": "Staff Zunder"
+            },
+            "5":{
+                "name":"Líder",
+                "colors":{
+                    "main":"#15a6d8",
+                    "gradient":{
+                        "start":"#5CD3FF",
+                        "end":"#003346"
+                    }
+                },
+                "level": 5,
+                "emojiName":"register_leader",
+                "iconUrl":"https://i.imgur.com/gBpr00f.png",
+                "dependency": "Staff Zunder"
+            }
+        }
+    }
+}

@@ -1,8 +1,9 @@
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, Guild, GuildMember, UserContextMenuCommandInteraction } from "discord.js";
 import { config } from "../..";
-import { registers } from "../../jsons";
+import { registers, registries } from "../../jsons";
 import { CanvasBuilder, CanvasFontBuilder, DocumentPlayer, ServerManager, TextUtils } from "../../structs";
 import { loadImage } from "@napi-rs/canvas";
+import { findRole } from "../discord/guild";
 
 function emoji(guild: Guild, name: string){
     return ServerManager.findEmoji(guild, name);
@@ -25,136 +26,149 @@ type InteractionTypes = ChatInputCommandInteraction | UserContextMenuCommandInte
 
 export const systemProfile = {
     async showMember(interaction: InteractionTypes, member: GuildMember, memberData: DocumentPlayer){
-
-        const { registry } = memberData;
-        const register = registers[registry.type].find(r => r.level == registry.level) || registers[registry.type][0];
+        const { guild } = member;
+        const registryType = registries[memberData.registry.type];
+        const registry = registryType.roles[memberData.registry.level]
 
         await interaction.deferReply({fetchReply: true});
-
-        const blackGlassColor = CanvasBuilder.rgbaStyle(0, 0, 0, 0.3)
-
-        const canvas = new CanvasBuilder(1200, 600);
-
+        
         const canvasFont = new CanvasFontBuilder({
             family: "Montserrat", style: "bold", size: 60, textBaseLine: "top", textAlign: "start"
         });
-        // background
-        canvas
-        .setGradient().linear({
-            start: {x: 355, y: 0}, end: {x: 670, y: 600},
-            startColor: "#393A3F", endColor: "#242733"
-        })
-        .drawRect({ method: "fill", x: 0, y: 0, width: 1200, height: 600 })
-        .setStyle({style: config.colors.white});
 
-        // Block #1 - Profile avatar
-        const avatar = await loadImage(member.displayAvatarURL({extension: "png", size: 1024}))
-        canvas.drawImage({image: avatar, x: 40 + 10, y: 40, radius: 80});
-
-        // Block #2 - Member Infos
-        const registerIcon = await loadImage(register.iconUrl);
-        canvas
-        .drawRect({ method: "fill", x: 224, y: 40, width: 556, height: 160, radius: 16, style: blackGlassColor })
-        .setFont(canvasFont.data)
-        .drawText({ method: "fill", x: 254, y: 76, text: member.displayName, style: "#E7E7E7"})
-        .setFont(canvasFont.setSize(26).data)
-        .drawText({ method: "fill", x: 300, y: 156, text: register.name.toUpperCase(), style: register.color })
-        .drawRect({ method: "fill", x: 654, y: 148, width: 100, height: 36, radius: 16, style: blackGlassColor })
-        .setFont(canvasFont.setStyle("light").setSize(22).data)
-        .drawText({ method: "fill", x: 668, y: 156, text: `#${member.user.discriminator}`, style: config.colors.white })
-        .drawImage({image: registerIcon, x: 254, y: 148, size: 18})
-
-        // Block #3 - Interaction
-        const level = memberData.interaction?.level || 0;
-        const xp = memberData.interaction?.xp || 0
-        const xpRequired = (level > 0) ? level * 982 : 440;
-
-        canvas
-        .drawRect({ method: "fill", x: 40, y: 220, width: 360, height: 160, radius: 16, style: blackGlassColor })
-        .setFont(canvasFont.setStyle("bold").setSize(20).data)
-        .drawText({ method: "fill", x: 60, y: 238, text: "interação".toUpperCase(), style: config.colors.white })
-        .drawRect({ method: "fill", x: 55, y: 260, width: 330, height: 22, radius: 10, style: "#8B0088" });
-
-        const progressWidth = (xp / xpRequired) * 330;
-
-        if (progressWidth > 14){
-            canvas.setFilter().dropShadow(0, 0, 20, "#ED09E8")
-            .drawRect({
-                method: "fill", x: 55, y: 260,
-                width: progressWidth, height: 22, radius: 10, style: "#ED09E8"
+        async function blockUserInfo(){
+            return new CanvasBuilder(556, 160)
+            .setFilter().opacity(20)
+            .drawRect({x: 0, y: 0, width: 556, height: 160, method: "fill", radius: 16, style: config.colors.black})
+            .setFilter().opacity(40)
+            .drawRect({x: 430, y: 108, width: 100, height: 36, method: "fill", radius: 8, style: config.colors.black})
+            .drawRect({x: 470, y: 20, width: 60, height: 60, method: "fill", radius: 12, style: config.colors.black})
+            .clearFilter().setGradient().linear({
+                start: {x: 470, y: 20 }, end: {x: 470 + 60, y: 20 + 60 },
+                startColor: registryType.colors.gradient.start, endColor: registryType.colors.gradient.end
             })
-            .clearFilter()
+            .drawRect({x: 470, y: 20, width: 60, height: 60, method: "stroke", radius: 12, lineWidth: 5})
+            .setFont(canvasFont.data)
+            .drawImage({image: await loadImage(registryType.iconUrl), x: 480, y: 30, size: 20})
+            .drawImage({image: await loadImage(registry.iconUrl), x: 30, y: 108, size: 18})
+            .drawText({text: member.displayName, x: 30, y: 40, method: "fill", style: config.colors.white})
+            .setFont(canvasFont.setSize(26).data)
+            .drawText({ method: "fill", x: 76, y: 112, text: registry.name.toUpperCase(), style: registry.colors.main })
+            .setFont(canvasFont.setSize(22).setStyle("thin").data)
+            .drawText({ method: "fill", x: 444, y: 116, text: `#${member.user.discriminator}`, style: config.colors.white })
+            .data
+        }
+        
+        async function blockInteraction(){
+            
+            const level = memberData.interaction?.level || 0;
+            const xp = memberData.interaction?.xp || 0
+            const xpRequired = (level > 0) ? level * 982 : 440;
+            
+            const canvas = new CanvasBuilder(360, 160)
+            .setFilter().opacity(20)
+            .drawRect({x: 0, y: 0, width: 360, height: 160, method: "fill", radius: 16, style: "#130013"})
+            .clearFilter().setStyle({style: config.colors.white}).setFont(canvasFont.setSize(22).data)
+            .setFont(canvasFont.setStyle("bold").setSize(24).data)
+            .drawText({text: "interação".toUpperCase(), x: 20, y: 18, method: "fill"})
+            .setFont(canvasFont.setStyle("regular").setSize(22).data)
+            .drawImage({image: await loadImage(config.images.icons["interaction-level"]), x: 12, y: 74, size: 16})
+            .drawText({text: "Nível: ".toUpperCase(), x: 45, y: 80, method: "fill", style: "#C5C5C5"})
+            .drawText({text: `${level}`, x: 124, y: 80, method: "fill"})
+            .drawImage({image: await loadImage(config.images.icons["interaction-xp"]), x: 12, y: 104, size: 14})
+            .drawText({text: "Xp: ".toUpperCase(), x: 45, y: 108, method: "fill", style: "#C5C5C5"})
+            .drawText({text: `${xp} / ${xpRequired}`, x: 86, y: 108, method: "fill"})
+            // Progress bar
+            .drawRect({ method: "fill", x: 15, y: 44, width: 330, height: 22, radius: 10, style: "#8B0088" })
+            
+            const progressWidth = (xp / xpRequired) * 330;
+            if (progressWidth > 14){
+                canvas.setFilter().dropShadow(0, 0, 20, "#ED09E8")
+                .drawRect({method: "fill", x: 15, y: 44, width: progressWidth, height: 22, radius: 10, style: "#ED09E8"})
+                .clearFilter()
+            }
+
+            return canvas.data
         }
 
-        canvas
-        .setFont(canvasFont.setStyle("regular").setSize(22).data)
-        .drawText({
-            method: "fill", x: 90, y: 295,
-            text: `Level: ${level}`.toUpperCase(), style: config.colors.white
-        })
-        .setFont(canvasFont.setAlign("end").data)
-        .drawText({
-            method: "fill", x: 380, y: 295,
-            text: `Xp: ${xp} / ${xpRequired}`.toUpperCase(), style: config.colors.white
-        })
-
-        
-        
-        // Block #3 Work
-        const roleWork = member.guild.roles.cache.find(r => r.name == config.guild.roles.functional.work);
-        if (roleWork && member.roles.cache.has(roleWork.id)){
+        async function blockWork() {
             const level = memberData.work?.level || 0;
             const xp = memberData.work?.xp || 0
             const xpRequired = (level > 0) ? level * 982 : 440;
 
-            canvas
-            .drawRect({
-                method: "fill", x: 40, y: 220 + 180,
-                width: 360, height: 160, radius: 16, style: CanvasBuilder.rgbaStyle(0, 0, 0, 0.3)
-            })
-            .setFont(canvasFont.setStyle("bold").setSize(20).setAlign("start").data)
-            .drawText({
-                method: "fill", x: 60, y: 238 + 180,
-                text: "trabalho".toUpperCase(), style: config.colors.white
-            })
-            .drawRect({
-                method: "fill", x: 55, y: 260 + 180,
-                width: 330, height: 22, radius: 10, style: "#008B40"
-            });
+            const canvas = new CanvasBuilder(360, 160)
+            .setFilter().opacity(20)
+            .drawRect({x: 0, y: 0, width: 360, height: 160, method: "fill", radius: 16, style: "#001301"})
+            .clearFilter().setStyle({style: config.colors.white}).setFont(canvasFont.setSize(22).data)
+            .setFont(canvasFont.setStyle("bold").setSize(24).data)
+            .drawText({text: "trabalho".toUpperCase(), x: 20, y: 18, method: "fill"})
+            .setFont(canvasFont.setStyle("regular").setSize(22).data)
+            .drawImage({image: await loadImage(config.images.icons["work-level"]), x: 12, y: 74, size: 16})
+            .drawText({text: "Nível: ".toUpperCase(), x: 45, y: 80, method: "fill", style: "#C5C5C5"})
+            .drawText({text: `${level}`, x: 124, y: 80, method: "fill"})
+            .drawImage({image: await loadImage(config.images.icons["work-xp"]), x: 12, y: 104, size: 14})
+            .drawText({text: "Xp: ".toUpperCase(), x: 45, y: 108, method: "fill", style: "#C5C5C5"})
+            .drawText({text: `${xp} / ${xpRequired}`, x: 86, y: 108, method: "fill"})
+            // Progress bar
+            .drawRect({ method: "fill", x: 15, y: 44, width: 330, height: 22, radius: 10, style: "#008B40" })
             
-            const workProgressWidth = (xp / xpRequired) * 330;
-    
-            if (workProgressWidth > 14){
-                canvas.setFilter().dropShadow(0, 0, 20, "#09ED64")
-                .drawRect({
-                    method: "fill", x: 55, y: 260 + 180,
-                    width: workProgressWidth, height: 22, radius: 10, style: "#09ED64"
-                })
+            const progressWidth = (xp / xpRequired) * 330;
+            if (progressWidth > 14){
+                canvas.setFilter().dropShadow(0, 0, 20, "#ED09E8")
+                .drawRect({method: "fill", x: 15, y: 44, width: progressWidth, height: 22, radius: 10, style: "#09ED64"})
                 .clearFilter()
             }
-    
-            canvas
-            .setFont(canvasFont.setStyle("regular").setSize(22).data)
-            .drawText({
-                method: "fill", x: 90, y: 295 + 180,
-                text: `Level: ${level}`.toUpperCase(), style: config.colors.white
-            })
-            .setFont(canvasFont.setAlign("end").data)
-            .drawText({
-                method: "fill", x: 380, y: 295 + 180,
-                text: `Xp: ${xp} / ${xpRequired}`.toUpperCase(), style: config.colors.white
-            })
-        } else {
-            canvas
-            .drawRect({
-                method: "fill", x: 40, y: 220 + 180,
-                width: 360, height: 160, radius: 16, style: CanvasBuilder.rgbaStyle(0, 0, 0, 0.1)
-            })
+            return canvas.data      
         }
 
+        async function blockWallet(){
+            const coins = memberData.wallet?.coins || 0;
+            const coinsLimit = memberData.config?.limits?.coins || 20000;
+
+            return new CanvasBuilder(360, 160)
+            .setFilter().opacity(30)
+            .setGradient().linear({
+                start: {x: 0, y: 0}, end: {x: 360, y: 160},
+                startColor: "#250D00", endColor: "#873000"
+            })
+            .drawRect({x: 0, y: 0, width: 360, height: 160, method: "fill", radius: 16})
+            .clearFilter().setStyle({style: config.colors.white})
+            .drawImage({image: await loadImage(config.images.icons.coins), x: 20, y: 42, size: 10})
+            .setFont(canvasFont.setStyle("bold").setSize(22).data)
+            .drawText({text: "carteira".toUpperCase(), x: 20, y: 18, method: "fill"})
+            .setFont(canvasFont.setSize(18).setStyle("regular").data)
+            .drawText({text: "moedas: ".toUpperCase(), x: 42, y: 46, method: "fill", style: "#C5C5C5"})
+            .drawText({text: `${coins} / ${coinsLimit}`, x: 134, y: 46, method: "fill", style: config.colors.white})
+            .data
+        }
+
+        const avatar = await loadImage(member.displayAvatarURL({extension: "png", size: 512}))
+
+        const canvas = new CanvasBuilder(1200, 600).imageSettings(true)
+        // Background
+        .setGradient().linear({
+            start: {x: 355, y: 0}, end: {x: 670, y: 600}, startColor: "#393A3F", endColor: "#242733"
+        })
+        .drawRect({ method: "fill", x: 0, y: 0, width: 1200, height: 600 })
+        // Profile avatar
+        .drawImage({image: avatar, x: 40, y: 40, radius: 80})
+        .setGradient().linear({
+            start: {x: 40, y: 40}, end: {x: 200, y: 200}, 
+            startColor: "#FF4D4D",
+            endColor: "#6D1616"
+        })
+        .drawCircle({x: 40, y: 40, radius: 80, method: "stroke", lineWidth: 8})
+        // Blocks
+        .drawImage({image: await blockUserInfo(), x: 224, y: 40})
+        .drawImage({image: await blockWallet(), x: 800, y: 220})
+        .drawImage({image: await blockInteraction(), x: 40, y: 220});
+
+        const roleWork = findRole(guild, config.guild.roles.functional.work);
+        if (roleWork && member.roles.cache.has(roleWork.id)) canvas.drawImage({image: await blockWork(), x: 40, y: 400})
+        
 
         const files: Array<AttachmentBuilder> = []
-        files.push(new AttachmentBuilder(canvas.getCanvas().toBuffer("image/png"), {name: "profile.png"}));
+        files.push(new AttachmentBuilder(canvas.data.toBuffer("image/png"), {name: "profile.png"}));
 
         const rows = [
             new ActionRowBuilder<ButtonBuilder>()

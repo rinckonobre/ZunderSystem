@@ -1,6 +1,7 @@
 export * from "./types/Command";
 export * from "./types/Event";
 export * from "./types/Schedule";
+export * from "./types/Components";
 
 export * from "./ExtendedClient";
 

@@ -4,8 +4,6 @@ import { logger, wait } from "../../functions";
 import { toHexColor } from "../../functions/aplication/convert";
 import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, oldEmbedMenuBuilder, Files, ResourceManager, ServerManager, ZunderResourceUploadProps } from "../../structs";
 
-const ephemeral = true;
-
 export default new Command({
     name: "resources",
     nameLocalizations: { "pt-BR": "recursos" },
@@ -63,7 +61,7 @@ export default new Command({
                     nameLocalizations: { "pt-BR": "membro" },
                     description: "list a member's resources",
                     descriptionLocalizations: { "pt-BR": "listar os recursos de um membro" },
-                    type: ApplicationCommandOptionType.String,
+                    type: ApplicationCommandOptionType.User,
                 }
             ]
         },
@@ -156,7 +154,7 @@ export default new Command({
         }
         
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
-        if (!memberData || !memberData.registry){
+        if (!memberData){
             new BreakInteraction(interaction, "Apenas membros registrados podem utilizar este comando!");
             return;
         }

@@ -293,7 +293,12 @@
         ],
         "icons": {
             "join-plus": "https://i.imgur.com/UhO2mMi.png",
-            "leave-minus": "https://i.imgur.com/N7fSBbM.png"
+            "leave-minus": "https://i.imgur.com/N7fSBbM.png",
+            "interaction-level": "https://i.imgur.com/sMi1YBJ.png",
+            "interaction-xp": "https://i.imgur.com/irksvwO.png",
+            "work-level": "https://i.imgur.com/DciDHoC.png",
+            "work-xp": "https://i.imgur.com/gYFmCti.png",
+            "coins": "https://i.imgur.com/G36upYR.png"
         },
         "status": {
             "idle": "https://i.imgur.com/UWuJdwp.png",

@@ -1,9 +1,7 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
 import { Command, DocumentPlayer, DocumentPlayerPaths } from "../../structs";
-import { devices } from "../../jsons";
+import { devices, registries } from "../../jsons";
 import { db } from "../..";
-
-const ephemeral = true;
 
 export default new Command({
     name: "change",
@@ -31,7 +29,7 @@ export default new Command({
                             name: "value",
                             description: "Register level",
                             type: ApplicationCommandOptionType.Integer,
-                            choices: [1,2,3,4,5].map(n => ({name: `${n}`, value: n})),
+                            choices:  [1,2,3,4,5].map(n => ({name: `${n}`, value: n})),
                             required: true
                         }
                     ]

@@ -2,8 +2,6 @@ import { ApplicationCommandType, ColorResolvable, EmbedBuilder } from "discord.j
 import { config } from "../..";
 import { Command, ReplyBuilder } from "../../structs";
 
-const ephemeral = true;
-
 export default new Command({
     name: "bot",
     description: "Mostra informações sobre o bot",

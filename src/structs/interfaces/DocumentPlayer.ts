@@ -34,7 +34,7 @@ interface DocumentPlayerWallet {
 
 export interface DocumentPlayerRegistry {
     /** Player's registry level */
-    level: number;
+    level: 1 | 2 | 3 | 4 | 5;
     /** Player's nick */
     nick: string;
     /** Player's registry type */

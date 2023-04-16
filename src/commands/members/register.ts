@@ -3,7 +3,7 @@ import { client, config, db } from "../..";
 import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, ServerManager } from "../../structs";
 
 import { buttonCollector, logger, stringSelectCollector, systemRecords, systemRegister, toHexColor, wait } from "../../functions";
-import { devices, registers } from "../../jsons";
+import { devices, registries } from "../../jsons";
 
 const ephemeral = true;
 
@@ -307,6 +307,17 @@ export default new Command({
     ]),
     buttons: new Collection([
         ["register-member-button", async (interaction) => {
+            if (!interaction.inCachedGuild()) return;
+            const { member, guild } = interaction;
+            const cGeneral = guild.channels.cache.find(c => c.name === config.guild.channels.general);
+
+            const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
+            if (memberData) {
+                client.emit("guildMemberAdd", member);
+                new BreakInteraction(interaction, `Você já está registrado! Acesse o chat ${cGeneral}`);
+                return;
+            }
+
             const modal = new ModalBuilder({
                 customId: "register-member-modal",
                 title: "Registrar",
@@ -330,15 +341,7 @@ export default new Command({
             if (!interaction.inCachedGuild()) return;
             const { member, guild } = interaction;
             const nick = interaction.fields.getTextInputValue("register-member-nick-input"); 
-            
             const cGeneral = guild.channels.cache.find(c => c.name === config.guild.channels.general);
-        
-            const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
-            if (memberData) {
-                client.emit("guildMemberAdd", member);
-                new BreakInteraction(interaction, `Você já está registrado! Acesse o chat ${cGeneral}`);
-                return;
-            }
             
             if (nick.includes(" ")) {
                 new BreakInteraction(interaction, "Digite seu nick sem espaços");
@@ -348,7 +351,7 @@ export default new Command({
             const blackListChars = [
                 "@", "/", "*", "-", "&", "!", "<", ">", "#",
                 ":", ";", "(", ")", "$", "%", "`", "[", "]", "+",
-                "=",
+                "=", ".", ",", "{", "}"
             ];
         
             for (const char of blackListChars) {
@@ -358,13 +361,8 @@ export default new Command({
                     return;
                 }
             }
-            const roleName = registers.discord.find(r => r.level == 1);
-            if (!roleName) {
-                new BreakInteraction(interaction, "O cargo de membro padrão não foi encontrado");
-                return;
-            }
             
-            const memberRole = ServerManager.findRole(guild, roleName.name);
+            const memberRole = ServerManager.findRole(guild, registries.discord.roles[1].name);
             if (!memberRole) {
                 new BreakInteraction(interaction, "O cargo de membro padrão não foi encontrado");
                 return;

@@ -5,8 +5,6 @@ import { informations, terms } from "../../jsons";
 import { toHexColor } from "../../functions/aplication/convert";
 import { Command, DiscordCreate, DocumentPlayer, oldEmbedMenuBuilder, Interruption, ReplyBuilder, TextUtils } from "../../structs";
 
-const ephemeral = true;
-
 export default new Command({
     name: "informações",
     description: "Mostra informações sobre o servidor",

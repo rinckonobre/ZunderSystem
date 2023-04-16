@@ -40,7 +40,7 @@ interface StyleOptions {
     style: CanvasStyle,
     applyOn?: "fill" | "stroke" | "both";
 }
-interface DrawImageOptions extends Coords { image: Image, size?: number, radius?: number; }
+interface DrawImageOptions extends Coords { image: Image | Canvas, size?: number, radius?: number; }
 
 interface DrawProgressBarOptions extends Coords, Sizes {
     current: number; total: number;
@@ -53,19 +53,12 @@ interface GradientOptions { start: Coords, end: Coords, startColor: string, endC
 
 
 export class CanvasBuilder {
-    public global: Global;
-    public canvas: Canvas;
+    public data: Canvas; 
     public context: SKRSContext2D;
     constructor(width: number, height: number) {
-        this.global = { width, height };
-        this.canvas = createCanvas(width, height);
-        this.context = this.canvas.getContext("2d");
-    }
-    public getCanvas() {
-        return this.canvas;
-    }
-    public getContext() {
-        return this.context;
+        this.data = new Canvas(width, height)
+        this.context = this.data.getContext("2d")        
+        this.imageSettings(true)
     }
     public setFont(options: FontOptions) {
         const { family, size, style, textAlign, textBaseLine } = options;
@@ -97,7 +90,7 @@ export class CanvasBuilder {
         return this;
     }
     public drawScreen(style: CanvasStyle) {
-        const { width, height } = this.global;
+        const { width, height } = this.data;
         this.drawRect({ x: 0, y: 0, width, height, method: "fill", style: style });
         return this;
     }
@@ -262,6 +255,11 @@ export class CanvasBuilder {
                 return builder;
             }
         };
+    }
+    public imageSettings(enabled: boolean, quality: ImageSmoothingQuality = "high"){
+        this.context.imageSmoothingQuality = quality;
+        this.context.imageSmoothingEnabled = enabled
+        return this;
     }
     public static rgbaStyle(red: number, green: number, blue: number, alpha: number = 1) {
         return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
