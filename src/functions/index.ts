@@ -12,4 +12,3 @@ export * from "./aplication/logger";
 export * from "./aplication/wait";
 export * from "./aplication/convert";
 export * from "./aplication/canvas";
-

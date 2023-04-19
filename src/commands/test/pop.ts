@@ -19,8 +19,6 @@ export default new Command({
     visibility: "private",
     async run({ client, interaction, options }) {
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        
-        
 
     }
 });
