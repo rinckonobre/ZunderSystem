@@ -17,6 +17,11 @@ import { CommandType, ComponentsButton, ComponentsModal, ComponentsSelect, Event
 
 dotenv.config();
 
+export type BotEnviroment = "development" | "production"
+interface ExtendedClientOptions {
+    enviroment: BotEnviroment
+}
+
 export class ExtendedClient extends Client {
     public onwerID: string;
     public mainGuildID: string;
@@ -24,26 +29,33 @@ export class ExtendedClient extends Client {
     public buttons: ComponentsButton = new Collection();
     public selects: ComponentsSelect = new Collection();
     public modals: ComponentsModal = new Collection();
+    public enviroment: BotEnviroment;
     //public youtube;
 
-    constructor() {
+    constructor({enviroment}:ExtendedClientOptions) {
         super({
             intents: Object.keys(IntentsBitField.Flags) as BitFieldResolvable<GatewayIntentsString, number>,
             partials: [Partials.Channel, Partials.GuildMember, Partials.Message, Partials.User, Partials.ThreadMember],
             failIfNotExists: false,
         });
-
+        this.enviroment = enviroment;
         this.onwerID = "264620632644255745";
-        this.mainGuildID = String(process.env.guildID);
-        //this.youtube = new YoutubeClient({ key });
+        
+        this.mainGuildID = (enviroment == "development") ?
+        process.env.DEV_MAIN_GUILD_ID as string : 
+        process.env.PROD_MAIN_GUILD_ID as string;
     }
 
     public start() {
+        const token = (this.enviroment == "development") ? 
+        process.env.DEV_BOT_TOKEN as string : 
+        process.env.PROD_BOT_TOKEN as string
+
         this.registerEvents();
         this.registerModules();
         this.registerFonts();
         this.registerSchedules();
-        this.login(process.env.botToken);
+        this.login(token);
     }
 
     private registerSchedules() {
@@ -73,10 +85,10 @@ export class ExtendedClient extends Client {
     private registerCommands(commands: Array<ApplicationCommandDataResolvable>) {
         this.application?.commands.set(commands)
             .then(() => {
-                console.log("✅ Slash Commands (/) defined".green);
+                console.log("✓ Slash Commands (/) defined".green);
             })
             .catch((error) => {
-                console.log(`❌ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
+                console.log(`✘ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
             });
     }
     private async registerModules() {

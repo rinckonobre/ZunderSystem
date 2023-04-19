@@ -1,8 +1,7 @@
 import { ActionRowBuilder, Attachment, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
 
 import { DocumentPlayer, DocumentResource, GuildManager, ServerManager, ZunderResourceEditProps, ZunderResourceUploadProps } from "..";
-import { db } from "../..";
-import { resources } from "../../config.json";
+import { config, db } from "../..";
 export class ResourceManager {
     public static tempUpload: Map<string, ZunderResourceUploadProps> = new Map();
     public static tempEdit: Map<string, ZunderResourceEditProps> = new Map();
@@ -11,7 +10,7 @@ export class ResourceManager {
     public static async findMessage(id: string, resource: DocumentResource, guild: Guild){
         const guildManager = new GuildManager(guild);
         const channelName = `${resource.category.name}-${resource.category.subCategory}`
-        const channel = guildManager.findChannelInCategory(channelName, ChannelType.GuildText, resources.title) as TextChannel | undefined;
+        const channel = guildManager.findChannelInCategory(channelName, ChannelType.GuildText, config.resources.title) as TextChannel | undefined;
 
         if (!channel) return undefined;
         return await channel.messages.fetch(id);

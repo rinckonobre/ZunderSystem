@@ -15,10 +15,14 @@ export default new Event({
             return number < 10 ? `0${number}` : `${number}`
         }
 
-        console.log("✅ Bot online".green)
-        console.log("⤷ ⌨️  Comandos (/) carregados:".cyan, `${formatNumber(commands) || "nenhum"}`);
-        console.log("⤷ ⏺️  Botões carregados:".cyan, `${formatNumber(buttons) || "nenhum"}`);
-        console.log("⤷ 🗃️  Menus de seleção carregados:".cyan, `${formatNumber(selects) || "nenhum"}`);
-        console.log("⤷ 📑 Modais carregados:".cyan, `${formatNumber(modals) || "nenhum"}`);
+        const display = (client.enviroment == "development") ?
+        " in development mode ".bgCyan.black :
+        " in production mode ".bgGreen.white 
+
+        console.log(" ✓ Bot online".green, display)
+        console.log("⤷ ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
+        console.log("⤷ ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
+        console.log("⤷ 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
+        console.log("⤷ 📑 Modals loaded:".cyan, `${formatNumber(modals) || "nenhum"}`);
     }
 })

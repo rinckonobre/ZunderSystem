@@ -114,7 +114,7 @@ export const systemProfile = {
             
             const progressWidth = (xp / xpRequired) * 330;
             if (progressWidth > 14){
-                canvas.setFilter().dropShadow(0, 0, 20, "#ED09E8")
+                canvas.setFilter().dropShadow(0, 0, 20, "#09ED64")
                 .drawRect({method: "fill", x: 15, y: 44, width: progressWidth, height: 22, radius: 10, style: "#09ED64"})
                 .clearFilter()
             }

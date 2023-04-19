@@ -1,14 +1,26 @@
-export * from "colors";
-import config from "./config.json";
-
-import serviceAccount from './firebase.json';
 import firebase, { credential, ServiceAccount } from 'firebase-admin';
-firebase.initializeApp({ credential: credential.cert(serviceAccount as ServiceAccount) });
+export * from "colors";
+import dotenv from "dotenv";
+import config from "./config/config.json";
+dotenv.config()
 
-import { Database, ExtendedClient } from "./structs";
+const enviroment = process.env.ENV as BotEnviroment;
 
-const client = new ExtendedClient();
+import devFirestoreAccount from "./config/development/firebase.json";
+import prodFirestoreAccount from "./config/production/firebase.json";
+
+if (enviroment == "development"){
+	firebase.initializeApp({ credential: credential.cert(devFirestoreAccount as ServiceAccount) });
+} else {
+	firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
+}
+
+import { BotEnviroment, Database, ExtendedClient } from "./structs";
+
+const client = new ExtendedClient({enviroment});
 client.start();
+
+
 
 const db = {
 	players: new Database("players"),

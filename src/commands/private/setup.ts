@@ -1,7 +1,6 @@
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, codeBlock, ColorResolvable, EmbedBuilder, TextChannel } from "discord.js";
 import { config } from "../..";
 
-import { resources } from "../../config.json";
 import { informations } from "../../jsons";
 import { Command, DiscordCreate, Interruption, ReplyBuilder, ServerManager, TextUtils } from "../../structs";
 
@@ -44,13 +43,13 @@ export default new Command({
                     return;
                 }
 
-                const categoryResources = guild.channels.cache.find(c => c.name == resources.title && c.type == ChannelType.GuildCategory);
+                const categoryResources = guild.channels.cache.find(c => c.name == config.resources.title && c.type == ChannelType.GuildCategory);
                 
 
                 // Criar categoria recursos caso não existir e criar canais
                 if (!categoryResources) {
                     guild.channels.create({
-                        name: resources.title,
+                        name: config.resources.title,
                         type: ChannelType.GuildCategory,
                     }).then(category => {
 
@@ -61,7 +60,7 @@ export default new Command({
                             ReadMessageHistory: true
                         })
 
-                        for (const cCategory of resources.categories) {
+                        for (const cCategory of config.resources.categories) {
                             for (const cName of cCategory.subCategories) {
                                 guild.channels.create({
                                     name: cCategory.name + "-" + cName,
@@ -79,7 +78,7 @@ export default new Command({
                     const category = categoryResources as CategoryChannelResolvable
                     let categoryIndex = 0;
 
-                    for (const cCategory of resources.categories) {
+                    for (const cCategory of config.resources.categories) {
                         let channelIndex = 0;
 
                         for (const cName of cCategory.subCategories) {

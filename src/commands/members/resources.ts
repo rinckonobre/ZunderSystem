@@ -241,7 +241,7 @@ export default new Command({
                 //     return;
                 // }
 
-                const mention = options.getMember("membro") as GuildMember || member;
+                const mention = options.getMember("member") as GuildMember || member;
                 const mentionData = await db.players.get(mention.id) as DocumentPlayer | undefined;
 
                 if (!mentionData || !mentionData.registry) {
