@@ -15,12 +15,10 @@ if (enviroment == "development"){
 	firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
 }
 
-import { BotEnviroment, Database, ExtendedClient } from "./structs";
+import { BotEnviroment, Database, ExtendedClient } from './app/structs';
 
 const client = new ExtendedClient({enviroment});
 client.start();
-
-
 
 const db = {
 	players: new Database("players"),
