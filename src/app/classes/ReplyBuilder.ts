@@ -22,7 +22,7 @@ export class ReplyBuilder {
     private selectFunction?: (selectInteraction: StringSelectMenuInteraction) => any;
     private embeds: Array<EmbedBuilder> = new Array();
     constructor(interaction: ReplyBuilderInteraction, ephemeral?: boolean){
-        this.interaction = interaction
+        this.interaction = interaction;
         this.ephemeral = ephemeral;
     }
     public setFiles(files: Array<any>){
@@ -30,7 +30,7 @@ export class ReplyBuilder {
         return this;
     }
     public addFile(file: any){
-        this.files?.push(file)
+        this.files?.push(file);
     }
     public setContent(content: string){
         this.content = content;
@@ -45,7 +45,7 @@ export class ReplyBuilder {
         return this;
     }
     public setSelects(row: number, selects: Array<ReplyBuilderSelects>){
-        this.components.set(row, selects)
+        this.components.set(row, selects);
         return this;
     }
     public addSelect(row: number, select: ReplyBuilderSelects){
@@ -58,7 +58,7 @@ export class ReplyBuilder {
         return this;
     }
     public setButtons(row: number, buttons: Array<ButtonBuilder>){
-        this.components.set(row, buttons)
+        this.components.set(row, buttons);
         return this;
     }
     public addButton(row: number, button: ButtonBuilder){
@@ -83,13 +83,13 @@ export class ReplyBuilder {
         // can't be ephemeral
         const rows: Array<ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>> = new Array();
         for (let i = 0; i < 5; i++) {
-            const components = this.components.get(i)
-            if (!components) break
+            const components = this.components.get(i);
+            if (!components) break;
             if (components[0] instanceof StringSelectMenuBuilder) {
-                rows.push(new ActionRowBuilder<StringSelectMenuBuilder>({components: components }))
+                rows.push(new ActionRowBuilder<StringSelectMenuBuilder>({components: components }));
             }
             if (components[0] instanceof ButtonBuilder) {
-                rows.push(new ActionRowBuilder<ButtonBuilder>({components: components }))
+                rows.push(new ActionRowBuilder<ButtonBuilder>({components: components }));
             }
         }
 
@@ -97,16 +97,16 @@ export class ReplyBuilder {
         let msg: Message | InteractionResponse | undefined;
 
         if (interaction instanceof Message) {
-            msg = await interaction.reply({...replyOptions})
+            msg = await interaction.reply({...replyOptions});
         }
         // can be updated
         if (interaction instanceof ButtonInteraction || 
             interaction instanceof StringSelectMenuInteraction){
 
             if (update && update === true) {
-                msg = await interaction.update({...replyOptions})
+                msg = await interaction.update({...replyOptions});
             } else {
-                msg = await interaction.reply({ephemeral, ...replyOptions})
+                msg = await interaction.reply({ephemeral, ...replyOptions});
             }
         }
 
@@ -117,15 +117,15 @@ export class ReplyBuilder {
             interaction instanceof ModalSubmitInteraction){
 
             if (update && update === true) {
-                msg = await interaction.editReply({...replyOptions})
+                msg = await interaction.editReply({...replyOptions});
             } else {
-                msg = await interaction.reply({ephemeral, ...replyOptions})
+                msg = await interaction.reply({ephemeral, ...replyOptions});
             }
         }
 
         if (msg) {
-           if (this.buttonFunction) DiscordCreate.buttonCollector(msg, this.buttonFunction)
-           if (this.selectFunction) DiscordCreate.selectCollector(msg, this.selectFunction)
+           if (this.buttonFunction) DiscordCreate.buttonCollector(msg, this.buttonFunction);
+           if (this.selectFunction) DiscordCreate.selectCollector(msg, this.selectFunction);
         }
 
         return msg;

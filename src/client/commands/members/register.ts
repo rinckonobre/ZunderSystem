@@ -1,9 +1,7 @@
+import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, ServerManager, client, config, db } from "@/app";
+import { convertHex, stringSelectCollector, buttonCollector, logger, wait, systemRecords, systemRegister } from "@/app/functions";
+import { devices, registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
-import { db, client, config } from "../../../app";
-import { toHexColor, stringSelectCollector, buttonCollector, logger, wait, systemRecords, systemRegister } from "../../../app/functions";
-import { Command, BreakInteraction, DocumentPlayer, DocumentPlayerRegistry, ServerManager, DiscordCreate } from "../../../app/structs";
-import { devices, registries } from "../../../config/jsons";
-
 
 export default new Command({
     name: "register",
@@ -55,18 +53,18 @@ export default new Command({
 
         const emojis: Collection<string, GuildEmoji | undefined> = new Collection(
             devices.map(d => ([d.emoji, client.emojis.cache.find(e => e.name == d.emoji)]))
-        )
+        );
         emojis.set("check", client.emojis.cache.find(e => e.name == "check"));
         emojis.set("cancel", client.emojis.cache.find(e => e.name == "cancel"));
 
         const rows = [
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>()
-        ]
+        ];
 
         const buttons = {
             confirm: new ButtonBuilder({customId: "register-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
             cancel: new ButtonBuilder({customId: "register-cancel-button", label: "Cancelar", style: ButtonStyle.Danger}),
-        }
+        };
 
         const deviceSelect = new StringSelectMenuBuilder({
             customId: "register-devices-select",
@@ -77,7 +75,7 @@ export default new Command({
                     label: name, value: id, 
                     description: `Registrar usando o dispositivo ${d.name}`, 
                     emoji: {id: emojis.get(emoji)?.id}
-                }
+                };
             })
         });
 
@@ -85,12 +83,12 @@ export default new Command({
 
         const embed = new EmbedBuilder({
             title: "📝 Registro Zunder",
-            color: toHexColor(config.colors.zunder),
+            color: convertHex(config.colors.zunder),
             thumbnail: { url: member.displayAvatarURL() },
             description: `> Você está tentando se registrar usando o nick \`${nick}\`
             Selecione um dispositivo para se registrar`,
             footer: {text: "Administração Zunder", iconURL: guild.iconURL() || undefined }
-        })
+        });
 
         const message = await interaction.reply({ephemeral: true, embeds: [embed], components: [rows[0]], fetchReply: true});
 
@@ -99,14 +97,14 @@ export default new Command({
             const selectedDevice = devices.find(d => d.id == selected);
 
             if (!selectedDevice) {
-                new BreakInteraction(subInteraction, "Não foi possível usar o dispositivo selecionado!", {replace: true})
+                new BreakInteraction(subInteraction, "Não foi possível usar o dispositivo selecionado!", {replace: true});
                 return;
             }
 
-            const emoji = emojis.get(selectedDevice.emoji)
+            const emoji = emojis.get(selectedDevice.emoji);
 
             embed.setDescription(`O dispositivo selecionado foi ${emoji} **${selectedDevice.name}**
-            Deseja confirmar a solicitação de registro?`)
+            Deseja confirmar a solicitação de registro?`);
 
             rows[0].setComponents(buttons.confirm, buttons.cancel);
 
@@ -133,7 +131,7 @@ export default new Command({
                 Nick: \`${nick}\`
                 Dispositivo: ${emoji} **${selectedDevice.name}**
                 
-                Aguarde a staff verificar e te dar uma resposta`)
+                Aguarde a staff verificar e te dar uma resposta`);
     
                 await member.send({embeds: [embed]}).catch(logger);
     
@@ -144,7 +142,7 @@ export default new Command({
                         {label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: emojis.get("check")?.id}},
                         {label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: emojis.get("cancel")?.id}}
                     ]
-                })
+                });
 
                 rows[0].setComponents(requestManagerSelect);
     
@@ -161,7 +159,7 @@ export default new Command({
                 if (cManagement?.type == ChannelType.GuildText){
                     cManagement.send({content: "||@everyone||", embeds: [embed], components: [rows[0]]});
                 }
-           })
+           });
         });
 
     },
@@ -176,7 +174,7 @@ export default new Command({
             const mentionData = await db.players.get(mentionID) as DocumentPlayer | undefined;
 
             async function breakInteraction(text: string){
-                embed.setColor(toHexColor(config.colors.danger))
+                embed.setColor(convertHex(config.colors.danger))
                 .setDescription(text)
                 .setFields();
                 interaction.update({embeds: [embed], components: []});
@@ -224,12 +222,12 @@ export default new Command({
 
                 const newRegistry: DocumentPlayerRegistry = {
                     nick, device: deviceId, type: "zunder", level: mentionData.registry.level,
-                }
+                };
 
                 await db.players.update(mention.id, "registry", newRegistry);
 
                 embed.setTitle("💛 Solicitação aprovada")
-                .setColor(toHexColor(config.colors.zunder))
+                .setColor(convertHex(config.colors.zunder))
                 .setFooter({text: "Administração Zunder"})
                 .setTimestamp()
                 .setDescription(`Sua solicitação de registro Zunder foi aprovada!
@@ -270,13 +268,13 @@ export default new Command({
 
                 interaction.update({embeds: [
                     new EmbedBuilder({
-                        color: toHexColor(config.colors.success),
+                        color: convertHex(config.colors.success),
                         description: "Esta solicitação de registro foi aprovada!"
                     })
                 ], components: []});
             } else {
                 embed.setTitle("💔 Solicitação recusada")
-                .setColor(toHexColor(config.colors.danger))
+                .setColor(convertHex(config.colors.danger))
                 .setFooter({text: "Administração Zunder"})
                 .setTimestamp()
                 .setDescription(`Sua solicitação de registro Zunder foi recusada!
@@ -290,7 +288,7 @@ export default new Command({
 
                 interaction.update({embeds: [
                     new EmbedBuilder({
-                        color: toHexColor(config.colors.danger),
+                        color: convertHex(config.colors.danger),
                         description: "Esta solicitação de registro foi recusada!"
                     })
                 ], components: []});
@@ -304,6 +302,9 @@ export default new Command({
         }]
     ]),
     buttons: new Collection([
+        ["test", async (interaction) => {
+        
+        }],
         ["register-member-button", async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild } = interaction;
@@ -382,4 +383,4 @@ export default new Command({
             interaction.reply({ephemeral: true, content: `Você foi registrado! Acesse o chat ${cGeneral}`});            
         }]
     ]),
-})
+});

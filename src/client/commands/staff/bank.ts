@@ -1,7 +1,6 @@
+import { BreakInteraction, Command, DocumentGuild, DocumentPlayer, config, db } from "@/app";
+import { convertHex, buttonCollector } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, GuildMember } from "discord.js";
-import { config, db } from "../../../app";
-import { toHexColor, buttonCollector } from "../../../app/functions";
-import { Command, BreakInteraction, DocumentPlayer, DocumentGuild } from "../../../app/structs";
 
 const ephemeral = true;
 
@@ -86,18 +85,18 @@ export default new Command({
 
         const rows = [
             new ActionRowBuilder<ButtonBuilder>()
-        ]
+        ];
 
         const buttons = {
             confirm: new ButtonBuilder({customId: "bank-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
             cancel: new ButtonBuilder({customId: "bank-cancel-button", label: "Cancelar", style: ButtonStyle.Danger})
-        }
+        };
 
         const currents = {
             amount: guildData.bank.total || 0
-        }
+        };
 
-        const embed = new EmbedBuilder({ color: toHexColor(config.colors.default) })
+        const embed = new EmbedBuilder({ color: convertHex(config.colors.default) });
         
         switch(options.getSubcommand(true)){
             case "add":{
@@ -123,7 +122,7 @@ export default new Command({
                 buttonCollector(message, {max: 1}).on("collect", async (subInteraction) => {
 
                     if (subInteraction.customId == "bank-cancel-button"){
-                        new BreakInteraction(subInteraction, "A operação foi cancelada!", {replace: true})
+                        new BreakInteraction(subInteraction, "A operação foi cancelada!", {replace: true});
                         return;
                     }
 
@@ -131,10 +130,10 @@ export default new Command({
                     await subInteraction.update({embeds: [embed], components: []});
 
                     const embedLog = new EmbedBuilder({
-                        title: `📥 Valor adicionado`,
+                        title: "📥 Valor adicionado",
                         description: `${mention} **${mention.user.tag}** apoiou o grupo \nValor: ${amount} reais`,
-                        color: toHexColor(config.colors.joinGreen)
-                    })
+                        color: convertHex(config.colors.joinGreen)
+                    });
 
                     cBank.send({embeds: [embedLog]});
 
@@ -151,7 +150,7 @@ export default new Command({
                     const total = await db.guilds.get(guild.id, "bank.total") as number;
                     
                     cBank.edit({topic: `Valo total em conta: ${total} reais`});
-                })
+                });
                 return;
             }
             case "remove":{
@@ -171,18 +170,18 @@ export default new Command({
                 buttonCollector(message, {max: 1}).on("collect", async (subInteraction) => {
 
                     if (subInteraction.customId == "bank-cancel-button"){
-                        new BreakInteraction(subInteraction, "A operação foi cancelada!", {replace: true})
+                        new BreakInteraction(subInteraction, "A operação foi cancelada!", {replace: true});
                         return;
                     }
 
-                    embed.setDescription(`O valor foi removido do banco!`);
+                    embed.setDescription("O valor foi removido do banco!");
                     await subInteraction.update({embeds: [embed], components: []});
 
                     const embedLog = new EmbedBuilder({
-                        title: `📥 Valor removido`,
+                        title: "📥 Valor removido",
                         description: `> Motivo: ${reason} \nValor: ${amount} reais`,
-                        color: toHexColor(config.colors.leaveRed)
-                    })
+                        color: convertHex(config.colors.leaveRed)
+                    });
 
                     cBank.send({embeds: [embedLog]});
 
@@ -195,9 +194,9 @@ export default new Command({
                     const total = await db.guilds.get(guild.id, "bank.total") as number;
                     
                     cBank.edit({topic: `Valo total em conta: ${total} reais`});
-                })
+                });
                 return;
             }
         }
     },
-})
+});

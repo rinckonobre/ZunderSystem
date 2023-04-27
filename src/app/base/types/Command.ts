@@ -1,5 +1,5 @@
 import { ApplicationCommandData, AutocompleteInteraction, ButtonInteraction, Collection, CommandInteraction, CommandInteractionOptionResolver, Guild, GuildMember, ModalSubmitInteraction, StringSelectMenuInteraction } from 'discord.js';
-import { ExtendedClient } from '..';
+import { ExtendedClient } from "..";
 
 // Chat Command Props
 interface CommandRunProps {
@@ -36,6 +36,6 @@ export type CommandType = ApplicationCommandData & CommandComponents & {
 export class Command {
     constructor(options: CommandType){
         options.dmPermission = false;
-        Object.assign(this, options)
+        Object.assign(this, options);
     }
 }

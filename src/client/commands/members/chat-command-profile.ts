@@ -1,7 +1,6 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, Collection, GuildMember } from "discord.js";
-import { db } from "../../../app";
-import { systemProfile, logger } from "../../../app/functions";
-import { Command, BreakInteraction, DocumentPlayer } from "../../../app/structs";
+import { Command, BreakInteraction, db, DocumentPlayer } from "@/app";
+import { systemProfile, logger } from "@/app/functions";
 
 export default  new Command({
     name: "profile",
@@ -50,12 +49,12 @@ export default  new Command({
     buttons: new Collection([
         ["profile-close-button", async (interaction) => {
             if (!interaction.inCachedGuild()) return;
-            interaction.deferUpdate()
+            interaction.deferUpdate();
             const { member, message: { content }} = interaction;
             const UserProfileId = content.slice(4).slice(0, content.length - 5);
             
             if (UserProfileId != member.id) return;
-            interaction.message.delete().catch(logger)
+            interaction.message.delete().catch(logger);
         }]
     ])
 });

@@ -1,7 +1,6 @@
+import { DocumentPlayer, Event, MemberCooldowns, NumberUtils, client, db } from "@/app";
+import { systemCoins, wait, systemExperience } from "@/app/functions";
 import { ChannelType, GuildMember } from "discord.js";
-import { DocumentPlayer, Event, MemberCooldowns, NumberUtils } from "../../../app/structs";
-import { client, db } from "../../../app";
-import { systemCoins, wait, systemExperience } from "../../../app/functions";
 
 export default new Event({
     name: "messageCreate", async run(message) {
@@ -22,13 +21,13 @@ export default new Event({
         const randomXp = NumberUtils.random(1, 8);
         const randomCoins = NumberUtils.random(1, 4);
 
-        await systemCoins.give(member, randomCoins)
+        await systemCoins.give(member, randomCoins);
         MemberCooldowns.Economy.set(member, 1);
 
         await wait(5000);
 
         systemExperience.give(member, randomXp, "interaction");
-        MemberCooldowns.Economy.delete(member)
+        MemberCooldowns.Economy.delete(member);
 
     }
-})
+});

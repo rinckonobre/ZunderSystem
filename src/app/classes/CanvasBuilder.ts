@@ -48,17 +48,17 @@ interface DrawProgressBarOptions extends Coords, Sizes {
     radius?: number;
 }
 
-type DrawCircleOptions = Coords & DrawOptions & { center?: boolean; };
-interface GradientOptions { start: Coords, end: Coords, startColor: string, endColor: string; };
+type DrawCircleOptions = Coords & DrawOptions & { center?: boolean; }
+interface GradientOptions { start: Coords, end: Coords, startColor: string, endColor: string; }
 
 
 export class CanvasBuilder {
     public data: Canvas; 
     public context: SKRSContext2D;
     constructor(width: number, height: number) {
-        this.data = new Canvas(width, height)
-        this.context = this.data.getContext("2d")        
-        this.imageSettings(true)
+        this.data = new Canvas(width, height);
+        this.context = this.data.getContext("2d");    
+        this.imageSettings(true);
     }
     public setFont(options: FontOptions) {
         const { family, size, style, textAlign, textBaseLine } = options;
@@ -258,7 +258,7 @@ export class CanvasBuilder {
     }
     public imageSettings(enabled: boolean, quality: ImageSmoothingQuality = "high"){
         this.context.imageSmoothingQuality = quality;
-        this.context.imageSmoothingEnabled = enabled
+        this.context.imageSmoothingEnabled = enabled;
         return this;
     }
     public static rgbaStyle(red: number, green: number, blue: number, alpha: number = 1) {

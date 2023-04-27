@@ -1,13 +1,8 @@
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Guild, GuildMember, UserContextMenuCommandInteraction } from "discord.js";
 import { loadImage } from "@napi-rs/canvas";
 import { registries } from "../../../config/jsons";
-import { ServerManager, DocumentPlayer, CanvasFontBuilder, CanvasBuilder } from "../../structs";
 import { findRole } from "../discord/guild";
-import { config } from "../..";
-
-function emoji(guild: Guild, name: string){
-    return ServerManager.findEmoji(guild, name);
-}
+import { CanvasBuilder, CanvasFontBuilder, DocumentPlayer, config } from "../..";
 
 // function setup(member: GuildMember, memberData: DocumentPlayer){
 //     const register = registers[memberData.registry!.type].find(r => r.level == memberData.registry!.level)!;
@@ -28,7 +23,7 @@ export const systemProfile = {
     async showMember(interaction: InteractionTypes, member: GuildMember, memberData: DocumentPlayer){
         const { guild } = member;
         const registryType = registries[memberData.registry.type];
-        const registry = registryType.roles[memberData.registry.level]
+        const registry = registryType.roles[memberData.registry.level];
 
         await interaction.deferReply({fetchReply: true});
         
@@ -56,13 +51,13 @@ export const systemProfile = {
             .drawText({ method: "fill", x: 76, y: 112, text: registry.name.toUpperCase(), style: registry.colors.main })
             .setFont(canvasFont.setSize(22).setStyle("thin").data)
             .drawText({ method: "fill", x: 444, y: 116, text: `#${member.user.discriminator}`, style: config.colors.white })
-            .data
+            .data;
         }
         
         async function blockInteraction(){
             
             const level = memberData.interaction?.level || 0;
-            const xp = memberData.interaction?.xp || 0
+            const xp = memberData.interaction?.xp || 0;
             const xpRequired = (level > 0) ? level * 982 : 440;
             
             const canvas = new CanvasBuilder(360, 160)
@@ -79,21 +74,21 @@ export const systemProfile = {
             .drawText({text: "Xp: ".toUpperCase(), x: 45, y: 108, method: "fill", style: "#C5C5C5"})
             .drawText({text: `${xp} / ${xpRequired}`, x: 86, y: 108, method: "fill"})
             // Progress bar
-            .drawRect({ method: "fill", x: 15, y: 44, width: 330, height: 22, radius: 10, style: "#8B0088" })
+            .drawRect({ method: "fill", x: 15, y: 44, width: 330, height: 22, radius: 10, style: "#8B0088" });
             
             const progressWidth = (xp / xpRequired) * 330;
             if (progressWidth > 14){
                 canvas.setFilter().dropShadow(0, 0, 20, "#ED09E8")
                 .drawRect({method: "fill", x: 15, y: 44, width: progressWidth, height: 22, radius: 10, style: "#ED09E8"})
-                .clearFilter()
+                .clearFilter();
             }
 
-            return canvas.data
+            return canvas.data;
         }
 
         async function blockWork() {
             const level = memberData.work?.level || 0;
-            const xp = memberData.work?.xp || 0
+            const xp = memberData.work?.xp || 0;
             const xpRequired = (level > 0) ? level * 982 : 440;
 
             const canvas = new CanvasBuilder(360, 160)
@@ -110,15 +105,15 @@ export const systemProfile = {
             .drawText({text: "Xp: ".toUpperCase(), x: 45, y: 108, method: "fill", style: "#C5C5C5"})
             .drawText({text: `${xp} / ${xpRequired}`, x: 86, y: 108, method: "fill"})
             // Progress bar
-            .drawRect({ method: "fill", x: 15, y: 44, width: 330, height: 22, radius: 10, style: "#008B40" })
+            .drawRect({ method: "fill", x: 15, y: 44, width: 330, height: 22, radius: 10, style: "#008B40" });
             
             const progressWidth = (xp / xpRequired) * 330;
             if (progressWidth > 14){
                 canvas.setFilter().dropShadow(0, 0, 20, "#09ED64")
                 .drawRect({method: "fill", x: 15, y: 44, width: progressWidth, height: 22, radius: 10, style: "#09ED64"})
-                .clearFilter()
+                .clearFilter();
             }
-            return canvas.data      
+            return canvas.data;
         }
 
         async function blockWallet(){
@@ -139,10 +134,10 @@ export const systemProfile = {
             .setFont(canvasFont.setSize(18).setStyle("regular").data)
             .drawText({text: "moedas: ".toUpperCase(), x: 42, y: 46, method: "fill", style: "#C5C5C5"})
             .drawText({text: `${coins} / ${coinsLimit}`, x: 134, y: 46, method: "fill", style: config.colors.white})
-            .data
+            .data;
         }
 
-        const avatar = await loadImage(member.displayAvatarURL({extension: "png", size: 512}))
+        const avatar = await loadImage(member.displayAvatarURL({extension: "png", size: 512}));
 
         const canvas = new CanvasBuilder(1200, 600).imageSettings(true)
         // Background
@@ -164,27 +159,27 @@ export const systemProfile = {
         .drawImage({image: await blockInteraction(), x: 40, y: 220});
 
         const roleWork = findRole(guild, config.guild.roles.functional.work);
-        if (roleWork && member.roles.cache.has(roleWork.id)) canvas.drawImage({image: await blockWork(), x: 40, y: 400})
+        if (roleWork && member.roles.cache.has(roleWork.id)) canvas.drawImage({image: await blockWork(), x: 40, y: 400});
         
 
-        const files: Array<AttachmentBuilder> = []
+        const files: Array<AttachmentBuilder> = [];
         files.push(new AttachmentBuilder(canvas.data.toBuffer("image/png"), {name: "profile.png"}));
 
         const rows = [
             new ActionRowBuilder<ButtonBuilder>()
-        ]
+        ];
 
         const buttons = {
             config: new ButtonBuilder({customId: "profile-config-button", label: "Configurações", emoji: "⚙️", style: ButtonStyle.Secondary}),
             close: new ButtonBuilder({customId: "profile-close-button", label: "Fechar", style: ButtonStyle.Danger})
-        }
+        };
 
         rows[0].setComponents(buttons.config, buttons.close);
 
         if (interaction instanceof ButtonInteraction) {
-            interaction.update({content: `[ ](${interaction.user.id})`, files, components: [rows[0]]})
+            interaction.update({content: `[ ](${interaction.user.id})`, files, components: [rows[0]]});
         } else {
-            interaction.editReply({content: `[ ](${interaction.user.id})`,files, components: [rows[0]]})
+            interaction.editReply({content: `[ ](${interaction.user.id})`,files, components: [rows[0]]});
         }
     }
     // showMember(interaction: CommandTypes, member: GuildMember, memberData: DocumentPlayer){
@@ -233,4 +228,4 @@ export const systemProfile = {
 
     //     
     // }
-}
+};

@@ -1,22 +1,22 @@
-import { Attachment, ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
+import { Attachment, ChannelType, ColorResolvable, EmbedBuilder, GuildMember } from "discord.js";
 import { systemExperience } from "./system-experience";
-import { config, db } from "../..";
+import { DocumentPlayer, Firestore, config, db } from "../..";
 import { works } from "../../../config/jsons";
-import { Firestore, DocumentPlayer, ServerManager } from "../../structs";
+import { findChannel } from "../discord/guild";
 
 const playersColl = new Firestore("players");
 
 export const systemWork = {
     async accept(member: GuildMember, image: Attachment, memberData: DocumentPlayer){
-        const guild = member.guild
-        const cWork = ServerManager.findChannel(guild, config.guild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
+        const guild = member.guild;
+        const cWork = findChannel(guild, config.guild.channels.work, ChannelType.GuildText);
         if (!cWork) return;
 
-        const sectorID = memberData.work!.gameID
-        const professionID = memberData.work!.profession
+        const sectorID = memberData.work!.gameID;
+        const professionID = memberData.work!.profession;
 
-        const sector = works.find(sector => sector.id === sectorID)!
-        const profession = sector.professions.find(profession => profession.id === professionID)!
+        const sector = works.find(sector => sector.id === sectorID)!;
+        const profession = sector.professions.find(profession => profession.id === professionID)!;
 
         const embed = new EmbedBuilder()
         .setAuthor({name: member.displayName, iconURL: member.displayAvatarURL()})
@@ -26,15 +26,15 @@ export const systemWork = {
         Modo: \`${profession.mode}\``)
         .setThumbnail("attachment://" + image.name)
         .setFooter({text: "Trabalho aprovado", iconURL: config.images.status.accepted})
-        .setTimestamp()
+        .setTimestamp();
 
-        cWork.send({embeds: [embed], files: [image]})
+        cWork.send({embeds: [embed], files: [image]});
 
-        const MemberDataManager = playersColl.getDocManager(member.id)
+        const MemberDataManager = playersColl.getDocManager(member.id);
 
-        const xp = profession.exp
-        const salary = memberData.work?.salary || 0
-        const dones = memberData.work?.dones || []
+        const xp = profession.exp;
+        const salary = memberData.work?.salary || 0;
+        const dones = memberData.work?.dones || [];
 
         if (dones.length < 1) {
             dones.push({
@@ -42,7 +42,7 @@ export const systemWork = {
                 gameID: sectorID,
                 amount: 1,
                 xpEarned: xp
-            })
+            });
         } else {
             dones.forEach((item, index) => {
                 if (item.professionID == professionID && item.gameID === sectorID) {
@@ -53,10 +53,10 @@ export const systemWork = {
                         dones[index].amount += 1;
                         dones[index].xpEarned += xp;
                     } else {
-                        dones[index] = { amount: 1, xpEarned: xp, gameID: sectorID, professionID }
+                        dones[index] = { amount: 1, xpEarned: xp, gameID: sectorID, professionID };
                     }
                 }
-            })
+            });
         }
 
         db.players.update(member.id, "work.dones", dones);
@@ -65,7 +65,7 @@ export const systemWork = {
         memberData.work!.dones = dones;
         memberData.work!.salary = salary + profession.salary;
 
-        systemExperience.give(member, xp, "work")
+        systemExperience.give(member, xp, "work");
         
     },
-}
+};

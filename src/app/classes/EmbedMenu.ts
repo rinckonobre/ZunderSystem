@@ -33,7 +33,7 @@ export class EmbedMenu {
     private execution?: {
         placeholder: string,
         execute: EmbedMenuExecutionFunction
-    }
+    };
     constructor(interaction: Interactions, embed: EmbedBuilder, maxItemsPerPage: MaxItemsType, colluns: CollunsType) {
         this.interaction = interaction;
         this.embed = embed;
@@ -46,22 +46,22 @@ export class EmbedMenu {
     }
     public setItems(items: Array<EmbedMenuItem>){
         this.items = items;
-        return this
+        return this;
     }
     public addItem(item: EmbedMenuItem){
         this.items.push(item);
-        return this
+        return this;
     }
     public setExecution(placeholder: string, execute: EmbedMenuExecutionFunction){
-        this.execution = { placeholder, execute }
+        this.execution = { placeholder, execute };
         return this;
     }
     public async display(editReply?: boolean){
 
-        const { ephemeral, interaction, embed, maxItemsPerPage, colluns, items, execution } = this
-        const [ execute, placeholder ] = [execution?.execute, execution?.placeholder ]
+        const { ephemeral, interaction, embed, maxItemsPerPage, colluns, items, execution } = this;
+        const [ execute, placeholder ] = [execution?.execute, execution?.placeholder ];
 
-        const includeExectuion = (placeholder && execute) ? true : false
+        const includeExectuion = (placeholder && execute) ? true : false;
         let index = 0;
         let page = 0;
     
@@ -69,15 +69,15 @@ export class EmbedMenu {
             new ButtonBuilder({customId: "back-button", label: "◄", style: ButtonStyle.Danger, disabled: true}),
             new ButtonBuilder({customId: "home-button", emoji: "🏠", style: ButtonStyle.Primary, disabled: true}),
             new ButtonBuilder({customId: "next-button", label: "►", style: ButtonStyle.Success}),
-        ]})
+        ]});
     
-        const rowSelect = new ActionRowBuilder<StringSelectMenuBuilder>({})
+        const rowSelect = new ActionRowBuilder<StringSelectMenuBuilder>({});
 
         function setItems(){
             embed.setFields();
             const selectMenu = new StringSelectMenuBuilder({
                 customId: "embed-menu-select-menu", placeholder
-            })
+            });
             
             let count = 0;
     
@@ -88,13 +88,13 @@ export class EmbedMenu {
                 if (!item) {
                     if (colluns == 2) embed.addFields({name: "\u200b", value: "\u200b", inline: true});
                     break;
-                };
+                }
                 
                 if (includeExectuion) {
                     selectMenu.addOptions(new StringSelectMenuOptionBuilder({
                         label: item.label!,
                         value: item.value!,
-                    }))
+                    }));
                 }
     
                 if (colluns == 1) {
@@ -118,14 +118,14 @@ export class EmbedMenu {
                 }
             }
     
-            rowSelect.setComponents(selectMenu)
+            rowSelect.setComponents(selectMenu);
     
             if (page > 0) {
-                row.components[0].setDisabled(false)
-                row.components[1].setDisabled(false)
+                row.components[0].setDisabled(false);
+                row.components[1].setDisabled(false);
             } else {
-                row.components[0].setDisabled(true)
-                row.components[1].setDisabled(true)
+                row.components[0].setDisabled(true);
+                row.components[1].setDisabled(true);
             }
     
             if (items.length > (index + 1)) {
@@ -139,21 +139,21 @@ export class EmbedMenu {
             embeds: [embed], 
             components: includeExectuion ? [rowSelect, row] : [row],
             fetchReply: true
-        }
+        };
         
         let msg: Message | InteractionResponse | undefined;
 
         if (editReply && editReply === true) {
-            msg = await interaction.editReply(replyOptions)
+            msg = await interaction.editReply(replyOptions);
         } else {
-            msg = await interaction.reply({...replyOptions, ephemeral})
+            msg = await interaction.reply({...replyOptions, ephemeral});
         }
 
         if (!msg) return;
     
         DiscordCreate.buttonCollector(msg, async (buttonInteraction) => {
             if (interaction.user.id !== buttonInteraction.user.id) {
-                buttonInteraction.deferUpdate()
+                buttonInteraction.deferUpdate();
                 return;
             }
 
@@ -174,13 +174,12 @@ export class EmbedMenu {
                     break;
                 }
             }
-            
-            setItems()
-            buttonInteraction.update({embeds: [embed], components: includeExectuion ? [rowSelect, row] : [row]})
+            setItems();
+            buttonInteraction.update({embeds: [embed], components: includeExectuion ? [rowSelect, row] : [row]});
     
-        })
+        });
         if (includeExectuion) {
-            DiscordCreate.selectCollector(msg, execute!)
+            DiscordCreate.selectCollector(msg, execute!);
         }
     }
 }

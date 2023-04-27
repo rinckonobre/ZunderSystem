@@ -1,29 +1,30 @@
-import firebase, { credential, ServiceAccount } from 'firebase-admin';
-export * from "colors";
+import config from "@/config/config.json";
 import dotenv from "dotenv";
-import config from "./config/config.json";
-dotenv.config()
+export * from "colors";
+dotenv.config();
 
-const enviroment = process.env.ENV as BotEnviroment;
+// import firebase, { credential, ServiceAccount } from "firebase-admin";
+// const enviroment = process.env.ENV as "Development" | "Production";
 
-import devFirestoreAccount from "./config/development/firebase.json";
-import prodFirestoreAccount from "./config/production/firebase.json";
+// import devFirestoreAccount from "./config/development/firebase.json";
+// import prodFirestoreAccount from "./config/production/firebase.json";
 
-if (enviroment == "development"){
-	firebase.initializeApp({ credential: credential.cert(devFirestoreAccount as ServiceAccount) });
-} else {
-	firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
-}
+// if (enviroment == "Development"){
+// 	firebase.initializeApp({ credential: credential.cert(devFirestoreAccount as ServiceAccount) });
+// } else {
+// 	firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
+// }
 
-import { BotEnviroment, Database, ExtendedClient } from './app/structs';
+import { Database, ExtendedClient } from "./app";
 
-const client = new ExtendedClient({enviroment});
+const client = new ExtendedClient();
 client.start();
 
 const db = {
 	players: new Database("players"),
 	guilds: new Database("guilds"),
 	resources: new Database("resources")
-}
+};
 
 export { db, client, config };
+

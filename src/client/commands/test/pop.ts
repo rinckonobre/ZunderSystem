@@ -1,5 +1,6 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, ComponentType, TextInputStyle } from 'discord.js';
-import { Command } from '../../../app/structs';
+import { ApplicationCommandType, ChannelType, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
+import { convertHex } from "@/app/functions";
+import { Command, config } from "@/app";
 
 export default new Command({
     name: "pop",
@@ -7,18 +8,25 @@ export default new Command({
     descriptionLocalizations: {
         "pt-BR": "Comando lendário de testes da Zunder",
     },
-    options: [
-        {
-            name: "texto",
-            description: "digite um texto",
-            required: true,
-            type: ApplicationCommandOptionType.String
-        }
-    ],
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
-    async run({ client, interaction, options }) {
+    async run({ interaction }) {
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
 
+        interaction.guild.channels.create({
+            name: "maranha",
+            type: ChannelType.GuildCategory
+        });
+
+        interaction.reply({
+            ephemeral: true,
+            content: "Pop command",
+            embeds: [
+                new EmbedBuilder({
+                    title: "test",
+                    color: convertHex(config.colors.default)
+                })
+            ]
+        });
     }
 });

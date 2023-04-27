@@ -1,6 +1,5 @@
 import { EmbedBuilder, TextChannel } from "discord.js";
-import { client, config } from "../..";
-import { Firestore, Schedule, ServerManager, DocumentPlayer, DiscordCreate } from "../../structs";
+import { DiscordCreate, DocumentPlayer, Firestore, Schedule, ServerManager, client, config } from "../..";
 
 const playersColl = new Firestore("players");
 
@@ -23,18 +22,18 @@ export default new Schedule({
         const embeds: Array<EmbedBuilder> = [];
 
         roleWork.members.forEach(async member => {
-            const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined
+            const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined;
 
-            const registry = memberData?.registry
-            const inventory = memberData?.inventory
-            const work = memberData?.work
+            const registry = memberData?.registry;
+            const inventory = memberData?.inventory;
+            const work = memberData?.work;
 
             if (registry && work && (work.salary || 1) > 80) {
 
-                const currCoins = inventory?.coins || 0
-                const salary = work.salary || 0
+                const currCoins = inventory?.coins || 0;
+                const salary = work.salary || 0;
 
-                const newCoins = (30 / 100) * salary
+                const newCoins = (30 / 100) * salary;
 
                 if (memberData.inventory) {
                     memberData.inventory.coins = currCoins + newCoins;
@@ -42,19 +41,19 @@ export default new Schedule({
                     memberData.inventory = {
                         coins: newCoins,
                         amplifier: 0,
-                    }
+                    };
                 }
 
                 if (memberData.work) memberData.work.salary = 0;
 
-                playersColl.saveDocData(member.id, memberData)
+                playersColl.saveDocData(member.id, memberData);
 
                 embeds.push(DiscordCreate.simpleEmbed(config.colors.systems.work,
                     `💳 O pagamento de ${member} foi depositado!
                     > Recebeu ${ServerManager.findEmoji(guild, "coins")} \` ${newCoins} \` moedas`)
-                )
+                );
             }
-        })
+        });
 
         setTimeout(() => {
 
@@ -62,14 +61,14 @@ export default new Schedule({
 
             const sendMessages = setInterval(() => {
 
-                const embed = embeds.pop()
-                if (embed) cAudit.send({ embeds: [embed] })
+                const embed = embeds.pop();
+                if (embed) cAudit.send({ embeds: [embed] });
 
-                if (embeds.length < 1) clearInterval(sendMessages)
+                if (embeds.length < 1) clearInterval(sendMessages);
 
-            }, 120 * 1000)
-        }, 10 * 1000)
+            }, 120 * 1000);
+        }, 10 * 1000);
 
 
     },
-})
+});

@@ -1,7 +1,6 @@
+import { Event, config } from "@/app";
+import { convertHex, wait } from "@/app/functions";
 import { EmbedBuilder } from "discord.js";
-import { Event } from "../../../app/structs";
-import { config } from "../../../app";
-import { toHexColor, wait } from "../../../app/functions";
 
 export default new Event({
     name: "messageCreate",
@@ -17,17 +16,17 @@ export default new Event({
 
         const embed = new EmbedBuilder({
             author: {name: member.displayName, iconURL: member.displayAvatarURL()},
-            color: toHexColor(config.colors.danger),
+            color: convertHex(config.colors.danger),
             description: `Olá ${member}. Este chat não pode ser utilizado! \nSe registre usando o chat ${cRegister} por favor`
-        })
+        });
 
         message.delete()
         .catch(() => {});
         
-        const msg = await channel.send({embeds: [embed], content: `||${member}||`})
+        const msg = await channel.send({embeds: [embed], content: `||${member}||`});
         await wait(30_000);
         
         msg.delete()
         .catch(() => {});
     },
-})
+});

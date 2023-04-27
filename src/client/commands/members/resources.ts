@@ -1,7 +1,6 @@
+import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, Files, ResourceManager, ServerManager, ZunderResourceUploadProps, config, db, oldEmbedMenuBuilder } from "@/app";
+import { logger, convertHex, wait } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, Attachment, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, ColorResolvable, ComponentType, EmbedBuilder, Guild, GuildMember, MessageCollector, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, TextInputStyle, codeBlock } from "discord.js";
-import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, Files, ResourceManager, ServerManager, ZunderResourceUploadProps, oldEmbedMenuBuilder } from "../../../app/structs";
-import { config, db } from "../../../app";
-import { logger, toHexColor, wait } from "../../../app/functions";
 
 export default new Command({
     name: "resources",
@@ -119,11 +118,11 @@ export default new Command({
         const focusedValue = options.getFocused(true);
         switch (focusedValue.name){
             case "title": {
-                const collection = await db.resources.collection.get()
+                const collection = await db.resources.collection.get();
                 const choices = collection.docs.map(doc => {
                     const resource = doc.data() as DocumentResource;
-                    return {name: resource.title.slice(0, 80), value: doc.id }
-                })
+                    return {name: resource.title.slice(0, 80), value: doc.id };
+                });
                 let filtered = choices.filter(c => c.name.startsWith(focusedValue.value));
 
                 if (filtered.length < 1) 
@@ -162,14 +161,14 @@ export default new Command({
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
-        ]
+        ];
         
         switch ((options.getSubcommand()) as SubCommands){
             case "upload": {
                 
-                const currCooldown = memberData.cooldowns?.commands?.resources?.upload || Date.now()
+                const currCooldown = memberData.cooldowns?.commands?.resources?.upload || Date.now();
                 if (Date.now() < currCooldown) {
-                    new BreakInteraction(interaction, `Você poderá usar esse comando novamente <t:${~~(currCooldown / 1000)}:R>`)
+                    new BreakInteraction(interaction, `Você poderá usar esse comando novamente <t:${~~(currCooldown / 1000)}:R>`);
                     return;
                 }
 
@@ -202,7 +201,7 @@ export default new Command({
                             style: TextInputStyle.Short
                         })
                     ]
-                })
+                });
 
                 const zunderResource: ZunderResourceUploadProps = {
                     authorID: member.id, 
@@ -211,18 +210,18 @@ export default new Command({
                     reports: new Array()
                 };
 
-                const [ thumb, banner ] = [ options.getAttachment("thumb"), options.getAttachment("banner") ]
+                const [ thumb, banner ] = [ options.getAttachment("thumb"), options.getAttachment("banner") ];
 
                 if (thumb) {
                     if (Files.checkAttachmentMbSize(thumb, ">", 8)) {
-                        new BreakInteraction(interaction, "O arquivo que você enviou para thumbnail execede o limite de `8 mbs`")
+                        new BreakInteraction(interaction, "O arquivo que você enviou para thumbnail execede o limite de `8 mbs`");
                         return;
                     }
                     zunderResource.thumbAttach = thumb;
                 }
                 if (banner) {
                     if (Files.checkAttachmentMbSize(banner,">", 8)) {
-                        new BreakInteraction(interaction, "O arquivo que você enviou para thumbnail execede o limite de `8 mbs`")
+                        new BreakInteraction(interaction, "O arquivo que você enviou para thumbnail execede o limite de `8 mbs`");
                         return;
                     }
                     zunderResource.bannerAttach = banner;
@@ -264,11 +263,11 @@ export default new Command({
                         > ID \`${doc.id}\``,
                         thumb: resource.thumbURL,
                         color: config.colors.systems.resources as ColorResolvable
-                    }
+                    };
                 }))
                 .editEmbed((embed) => embed.setDescription(`Exibindo todos os recursos de ${mention}
                 > Total: \`${snapshot.docs.length}\` recursos`))
-                .send(interaction, member)
+                .send(interaction, member);
 
 
                 // const cooldown = new Cooldown(4, "MINUTES");
@@ -289,7 +288,7 @@ export default new Command({
                     new BreakInteraction(interaction, "Ocorreu um erro ao buscar o recurso! Contate o desenvolvedor");
                     return;
                 }
-                const backupEmbed = resourceMsg.embeds[0].data
+                const backupEmbed = resourceMsg.embeds[0].data;
 
                 if (backupEmbed.fields?.[1].value != member.id) {
                     new BreakInteraction(interaction, "Apenas o autor do recurso pode editar ele!");
@@ -297,9 +296,9 @@ export default new Command({
                 }
 
 
-                let newEmbed = new EmbedBuilder(backupEmbed)
+                let newEmbed = new EmbedBuilder(backupEmbed);
                 newEmbed.setFooter({text: "Isso é um preview do seu recurso original", iconURL: config.images.status.existing})
-                .setURL(resource.acessURL)
+                .setURL(resource.acessURL);
 
                 const mainMenuSelect = new StringSelectMenuBuilder({
                     customId: "resource-edit-select",
@@ -311,37 +310,36 @@ export default new Command({
                         {label: "Thumb", emoji: "🌌",value: "thumb", description: "Editar a imagem da thumb do recurso"},
                         {label: "Banner", emoji: "🏞️",value: "banner", description: "Editar a imagem do banner do recurso"},
                     ]
-                })
+                });
 
                 const mainMenuButtons = [
                     new ButtonBuilder({customId: "resource-edit-save-button", label: "Salvar", style: ButtonStyle.Success}),
                     new ButtonBuilder({customId: "resource-edit-discard-button", label: "Descartar", style: ButtonStyle.Danger}),
                     new ButtonBuilder({customId: "resource-edit-cancel-button", label: "Cancelar", style: ButtonStyle.Danger}),
-                ]
+                ];
 
                 const backButton = new ButtonBuilder({customId: "resource-edit-back-button", label: "Voltar", style: ButtonStyle.Danger});
 
                 let currentElement: string;
                 let currentCollector: MessageCollector;
 
-                const embedPrompt = DiscordCreate.simpleEmbed(config.colors.default, "-")
+                const embedPrompt = DiscordCreate.simpleEmbed(config.colors.default, "-");
 
                 async function backToMenu(interaction: ButtonInteraction | StringSelectMenuInteraction | ChatInputCommandInteraction){
                     const options = {embeds: [newEmbed], files, components: [
                         DiscordTools.createRowSelects(mainMenuSelect),
                         DiscordTools.createRowButtons(...mainMenuButtons),
-                    ]}
+                    ]};
 
                     if (interaction.isChatInputCommand()) {
                         if (interaction.replied) {
                             return await interaction.editReply(options);
                         }
                         return await interaction.reply({ephemeral: true, ...options});
-                    }
-                    else return await interaction.update(options);
+                    } else return await interaction.update(options);
                 }
 
-                const files: Array<AttachmentBuilder> = []
+                const files: Array<AttachmentBuilder> = [];
 
                 const msg = await backToMenu(interaction);
 
@@ -369,7 +367,7 @@ export default new Command({
                         }
                         case "thumb":{
                             if (!newEmbed.data.thumbnail) {
-                                imageEditButtons[2].setDisabled(true)
+                                imageEditButtons[2].setDisabled(true);
                             }
     
                             embedPrompt.setDescription("Escolha o que deseja fazer com a imagem da thumb");
@@ -382,7 +380,7 @@ export default new Command({
                         }
                         case "banner":{
                             if (!newEmbed.data.image) {
-                                imageEditButtons[2].setDisabled(true)
+                                imageEditButtons[2].setDisabled(true);
                             }
                             embedPrompt.setDescription("Escolha o que deseja fazer com a imagem do banner");
 
@@ -400,7 +398,7 @@ export default new Command({
                     });
 
                     currentCollector = awaitMessage(channel, interaction);
-                }})
+                }});
 
                 DiscordTools.buttonCollector({source: msg, async collect(subInteraction){
                     switch (subInteraction.customId) {
@@ -422,8 +420,8 @@ export default new Command({
                             return;
                         }
                         case "resource-edit-cancel-button":{
-                            subInteraction.deferUpdate()
-                            interaction.deleteReply().catch(() => {})
+                            subInteraction.deferUpdate();
+                            interaction.deleteReply().catch(() => {});
                             return;
                         }
                         case "resource-edit-image-change-button":{
@@ -449,18 +447,18 @@ export default new Command({
                         case "resource-edit-image-remove-button":{
                             switch (currentElement) {
                                 case "thumb":{
-                                    newEmbed.setThumbnail(null)
-                                    const currentImage = files.find(a => a.name == "thumb.png")
+                                    newEmbed.setThumbnail(null);
+                                    const currentImage = files.find(a => a.name == "thumb.png");
                                     if (currentImage) {
-                                        files.splice(files.indexOf(currentImage), 1)
+                                        files.splice(files.indexOf(currentImage), 1);
                                     }
                                     break;
                                 }
                                 case "banner":{
-                                    newEmbed.setImage(null)
-                                    const currentImage = files.find(a => a.name == "banner.png")
+                                    newEmbed.setImage(null);
+                                    const currentImage = files.find(a => a.name == "banner.png");
                                     if (currentImage) {
-                                        files.splice(files.indexOf(currentImage), 1)
+                                        files.splice(files.indexOf(currentImage), 1);
                                     }
                                     break;
                                 }
@@ -470,9 +468,9 @@ export default new Command({
                             return;
                         }
                         case "resource-edit-save-button":{
-                            subInteraction.deferUpdate()
+                            subInteraction.deferUpdate();
     
-                            const { title, description, url, thumbnail, image } = newEmbed.data
+                            const { title, description, url, thumbnail, image } = newEmbed.data;
     
                             const rowResource = DiscordTools.createRowButtons(
                                 new ButtonBuilder({url: url, label: "Acessar", style: ButtonStyle.Link}),
@@ -505,7 +503,7 @@ export default new Command({
                                     content: `Não foi possível editar o recurso!
                                     ${codeBlock(err)}`
                                 });
-                            })
+                            });
                             return;
                         }
                     }
@@ -523,15 +521,15 @@ export default new Command({
                         switch (currentElement) {
                             case "title":{
                                 if (content.length > 200){
-                                    interaction.followUp({ephemeral: true, content: `O título não pode ultrapassar 200 caracteres`})
+                                    interaction.followUp({ephemeral: true, content: "O título não pode ultrapassar 200 caracteres"});
                                     break;
                                 }
-                                newEmbed.setTitle(content)
+                                newEmbed.setTitle(content);
                                 break;
                             }
                             case "description":{
                                 if (content.length > 3500){
-                                    interaction.followUp({ephemeral: true, content: `A descrição não pode ultrapassar 3500 caracteres`})
+                                    interaction.followUp({ephemeral: true, content: "A descrição não pode ultrapassar 3500 caracteres"});
                                     break;
                                 }
                                 newEmbed.setDescription(content);
@@ -539,47 +537,47 @@ export default new Command({
                             }
                             case "url":{
                                 if (!content.includes("http://") && !content.includes("https://")) {
-                                    interaction.followUp({ephemeral: true, content: "A url de acesso do recurso que você enviou não é válida!"})
+                                    interaction.followUp({ephemeral: true, content: "A url de acesso do recurso que você enviou não é válida!"});
                                     return;
                                 }
-                                newEmbed.setURL(content)
+                                newEmbed.setURL(content);
                                 break;
                             }
                             case "thumb":{
                                 if (!attach) {
-                                    interaction.followUp({ephemeral: true, content: "É necessário enviar uma imagem!"})
+                                    interaction.followUp({ephemeral: true, content: "É necessário enviar uma imagem!"});
                                     return;
                                 }
 
-                                const currentImage = files.find(a => a.name == "thumb.png")
+                                const currentImage = files.find(a => a.name == "thumb.png");
                                 if (currentImage) {
-                                    files.splice(files.indexOf(currentImage), 1)
+                                    files.splice(files.indexOf(currentImage), 1);
                                 }
 
-                                files.push(new AttachmentBuilder(attach.url, {name: "thumb.png"}))
-                                newEmbed.setThumbnail("attachment://thumb.png")
+                                files.push(new AttachmentBuilder(attach.url, {name: "thumb.png"}));
+                                newEmbed.setThumbnail("attachment://thumb.png");
                                 break;
                             }
                             case "banner":{
                                 if (!attach) {
-                                    interaction.followUp({ephemeral: true, content: "É necessário enviar uma imagem!"})
+                                    interaction.followUp({ephemeral: true, content: "É necessário enviar uma imagem!"});
                                     return;
                                 }
 
-                                const currentImage = files.find(a => a.name == "banner.png")
+                                const currentImage = files.find(a => a.name == "banner.png");
                                 if (currentImage) {
-                                    files.splice(files.indexOf(currentImage), 1)
+                                    files.splice(files.indexOf(currentImage), 1);
                                 }
 
-                                files.push(new AttachmentBuilder(attach.url, {name: "banner.png"}))
-                                newEmbed.setImage("attachment://banner.png")
+                                files.push(new AttachmentBuilder(attach.url, {name: "banner.png"}));
+                                newEmbed.setImage("attachment://banner.png");
                                 break;
                             }
                         }
 
                         currentCollector.stop();
                         backToMenu(interaction);
-                    })
+                    });
                 }
                 return;
             }
@@ -640,15 +638,15 @@ export default new Command({
 
                 const embed = new EmbedBuilder({
                     description: `Ir até **${resource.title}** [clicando aqui](${resource.messageURL})`,
-                    color: toHexColor(config.colors.systems.resources)
-                })
+                    color: convertHex(config.colors.systems.resources)
+                });
 
-                interaction.reply({ ephemeral: true, embeds: [embed] })
+                interaction.reply({ ephemeral: true, embeds: [embed] });
 
                 return;
             }
             case "fetch": {
-                const id = options.getString("id", true)
+                const id = options.getString("id", true);
 
                 const resource = await db.resources.get(id) as DocumentResource | undefined;
                 if (!resource) {
@@ -658,10 +656,10 @@ export default new Command({
 
                 const embed = new EmbedBuilder({
                     description: `Ir até **${resource.title}** [clicando aqui](${resource.messageURL})`,
-                    color: toHexColor(config.colors.systems.resources)
-                })
+                    color: convertHex(config.colors.systems.resources)
+                });
 
-                interaction.reply({ ephemeral: true, embeds: [embed] })
+                interaction.reply({ ephemeral: true, embeds: [embed] });
             }
         }
     },
@@ -670,7 +668,7 @@ export default new Command({
             const member = interaction.member as GuildMember;
             const guild = interaction.guild as Guild;
             
-            await interaction.deferReply({ephemeral: true, fetchReply: true})
+            await interaction.deferReply({ephemeral: true, fetchReply: true});
             
             const zunderResource = ResourceManager.tempUpload.get(member.id);
             if (!zunderResource){
@@ -678,14 +676,14 @@ export default new Command({
                 return;
             }
                         
-            const { thumbAttach, bannerAttach } = zunderResource
+            const { thumbAttach, bannerAttach } = zunderResource;
             const [ title, description, acessURL ] = [
                 interaction.fields.getTextInputValue("resource-upload-title"),
                 interaction.fields.getTextInputValue("resource-upload-description"),
                 interaction.fields.getTextInputValue("resource-upload-acessurl"),
-            ]
+            ];
 
-            const embedResource = new EmbedBuilder({ title, description, color: toHexColor(config.colors.progress.green) });
+            const embedResource = new EmbedBuilder({ title, description, color: convertHex(config.colors.progress.green) });
 
             try {
                 embedResource.setURL(acessURL);
@@ -708,12 +706,12 @@ export default new Command({
             if (bannerAttach){
                 bannerAttach.name = "banner.png";
                 files.push(bannerAttach);
-                embedResource.setImage(bannerAttach.url)
+                embedResource.setImage(bannerAttach.url);
             }
 
             const embedPrompt = new EmbedBuilder({
                 description: "Selecione a categoria do seu recurso",
-                color: toHexColor(config.colors.progress.red)
+                color: convertHex(config.colors.progress.red)
             });
 
             const rowCategorySelect = DiscordTools.createRowSelects(
@@ -721,7 +719,7 @@ export default new Command({
                     customId: "resource-upload-category-select",
                     placeholder: "Selecionar categoria",
                     options: config.resources.categories.map(c => { 
-                        return {label: c.name, description: c.description, value: c.name } 
+                        return {label: c.name, description: c.description, value: c.name };
                     })
                 })
             );
@@ -730,16 +728,16 @@ export default new Command({
             const backButton = new ButtonBuilder({
                 customId: "resource-upload-back-button", 
                 label: "Voltar", style: ButtonStyle.Danger
-            })
+            });
             const confirmButton = new ButtonBuilder({
                 customId: "resource-upload-confirm-button", 
                 label: "Confirmar", style: ButtonStyle.Success
-            })
+            });
 
             const msg = await interaction.editReply({embeds: [embedResource, embedPrompt], components: [rowCategorySelect]});
 
             DiscordTools.selectCollector({source: msg, async collect(subInteraction) {
-                const { customId, values } = subInteraction
+                const { customId, values } = subInteraction;
 
                 if (customId == "resource-upload-category-select"){
                     resourceCategory = config.resources.categories.find(c => c.name == values[0])!;
@@ -748,7 +746,7 @@ export default new Command({
                         new StringSelectMenuBuilder({
                             customId: "resource-upload-subcategory-select",
                             placeholder: "Selecionar sub categoria",
-                            options: resourceCategory.subCategories.map(c => { return {label: c, value: c } })
+                            options: resourceCategory.subCategories.map(c => ({label: c, value: c}))
                         })
                     );
 
@@ -760,17 +758,17 @@ export default new Command({
                     subInteraction.update({
                         embeds: [embedResource, embedPrompt], 
                         components: [rowSubCategorySelect, DiscordTools.createRowButtons(backButton)]
-                    })
+                    });
                     return;
                 }
 
                 if (customId == "resource-upload-subcategory-select"){
-                    zunderResource.category = {name: resourceCategory.name, subCategory: values[0] }
+                    zunderResource.category = {name: resourceCategory.name, subCategory: values[0] };
                     
                     const rowBack = DiscordTools.createRowButtons(new ButtonBuilder({
                         customId: "resource-upload-back-category-button", 
                         label: "Voltar", style: ButtonStyle.Danger
-                    }))
+                    }));
 
                     embedResource.setColor(config.colors.progress.green as ColorResolvable);
                     embedPrompt.setDescription(`> **${resourceCategory.name}/${values[0]}**
@@ -780,10 +778,10 @@ export default new Command({
                     subInteraction.update({
                         embeds: [embedResource, embedPrompt], 
                         components: [DiscordTools.createRowButtons(confirmButton, backButton)]
-                    })
+                    });
                     return;
                 }
-            }})
+            }});
 
             DiscordTools.buttonCollector({source: msg, async collect(subInteraction) {
                 if (subInteraction.customId == "resource-upload-back-button"){
@@ -796,32 +794,32 @@ export default new Command({
 
                 if (subInteraction.customId == "resource-upload-confirm-button"){
 
-                    await subInteraction.deferUpdate({fetchReply: true})
+                    await subInteraction.deferUpdate({fetchReply: true});
                     
                     const cName = `${zunderResource.category?.name}-${zunderResource.category?.subCategory}`;
                     const channel = ServerManager.findChannel(guild, cName, ChannelType.GuildText) as TextChannel | undefined;
 
                     if (!channel) {
-                        new BreakInteraction(interaction, "O chat para o recurso não está configurado!", {replace: true})
+                        new BreakInteraction(interaction, "O chat para o recurso não está configurado!", {replace: true});
                         return;
                     }
 
                     const rowResource = DiscordTools.createRowButtons(
                         new ButtonBuilder({url: zunderResource.acessURL, label: "Acessar", style: ButtonStyle.Link}),
                         new ButtonBuilder({customId: "resource-report-button", label: "Reportar", style: ButtonStyle.Danger}),
-                    )
+                    );
 
                     embedResource.setColor(config.colors.systems.resources as ColorResolvable);
 
                     if (zunderResource.thumbAttach) embedResource.setThumbnail("attachment://thumb.png");
-                    if (zunderResource.bannerAttach) embedResource.setImage("attachment://banner.png")
+                    if (zunderResource.bannerAttach) embedResource.setImage("attachment://banner.png");
                     
-                    const msg = await channel.send({embeds: [embedResource], components: [rowResource], files})
+                    const msg = await channel.send({embeds: [embedResource], components: [rowResource], files});
 
                     embedResource.setFields(
                         {name: "ID do recurso", value: msg.id, inline: true},
                         {name: "ID do autor", value: member.id, inline: true}
-                    )
+                    );
 
                     msg.edit({embeds: [embedResource]});
 
@@ -831,26 +829,26 @@ export default new Command({
                     zunderResource.messageID = msg.id;
                     zunderResource.messageURL = msg.url;
 
-                    delete zunderResource.thumbAttach
-                    delete zunderResource.bannerAttach
+                    delete zunderResource.thumbAttach;
+                    delete zunderResource.bannerAttach;
 
                     await db.resources.create({id: msg.id, data: zunderResource});
 
                     embedPrompt.setDescription(`Seu recurso foi enviado em ${channel}! Confira [clicando aqui](${msg.url})`);
-                    await interaction.editReply({embeds: [embedPrompt], components: [], files: []})
+                    await interaction.editReply({embeds: [embedPrompt], components: [], files: []});
 
                     const role = guild.roles.cache.find(r => r.name == resourceCategory.role);
                     if (!role) return;
 
-                    const notifyMsg = await channel.send({content: `||${role}||`})
+                    const notifyMsg = await channel.send({content: `||${role}||`});
                     await wait(20_000);
                     notifyMsg.delete().catch(logger);
                     return;
                 }
-            }})
+            }});
         }]
     ])
-})
+});
 
 // Command Config
 type SubCommands = "upload" | "edit" | "list"| "fetch" | "search" | "delete" ;

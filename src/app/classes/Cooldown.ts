@@ -18,7 +18,7 @@ export class Cooldown extends Date {
                 break;
             }
             case "days":{
-                date.setHours(date.getHours() + (value  * 24))
+                date.setHours(date.getHours() + (value  * 24));
                 break;
             }
         }

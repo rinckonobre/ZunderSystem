@@ -1,9 +1,8 @@
+import { config, Event, GuildManager } from "@/app";
 import { ChannelType, chatInputApplicationCommandMention, ChatInputCommandInteraction, CommandInteractionOptionResolver, ComponentType, InteractionType, MessageContextMenuCommandInteraction, TextChannel, UserContextMenuCommandInteraction } from "discord.js";
-import { Event, GuildManager } from "../../../app/structs";
-import { config } from "../../../app";
 
 export default new Event({name: "interactionCreate", async run(interaction){
-    const { id, channel, guild, user, type } = interaction
+    const { id, channel, guild, user, type } = interaction;
     if (!guild) return;
 
     const guildManager = new GuildManager(guild);
@@ -11,34 +10,34 @@ export default new Event({name: "interactionCreate", async run(interaction){
     if (!cLogs) return;
 
     const time = `<t:${~~(Date.now() / 1000)}:t>`;
-    let content = `${time} **${user.tag}** `
+    let content = `${time} **${user.tag}** `;
 
     const format = chatInputApplicationCommandMention;
 
     if (type == InteractionType.ApplicationCommand) {
-        const {commandName, commandId } = interaction
-        const options = interaction.options as CommandInteractionOptionResolver
+        const {commandName, commandId } = interaction;
+        const options = interaction.options as CommandInteractionOptionResolver;
 
         const [ subCommandGroup, subCommand ] = [
             options.getSubcommandGroup(false), options.getSubcommand(false)
-        ]
+        ];
 
         if (interaction instanceof UserContextMenuCommandInteraction) {
-            content += `usou \`User/Apps/${commandName}\``
+            content += `usou \`User/Apps/${commandName}\``;
         }
         
         if (interaction instanceof MessageContextMenuCommandInteraction) {
-            content += `usou \`Message/Apps/${commandName}\``
+            content += `usou \`Message/Apps/${commandName}\``;
         }
 
         if (interaction instanceof ChatInputCommandInteraction) {
 
             if (subCommandGroup) {
-                content += `usou ${format(commandName, subCommandGroup, subCommand!, commandId, )}`
+                content += `usou ${format(commandName, subCommandGroup, subCommand!, commandId, )}`;
             } else if (subCommand) {
-                content += `usou ${format(commandName, subCommand, commandId, )}`
+                content += `usou ${format(commandName, subCommand, commandId, )}`;
             } else {
-                content += `usou ${format(commandName, commandId)}`
+                content += `usou ${format(commandName, commandId)}`;
             }
         }
     }
@@ -54,19 +53,19 @@ export default new Event({name: "interactionCreate", async run(interaction){
             [ComponentType.StringSelect, "menu de seleção"],
             [ComponentType.TextInput, "entrada de text"],
             [ComponentType.UserSelect, "menu de seleção de usuários"],
-        ])
+        ]);
 
-        content += `usou ${formatTypes.get(componentType)} \`${customId}\``
+        content += `usou ${formatTypes.get(componentType)} \`${customId}\``;
     }
 
     if (type == InteractionType.ModalSubmit) {
-        content += `usou o modal \`${interaction.customId}\``
+        content += `usou o modal \`${interaction.customId}\``;
     }
 
     if (channel) {
-        content += ` em ${channel}`
+        content += ` em ${channel}`;
     }
 
-    cLogs.send({content})
+    cLogs.send({content});
 
-}})
+}});

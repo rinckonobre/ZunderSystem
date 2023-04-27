@@ -1,15 +1,14 @@
+import { DiscordCreate, Event, GuildManager, MemberCooldowns, client, config } from "@/app";
 import { ChannelType, GuildMember, TextChannel } from "discord.js";
-import { DiscordCreate, Event, GuildManager, MemberCooldowns } from "../../../app/structs";
-import { client, config } from "../../../app";
 
-export default new Event({name: 'messageCreate', async run(message){
+export default new Event({name: "messageCreate", async run(message){
 
 	if (message.channel.type !== ChannelType.GuildText
         || message.guild!.id !== client.mainGuildID
         || message.author.bot)
     return;
     
-    const member = message.member as GuildMember
+    const member = message.member as GuildMember;
     const guildManager = new GuildManager(message.guild!);
 
     if (member.id == guildManager.guild.ownerId) return;
@@ -17,17 +16,17 @@ export default new Event({name: 'messageCreate', async run(message){
     const cGeneral = guildManager.findChannel<TextChannel>(config.guild.channels.general, ChannelType.GuildText);
     const cTerms = guildManager.findChannel<TextChannel>(config.guild.channels.terms, ChannelType.GuildText);
 
-    const times = MemberCooldowns.AntiFloodChat.get(member)
+    const times = MemberCooldowns.AntiFloodChat.get(member);
     if (!times) {
-        MemberCooldowns.AntiFloodChat.set(member, 1)
+        MemberCooldowns.AntiFloodChat.set(member, 1);
     } else {
 
-        MemberCooldowns.AntiFloodChat.set(member, times + 1)
+        MemberCooldowns.AntiFloodChat.set(member, times + 1);
 
         if (times + 1 > 4) {
             MemberCooldowns.AntiFloodChat.delete(member);
-            const messages = message.channel.messages.cache.filter(m => m.author.id === member.id)
-            message.channel.bulkDelete(messages.first(6))
+            const messages = message.channel.messages.cache.filter(m => m.author.id === member.id);
+            message.channel.bulkDelete(messages.first(6));
 
             const embed = DiscordCreate.simpleEmbed(config.colors.danger, `${member} evite o flood de mensagens nos chats por favor!
             > Leia os ${cTerms} do grupo
@@ -42,7 +41,7 @@ export default new Event({name: 'messageCreate', async run(message){
                     msg.delete().catch(() => {});
 
                 }, 60*1000);
-            })
+            });
             
             return;
         }
@@ -51,7 +50,7 @@ export default new Event({name: 'messageCreate', async run(message){
             MemberCooldowns.AntiFloodChat.set(member, times - 1);
         }, 6000);
     }
-}})
+}});
 
 // const member = message.member as GuildMember
 //     const guild = message.guild!

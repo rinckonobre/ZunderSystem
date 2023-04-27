@@ -13,5 +13,5 @@ export function wait(miliseconds: number, timeUnit: TimeUnits = "miliseconds"){
     }
     return new Promise(resolve => {
         setTimeout(resolve, miliseconds);
-    })
+    });
 }

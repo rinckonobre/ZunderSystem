@@ -1,7 +1,6 @@
+import { Event, client, config } from "@/app";
+import { logger } from "@/app/functions";
 import { ChannelType } from "discord.js";
-import { Event } from "../../../app/structs";
-import { client, config } from "../../../app";
-import { logger } from "../../../app/functions";
 
 export default new Event({
     name: "messageCreate",
@@ -16,11 +15,11 @@ export default new Event({
         const { attachments } = message;
     
         if (attachments.size != 1) {
-            message.delete().catch(logger)
+            message.delete().catch(logger);
             return;
         }
     
-        await message.react("❤️").catch(logger)
-        await message.react("💩").catch(logger)
+        await message.react("❤️").catch(logger);
+        await message.react("💩").catch(logger);
     }
-})
+});

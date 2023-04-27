@@ -1,6 +1,5 @@
 import { ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
-import { DocumentPlayer, ServerManager } from "../../structs";
-import { config, db } from "../..";
+import { DocumentPlayer, ServerManager, config, db } from "../..";
 
 export const systemExperience = {
     getRequiredXp(level: number) {
@@ -20,19 +19,19 @@ export const systemExperience = {
 
         const currLevel = memberData[type]?.level || 0;
         const currXp = memberData[type]?.xp || 0;
-        const requiredXp = this.getRequiredXp(currLevel)
+        const requiredXp = this.getRequiredXp(currLevel);
 
         const newXp = currXp + value;
-        memberData[type]!.xp = newXp
+        memberData[type]!.xp = newXp;
 
         //MemberDataManager.set(`${type}.xp`, newXp)
-        db.players.update(member.id, `${type}.xp`, newXp)
+        db.players.update(member.id, `${type}.xp`, newXp);
         
         if (newXp >= requiredXp) {
             //memberData[type]!.level = newLevel;
             //MemberDataManager.set(`${type}.level`, newLevel);
             const newLevel = currLevel + 1;
-            await db.players.update(member.id, `${type}.level`, newLevel)
+            await db.players.update(member.id, `${type}.level`, newLevel);
             
             if (newXp > requiredXp) {
                 //memberData[type]!.xp = bonusXp;
@@ -58,12 +57,12 @@ export const systemExperience = {
             //guildManager.findChannel<TextChannel>(dcGuild.channels.audit, ChannelType.GuildText);
             if (cAudit) {
                 const emojiLevel = ServerManager.findEmoji(member.guild, `${type}Level`);
-                const emojiCoins = ServerManager.findEmoji(member.guild, `coins`);
+                const emojiCoins = ServerManager.findEmoji(member.guild, "coins");
 
                 const embed = new EmbedBuilder()
                 .setColor(config.colors.systems.interaction as ColorResolvable)
                 .setDescription(`${emojiLevel} ${member} subiu para o nível de ${type == "work" ? "trabalho" : "interação"} \`${newLevel}\` 
-                Recompensa: ${emojiCoins} \`${coinsReward}\` moedas `)
+                Recompensa: ${emojiCoins} \`${coinsReward}\` moedas `);
 
                 cAudit.send({content: `||${member}||`, embeds: [embed]});
             }
@@ -73,4 +72,4 @@ export const systemExperience = {
 
         return true;
     }
-}
+};

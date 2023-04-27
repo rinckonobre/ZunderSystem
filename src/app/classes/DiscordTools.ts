@@ -11,10 +11,10 @@ interface CollectorOptions<T extends ButtonInteraction | StringSelectMenuInterac
 
 export class DiscordTools {
     public static createRowButtons(...components: Array<ButtonBuilder>){
-        return new ActionRowBuilder<ButtonBuilder>({components})
+        return new ActionRowBuilder<ButtonBuilder>({components});
     }
     public static createRowSelects(selectMenu: StringSelectMenuBuilder){
-        return new ActionRowBuilder<StringSelectMenuBuilder>({components: [selectMenu]})
+        return new ActionRowBuilder<StringSelectMenuBuilder>({components: [selectMenu]});
     }
     public static buttonCollector({source, collect, end, collectorOptions }: CollectorOptions<ButtonInteraction>){
         const collector = source.createMessageComponentCollector({componentType: ComponentType.Button, ...collectorOptions});

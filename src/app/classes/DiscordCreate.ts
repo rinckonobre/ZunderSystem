@@ -19,34 +19,34 @@ type MessageEndFunc = (collected: Collection<string, Message>, reason?: string) 
 
 export class DiscordCreate {
     public static buttonCollector(msg: Message | InteractionResponse, collectFunction: ButtonCollectFunc, endFunction?: ButtonEndFunc){
-        const collector = msg.createMessageComponentCollector({componentType: ComponentType.Button})
-        collector.on('collect', collectFunction);
-        if (endFunction) collector.on('end', endFunction);
+        const collector = msg.createMessageComponentCollector({componentType: ComponentType.Button});
+        collector.on("collect", collectFunction);
+        if (endFunction) collector.on("end", endFunction);
 
         return collector;
     }
     public static channelSelectCollector(msg: Message | InteractionResponse, collectFunction: ChannelSelectCollectFunc, endFunction?: ChannelSelectEndFunc){
-        const collector = msg.createMessageComponentCollector({componentType: ComponentType.ChannelSelect})
-        collector.on('collect', collectFunction);
-        if (endFunction) collector.on('end', endFunction);
+        const collector = msg.createMessageComponentCollector({componentType: ComponentType.ChannelSelect});
+        collector.on("collect", collectFunction);
+        if (endFunction) collector.on("end", endFunction);
         return collector;
     }
     public static selectCollector(msg: Message | InteractionResponse, collectFunction: SelectCollectFunc, endFunction?: SelectEndFunc){
-        const collector = msg.createMessageComponentCollector({componentType: ComponentType.StringSelect})
-        collector.on('collect', collectFunction);
-        if (endFunction) collector.on('end', endFunction);
+        const collector = msg.createMessageComponentCollector({componentType: ComponentType.StringSelect});
+        collector.on("collect", collectFunction);
+        if (endFunction) collector.on("end", endFunction);
 
         return collector;
     }
     public static messageCollector(channel: TextChannel, options: MessageCollectorOptions, collectFunction: MessageCollectFunc, endFunction?: MessageEndFunc){
         const collector = channel.createMessageCollector(options);
-        collector.on('collect', collectFunction)
-        if (endFunction) collector.on('end', endFunction)
+        collector.on("collect", collectFunction);
+        if (endFunction) collector.on("end", endFunction);
 
         return collector;
     }
     public static textInput(textInputData: TextInputComponentData){
-        return new ActionRowBuilder<TextInputBuilder>({ components: [textInputData] })
+        return new ActionRowBuilder<TextInputBuilder>({ components: [textInputData] });
     }
     public static simpleEmbed(color: string, description: string){
         return new EmbedBuilder().setColor(color as ColorResolvable).setDescription(description);
@@ -63,12 +63,12 @@ export class DiscordCreate {
                 label,
                 disabled,
                 emoji,
-            })
+            });
 
-            button.setStyle(style)
+            button.setStyle(style);
 
             if (style == ButtonStyle.Link) {
-                button.setURL(customIdOrUrl)
+                button.setURL(customIdOrUrl);
             } else {
                 button.setCustomId(customIdOrUrl);
             }

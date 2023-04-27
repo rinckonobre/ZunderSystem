@@ -30,13 +30,13 @@ export class EmbedMenuBuilder {
         let message: Message | InteractionResponse | undefined;
         
         if (dist instanceof ButtonInteraction || dist instanceof StringSelectMenuInteraction){
-            message = replace ? await dist.update({content: ""}) : await dist.reply({content: "test"})
+            message = replace ? await dist.update({content: ""}) : await dist.reply({content: "test"});
         }
         if (dist instanceof CommandInteraction){
-            message = replace ? await dist.editReply({content: ""}) : await dist.reply({content: "test"})
+            message = replace ? await dist.editReply({content: ""}) : await dist.reply({content: "test"});
         }
         if (dist instanceof Message){
-            message = await dist.reply({content: "test"})
+            message = await dist.reply({content: "test"});
         }
         
     }

@@ -9,7 +9,7 @@ export class ResourceManager {
     
     public static async findMessage(id: string, resource: DocumentResource, guild: Guild){
         const guildManager = new GuildManager(guild);
-        const channelName = `${resource.category.name}-${resource.category.subCategory}`
+        const channelName = `${resource.category.name}-${resource.category.subCategory}`;
         const channel = guildManager.findChannelInCategory(channelName, ChannelType.GuildText, config.resources.title) as TextChannel | undefined;
 
         if (!channel) return undefined;
@@ -33,7 +33,7 @@ export class ResourceManager {
         const rowResource = new ActionRowBuilder<ButtonBuilder>({components: [
             new ButtonBuilder({url: resourceData.acessURL, label: "Acessar", style: ButtonStyle.Link}),
             new ButtonBuilder({customId: "resource-report-button", label: "Reportar", style: ButtonStyle.Danger}),
-        ]})
+        ]});
 
         if (title) {
             embed.setTitle(title);
@@ -49,14 +49,14 @@ export class ResourceManager {
             resourceData.acessURL = acessURL;
         }
 
-        const files = msg.attachments.map(a => new AttachmentBuilder(a.url, {name: a.name}))
+        const files = msg.attachments.map(a => new AttachmentBuilder(a.url, {name: a.name}));
         //const files: Array<Attachment> = []
         // msg.attachments
         // .filter(({name}) => name == "thumb.png" || name == "banner.png")
         // .map(({attachment, name}) => new AttachmentBuilder(attachment, {name: name || "thumb.png"}));
 
         function spliceFile(name: string){
-            const index = files.findIndex(a => a.name == name)
+            const index = files.findIndex(a => a.name == name);
             if (index) files.splice(index, 1);
         }
 
@@ -66,7 +66,7 @@ export class ResourceManager {
             spliceFile("thumb.png");
         } else if (thumbAttach) {
             spliceFile("thumb.png");
-            files.push(new AttachmentBuilder(thumbAttach.url, {name: "thumb.png"}))
+            files.push(new AttachmentBuilder(thumbAttach.url, {name: "thumb.png"}));
             embed.setThumbnail("attachment://thumb.png");
         }
         
@@ -76,18 +76,18 @@ export class ResourceManager {
             spliceFile("banner.png");
         } else if (bannerAttach) {
             spliceFile("banner.png");
-            files.push(new AttachmentBuilder(bannerAttach.url, {name: "banner.png"}))
+            files.push(new AttachmentBuilder(bannerAttach.url, {name: "banner.png"}));
             embed.setImage("attachment://banner.png");
         }
         
-        const msgEdited = await msg.edit({embeds: [embed], components: [rowResource], files: (files.length < 1) ? [] : files})
+        const msgEdited = await msg.edit({embeds: [embed], components: [rowResource], files: (files.length < 1) ? [] : files});
         
         const embedData = msgEdited.embeds[0].data;
 
         if (embedData.thumbnail) resourceData.thumbURL = embedData.thumbnail.url;
         if (embedData.image) resourceData.bannerURL = embedData.image.url;
 
-        await db.players.setData(id, resourceData) 
+        await db.players.setData(id, resourceData);
         //await resourcesColl.saveDocData(id, resourceData);
         return {success: true, message: "O recurso foi editado com sucesso!"};
     }
@@ -110,7 +110,7 @@ export class ResourceManager {
 
         //resourcesColl.deleteDoc(id)
         await db.resources.delete(id);
-        msg.delete().catch(() => {})
+        msg.delete().catch(() => {});
 
         return {success: true, message: "O recurso foi editado com sucesso!"};
     }
@@ -162,7 +162,7 @@ export class ResourceBuilder {
         this.category = {
             name: category,
             subCategory: subCategory
-        }
+        };
         return this;
     }
     public setThumbAttach(attach: Attachment){

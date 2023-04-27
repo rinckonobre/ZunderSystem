@@ -1,5 +1,6 @@
+import { Command } from "@/app";
 import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Events, GuildMember } from "discord.js";
-import { Command } from "../../../app/structs";
+
 
 export default new Command({
     name: "eventos",
@@ -51,7 +52,7 @@ export default new Command({
                 break;
             }
         }
-        interaction.reply({ephemeral: true, content: "Evento emitido"})
+        interaction.reply({ephemeral: true, content: "Evento emitido"});
 
     },
-})
+});

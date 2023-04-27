@@ -153,32 +153,32 @@ export function canvasDrawText(ctx: CanvasCtx, options: CanvasDrawTextOptions){
 }
 
 export function canvasSetFont(ctx: CanvasCtx, options: CanvasFontOptions){
-    const { family, size, style, textAlign, textBaseLine } = options
+    const { family, size, style, textAlign, textBaseLine } = options;
 
     ctx.font = `${style} ${size}px ${family}`;
 
     if (textAlign) ctx.textAlign = textAlign;
     if (textBaseLine) ctx.textBaseline = textBaseLine;
 }
-interface CanvasGradientOptions { start: CanvasCoords, end: CanvasCoords, startColor: string, endColor: string };
+interface CanvasGradientOptions { start: CanvasCoords, end: CanvasCoords, startColor: string, endColor: string }
 export function createLinearGradiente(ctx: CanvasCtx, options: CanvasGradientOptions){
     const { start, end, startColor, endColor } = options;
     const gradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
     gradient.addColorStop(0, startColor);
     gradient.addColorStop(1, endColor);
-    return gradient
+    return gradient;
 }
 export function canvasStyle(ctx: CanvasCtx){
     return {
         rgba(red: number, green: number, blue: number, aplha: number = 1){
-            return `rgba(${red}, ${green}, ${blue}, ${aplha})`
+            return `rgba(${red}, ${green}, ${blue}, ${aplha})`;
         },
         linearGradient(options: CanvasGradientOptions){
             const { start, end, startColor, endColor } = options;
             const gradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
             gradient.addColorStop(0, startColor);
             gradient.addColorStop(1, endColor);
-            return gradient
+            return gradient;
         }
-    }
+    };
 }

@@ -16,7 +16,7 @@ export class ServerManager {
     }
     public static async findMessage(channel: GuildTextBasedChannel, id: string){
         if (channel instanceof StageChannel) return undefined;
-        const messages = await channel.messages.fetch()
-        return messages.get(id)
+        const messages = await channel.messages.fetch();
+        return messages.get(id);
     }
 }

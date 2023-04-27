@@ -51,7 +51,7 @@ export class oldEmbedMenuBuilder {
             new ButtonBuilder({customId: "embed-menu-next-button", label: "►", style: ButtonStyle.Secondary}),
             new ButtonBuilder({customId: "embed-menu-view-button", emoji: "👀", style: ButtonStyle.Primary}),
             new ButtonBuilder({customId: "embed-menu-close-button", label: "Fechar", style: ButtonStyle.Danger}),
-        ])
+        ]);
     }
 
     public editEmbed(embed: (embed: EmbedBuilder) => EmbedBuilder){
@@ -94,19 +94,19 @@ export class oldEmbedMenuBuilder {
         let index: number = 0;
         let page: number = 0;
 
-        const rowSelect = new ActionRowBuilder<StringSelectMenuBuilder>()
+        const rowSelect = new ActionRowBuilder<StringSelectMenuBuilder>();
 
         let embeds: Array<EmbedBuilder> = new Array();
 
         function refreshItems(){
             const selectMenu = new StringSelectMenuBuilder({
                 customId: "embed-menu-select-menu", placeholder
-            })
+            });
 
-            mainEmbed.setFields()
+            mainEmbed.setFields();
 
-            embeds = new Array()
-            embeds.push(mainEmbed)
+            embeds = new Array();
+            embeds.push(mainEmbed);
 
             let count = 0;
     
@@ -117,10 +117,10 @@ export class oldEmbedMenuBuilder {
                 if (!item) {
                     if (type == "GRID_2") mainEmbed.addFields({name: "\u200b", value: "\u200b", inline: true});
                     break;
-                };
+                }
                 
                 if (includeFunction) {
-                    if (item.selectOption) selectMenu.addOptions(item.selectOption)
+                    if (item.selectOption) selectMenu.addOptions(item.selectOption);
                 }
 
                 if (type == "BLOCK_LIST") {
@@ -131,7 +131,7 @@ export class oldEmbedMenuBuilder {
                         { name: item.title, value: item.content, inline: true },
                         { name: "\u200b", value: "\u200b", inline: true},
                         { name: "\u200b", value: "\u200b", inline: true}
-                    )
+                    );
 
                     if (item.thumb) embedItem.setThumbnail(item.thumb);
                     if (item.color) embedItem.setColor(item.color as ColorResolvable);
@@ -160,14 +160,14 @@ export class oldEmbedMenuBuilder {
                 }
             }
     
-            rowSelect.setComponents(selectMenu)
+            rowSelect.setComponents(selectMenu);
     
             if (page > 0) {
-                navButtons.components[0].setDisabled(false)
-                navButtons.components[1].setDisabled(false)
+                navButtons.components[0].setDisabled(false);
+                navButtons.components[1].setDisabled(false);
             } else {
-                navButtons.components[0].setDisabled(true)
-                navButtons.components[1].setDisabled(true)
+                navButtons.components[0].setDisabled(true);
+                navButtons.components[1].setDisabled(true);
             }
     
             if (items.length > (index + 1)) {
@@ -181,7 +181,7 @@ export class oldEmbedMenuBuilder {
              embeds, 
              components: includeFunction ? [rowSelect, navButtons] : [navButtons],
              fetchReply: true
-        }
+        };
         
         if (dist instanceof TextChannel) {
             msg = await dist.send(replyOptions);
@@ -192,9 +192,9 @@ export class oldEmbedMenuBuilder {
             dist instanceof MessageContextMenuCommandInteraction
         ) {
             if (update === true) {
-                msg = await dist.editReply(replyOptions)
+                msg = await dist.editReply(replyOptions);
             } else {
-                msg = await dist.reply({...replyOptions, ephemeral})
+                msg = await dist.reply({...replyOptions, ephemeral});
             }
         }
 
@@ -204,9 +204,9 @@ export class oldEmbedMenuBuilder {
             dist instanceof ChannelSelectMenuInteraction
         ) {
             if (update === true) {
-                msg = await dist.update(replyOptions)
+                msg = await dist.update(replyOptions);
             } else {
-                msg = await dist.reply({...replyOptions, ephemeral})
+                msg = await dist.reply({...replyOptions, ephemeral});
             }
         }
 
@@ -214,7 +214,7 @@ export class oldEmbedMenuBuilder {
     
         DiscordCreate.buttonCollector(msg, async (buttonInteraction) => {
             if (member.id !== buttonInteraction.user.id) {
-                buttonInteraction.deferUpdate()
+                buttonInteraction.deferUpdate();
                 return;
             }
 
@@ -235,33 +235,33 @@ export class oldEmbedMenuBuilder {
                     break;
                 }
                 case "embed-menu-close-button":{
-                    buttonInteraction.deferUpdate()
+                    buttonInteraction.deferUpdate();
                     buttonInteraction.message.delete().catch(() => {
-                        buttonInteraction.deleteReply().catch(() => {})
-                    })
+                        buttonInteraction.deleteReply().catch(() => {});
+                    });
                     return;
                 }
                 case "embed-menu-view-button": {
                     switch (type) {
                         case "BLOCK_LIST": type = "GRID_1";
                             break;
-                        case "GRID_1": type = "GRID_2"
+                        case "GRID_1": type = "GRID_2";
                             break;
-                        case "GRID_2": type = "GRID_3"
+                        case "GRID_2": type = "GRID_3";
                             break;
-                        case "GRID_3": type = "BLOCK_LIST"
+                        case "GRID_3": type = "BLOCK_LIST";
                             break;
                     }
                     break;
                 }
             }
             
-            refreshItems()
-            buttonInteraction.update({embeds, components: includeFunction ? [rowSelect, navButtons] : [navButtons], fetchReply: true})
-        })
+            refreshItems();
+            buttonInteraction.update({embeds, components: includeFunction ? [rowSelect, navButtons] : [navButtons], fetchReply: true});
+        });
 
         if (includeFunction) {
-            DiscordCreate.selectCollector(msg, menuFunction!)
+            DiscordCreate.selectCollector(msg, menuFunction!);
         }
 
     }

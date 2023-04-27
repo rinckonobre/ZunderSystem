@@ -3,7 +3,7 @@ import { Event } from "../../../app/structs";
 
 
 export default new Event({
-	name: 'interactionCreate', run(interaction) {
+	name: "interactionCreate", run(interaction) {
 		if (interaction.isModalSubmit()) {
 			const { customId } = interaction;
 
@@ -12,7 +12,7 @@ export default new Event({
 				clientModal(interaction);
 				return;
 			}
-		};
+		}
 
 		if (!interaction.isMessageComponent()) return;
 		const { customId } = interaction;
@@ -22,14 +22,14 @@ export default new Event({
 			if (clientButton) {
 				clientButton(interaction);
 				return;
-			};
+			}
 		}
 		if (interaction.isStringSelectMenu()){
 			const clientButton = client.selects.get(customId);
 			if (clientButton) {
 				clientButton(interaction);
 				return;
-			};
+			}
 		}
 	}
-})
+});

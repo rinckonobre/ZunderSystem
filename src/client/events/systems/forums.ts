@@ -1,5 +1,5 @@
-import { config } from "../../../app";
-import { Event } from "../../../app/structs";
+import { Event, config } from "@/app";
+
 
 
 export default new Event({
@@ -9,10 +9,10 @@ export default new Event({
         const message = await thread.fetchStarterMessage();
         if (cSuggests) {
             if (message && thread.parentId == cSuggests.id){
-                message.react("👍")
-                message.react("👎")
+                message.react("👍");
+                message.react("👎");
             }
-        };
-    },
-})
+        }
+    }
+});
 

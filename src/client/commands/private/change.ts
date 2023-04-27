@@ -1,7 +1,6 @@
+import { Command, DocumentPlayerPaths, db, DocumentPlayer } from "@/app";
+import { devices } from "@/config/jsons";
 import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
-import { db } from "../../../app";
-import { Command, DocumentPlayerPaths, DocumentPlayer } from "../../../app/structs";
-import { devices } from "../../../config/jsons";
 
 export default new Command({
     name: "change",
@@ -137,7 +136,7 @@ export default new Command({
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { member, guild, channel } = interaction;
 
-        await interaction.deferReply({ephemeral: true})
+        await interaction.deferReply({ephemeral: true});
 
         switch (options.getSubcommandGroup(true)){
             case "register": {
@@ -147,35 +146,35 @@ export default new Command({
                 switch(options.getSubcommand(true)){
                     case "level":{
                         const value = options.getInteger("value", true);
-                        const path: DocumentPlayerPaths = "registry.level"
+                        const path: DocumentPlayerPaths = "registry.level";
                         await db.players.update(mention.id, path, value);
-                        content = `O nível de registro de ${mention} foi alterado para ${value}`
+                        content = `O nível de registro de ${mention} foi alterado para ${value}`;
                         break;
                     }
                     case "type":{
                         const value = options.getString("value", true);
-                        const path: DocumentPlayerPaths = "registry.type"
+                        const path: DocumentPlayerPaths = "registry.type";
                         await db.players.update(mention.id, path, value);
-                        content = `O tipo de registro de ${mention} foi alterado para ${value}`
+                        content = `O tipo de registro de ${mention} foi alterado para ${value}`;
                         break;
                     }
                     case "device":{
                         const value = options.getString("value", true);
-                        const path: DocumentPlayerPaths = "registry.device"
+                        const path: DocumentPlayerPaths = "registry.device";
                         await db.players.update(mention.id, path, value);
-                        content = `O dispositivo de registro de ${mention} foi alterado para ${value}`
+                        content = `O dispositivo de registro de ${mention} foi alterado para ${value}`;
                         break;
                     }
                     case "nick":{
                         const value = options.getString("value", true);
-                        const path: DocumentPlayerPaths = "registry.nick"
+                        const path: DocumentPlayerPaths = "registry.nick";
                         await db.players.update(mention.id, path, value);
-                        content = `O nick de registro de ${mention} foi alterado para ${value}`
+                        content = `O nick de registro de ${mention} foi alterado para ${value}`;
                         break;
                     }
                 }
                 
-                interaction.editReply({content})
+                interaction.editReply({content});
                 return;
             }
             case "wallet":{
@@ -184,26 +183,26 @@ export default new Command({
                         const mention = options.getMember("member") as GuildMember;
                         const action = options.getString("action", true) as "add" | "set" | "remove";
                         const value = options.getNumber("value", true);
-                        const path: DocumentPlayerPaths = "wallet.coins"
+                        const path: DocumentPlayerPaths = "wallet.coins";
                         
                         let content = "> ";
-                        const mentionData = await db.players.get(member.id) as DocumentPlayer | undefined;;
+                        const mentionData = await db.players.get(member.id) as DocumentPlayer | undefined;
                         const coins = mentionData?.wallet?.coins || 0;
 
                         switch(action){
                             case "add":{
                                 await db.players.update(member.id, path, value, "increment");
-                                content = `Foram adicionadas ${value} moedas na carteira de ${mention}`
+                                content = `Foram adicionadas ${value} moedas na carteira de ${mention}`;
                                 break;
                             }
                             case "set":{
                                 await db.players.update(member.id, path, value);
-                                content = `Foram defindas ${value} moedas na carteira de ${mention}`
+                                content = `Foram defindas ${value} moedas na carteira de ${mention}`;
                                 break;
                             }
                             case "remove":{
                                 await db.players.update(member.id, path, coins - value);
-                                content = `Foram removidas ${value} moedas da carteira de ${mention}`
+                                content = `Foram removidas ${value} moedas da carteira de ${mention}`;
                                 break;
                             }
                         }
@@ -215,4 +214,4 @@ export default new Command({
             }
         }
     },
-})
+});

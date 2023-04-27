@@ -1,9 +1,8 @@
+import { DiscordCreate, Event, GuildManager, MemberCooldowns, client, config } from "@/app";
 import { ChannelType, GuildMember, TextChannel } from "discord.js";
-import { DiscordCreate, Event, GuildManager, MemberCooldowns } from "../../../app/structs";
-import { client, config } from "../../../app";
 
 export default new Event({
-    name: 'voiceStateUpdate', async run(oldState, newState) {
+    name: "voiceStateUpdate", async run(oldState, newState) {
 
         if (newState?.guild?.id !== client.mainGuildID
             || oldState.channel === newState.channel)
@@ -19,12 +18,12 @@ export default new Event({
 
         if (newState.channel) {
 
-            const times = MemberCooldowns.AntiFloodCall.get(member)
+            const times = MemberCooldowns.AntiFloodCall.get(member);
             if (!times) {
-                MemberCooldowns.AntiFloodCall.set(member, 1)
+                MemberCooldowns.AntiFloodCall.set(member, 1);
             } else {
 
-                MemberCooldowns.AntiFloodCall.set(member, times + 1)
+                MemberCooldowns.AntiFloodCall.set(member, times + 1);
 
                 if (times + 1 > 5) {
                     MemberCooldowns.AntiFloodCall.delete(member);
@@ -41,16 +40,13 @@ export default new Event({
                             msg.delete().catch(() => { });
 
                         }, 60 * 1000);
-                    })
-
+                    });
                     return;
                 }
-
                 setTimeout(() => {
                     MemberCooldowns.AntiFloodCall.set(member, times - 1);
                 }, 6000);
             }
-
         }
     }
-})
+});

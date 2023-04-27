@@ -1,5 +1,9 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
+    
     "lib": [
       "ESNext"
     ],
@@ -20,6 +24,19 @@
     "resolveJsonModule": true,
     "importHelpers": true,
     "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@base/*": ["./src/app/base/*"],
+      "@/functions/*": ["./src/app/functions/*"],
+      "@/classes/*": ["./src/app/classes/*"],
+      "@/interfaces/*": ["./src/app/interfaces/*"],
+      "@/manages/*": ["./src/app/manages/*"],
+      "@/structs/*": ["./src/app/structs/*"],
+      "@/tasks/*": ["./src/app/tasks/*"],
+      "@/config/*": ["./src/config/*"]
+
+    }
   },
   "include": [
     "src"
@@ -27,6 +44,6 @@
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
-    "src/firebase.json"
+    "firebase.json"
   ]
 }

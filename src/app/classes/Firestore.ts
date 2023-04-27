@@ -1,4 +1,4 @@
-import fbAdmin from 'firebase-admin';
+import fbAdmin from "firebase-admin";
 const db = fbAdmin.firestore();
 const { FieldValue } = fbAdmin.firestore;
 
@@ -11,13 +11,13 @@ export class FirestoreDocManager {
         return this;
     }
     public add(path: string, value: number){
-        this.doc.update({[path]: FieldValue.increment(value)})
+        this.doc.update({[path]: FieldValue.increment(value)});
     }
     public set(path: string, value: any){
-        this.doc.update({[path]: value})
+        this.doc.update({[path]: value});
     }
     public deleteField(path: string){
-        this.doc.update({[path]: FieldValue.delete()})
+        this.doc.update({[path]: FieldValue.delete()});
     }
     public async getData(){
         const data = (await this.doc.get()).data();
@@ -34,11 +34,11 @@ export class Firestore {
         this.collection = db.collection(collectionName);
     }
     public getDoc(id: string){
-        const doc = this.collection.doc(id)
+        const doc = this.collection.doc(id);
         return doc;
     }
     public async getDocData(id: string){
-        const doc = await this.collection.doc(id).get()
+        const doc = await this.collection.doc(id).get();
         return doc.data();
     }
     public async saveDocData(id: string, data: object){
@@ -50,13 +50,13 @@ export class Firestore {
         }
     }
     public async createDoc(id: string, data: object){
-        this.collection.doc(id).set(data)
+        this.collection.doc(id).set(data);
     }
     public async addDoc(data: object){
         return await this.collection.add(data);
     }
     public getDocManager(id: string){
-        const doc = this.collection.doc(id)
+        const doc = this.collection.doc(id);
         return new FirestoreDocManager(doc);
     }
     public deleteDoc(id: string){

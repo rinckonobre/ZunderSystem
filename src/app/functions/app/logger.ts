@@ -1,17 +1,17 @@
-import { codeBlock, TextChannel } from "discord.js";
+import { ChannelType, codeBlock } from "discord.js";
 import { client, config } from "../..";
-import { ServerManager } from "../../structs";
+import { findChannel } from "../discord/guild";
 
 export function logger(message: string){
 
     const guild = client.guilds.cache.get(client.mainGuildID);
     if (!guild) {
-        console.log("Não foi possível localizar o servidor principal")
-        console.log(message)
+        console.log("Não foi possível localizar o servidor principal");
+        console.log(message);
         return;
     }
 
-    const cLogs = ServerManager.findChannel(guild, config.guild.channels.logs) as TextChannel | undefined;
+    const cLogs = findChannel(guild, config.guild.channels.logs, ChannelType.GuildText);
     if (!cLogs) {
         console.log("Não foi possível localizar o chat de logs");
         console.log(message);
@@ -19,5 +19,5 @@ export function logger(message: string){
     }
 
     const time = `<t:${~~(Date.now() / 1000)}:t>`;
-    cLogs.send({content: `${time} ${codeBlock(message)}`})
+    cLogs.send({content: `${time} ${codeBlock(message)}`});
 }

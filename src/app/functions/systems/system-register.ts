@@ -1,6 +1,5 @@
 import { GuildMember } from "discord.js";
-import { db } from "../..";
-import { DocumentPlayer } from "../../structs";
+import { DocumentPlayer, db } from "../..";
 
 //const playerColl = new Firestore("players");
 
@@ -17,8 +16,8 @@ export const systemRegister = {
         const data: DocumentPlayer = {registry: {
             nick: nick || member.displayName,
             device, type, level: 1
-        }}
+        }};
 
-        db.players.create({id: member.id, data})
+        db.players.create({id: member.id, data});
     }
-} 
+};

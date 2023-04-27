@@ -1,12 +1,9 @@
 import { AttachmentBuilder, ChannelType } from "discord.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { DocumentPlayer, Event, ServerManager } from "../../../app/structs";
-import { client, config, db } from "../../../app";
-import { canvasDrawImage, canvasDrawRect, canvasSetFont, canvasDrawText } from "../../../app/functions";
-import { registers } from "../../../config/jsons";
+import { Event, client, config } from "@/app";
+import { canvasDrawImage, canvasDrawRect, canvasSetFont, canvasDrawText } from "@/app/functions";
 
-
-export default new Event({name: 'guildMemberRemove', async run(member){
+export default new Event({name: "guildMemberRemove", async run(member){
     if (member.guild.id != client.mainGuildID ) return;
 
     const cGlobal = member.guild.channels.cache.find(c => c.name == config.guild.channels.global);
@@ -18,7 +15,7 @@ export default new Event({name: 'guildMemberRemove', async run(member){
     const images = {
         background: await loadImage(config.images.resolutions["1024-260"][0]),
         profile: await loadImage(member.displayAvatarURL({extension: "png", size: 1024}))
-    }
+    };
 
     canvasDrawImage(ctx, {x: 0, y: 0, image: images.background});
 
@@ -39,10 +36,10 @@ export default new Event({name: 'guildMemberRemove', async run(member){
     canvasDrawText(ctx, {text: discriminator, method: "fill", x: 90, y: 226, color: config.colors.white});
     
     canvasSetFont(ctx, {family: "Montserrat", size: 60, style: "bold", textBaseLine: "alphabetic"});
-    canvasDrawText(ctx, {text: username, method: "fill", x: textGroupX + 96, y: textGroupY + 16, color: config.colors.white})
+    canvasDrawText(ctx, {text: username, method: "fill", x: textGroupX + 96, y: textGroupY + 16, color: config.colors.white});
 
     canvasSetFont(ctx, {family: "Montserrat", size: 40, style: "medium", textBaseLine: "alphabetic"});
-    canvasDrawText(ctx, {text: "Saiu do servidor".toUpperCase(), method: "fill", x: textGroupX + 44, y: textGroupY + 68, color: config.colors.leaveRed})
+    canvasDrawText(ctx, {text: "Saiu do servidor".toUpperCase(), method: "fill", x: textGroupX + 44, y: textGroupY + 68, color: config.colors.leaveRed});
 
     // const embed = new EmbedBuilder()
     // .setImage("attachment://image.png")
@@ -50,8 +47,8 @@ export default new Event({name: 'guildMemberRemove', async run(member){
     // .setDescription(`<t:${~~(Date.now() / 1000)}>`)
 
     const buffer = canvas.toBuffer("image/png");
-    const files = [new AttachmentBuilder(buffer, {name: "image.png"})]
+    const files = [new AttachmentBuilder(buffer, {name: "image.png"})];
 
-    cGlobal.send({content: `<t:${~~(Date.now() / 1000)}>`, files })
+    cGlobal.send({content: `<t:${~~(Date.now() / 1000)}>`, files });
 
-}})
+}});

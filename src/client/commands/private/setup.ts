@@ -1,7 +1,7 @@
+import { Command, ReplyBuilder, DiscordCreate, Interruption, ServerManager, TextUtils, config } from "@/app";
+import { informations } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, codeBlock, ColorResolvable, EmbedBuilder, TextChannel } from "discord.js";
-import { Command, ReplyBuilder, DiscordCreate, Interruption, ServerManager, TextUtils } from "../../../app/structs";
-import { informations } from "../../../config/jsons";
-import { config } from "../../../app";
+
 
 export default new Command({
     name: "setup",
@@ -36,9 +36,9 @@ export default new Command({
         const guild = interaction.guild;
 
         switch(options.getSubcommand()){
-            case 'recursos': {
+            case "recursos": {
                 if (!guild?.channels) {
-                    interaction.reply({ephemeral: true, content: "A guilda não tem canais"})
+                    interaction.reply({ephemeral: true, content: "A guilda não tem canais"});
                     return;
                 }
 
@@ -57,7 +57,7 @@ export default new Command({
                             ViewChannel: false,
                             SendMessagesInThreads: true,
                             ReadMessageHistory: true
-                        })
+                        });
 
                         for (const cCategory of config.resources.categories) {
                             for (const cName of cCategory.subCategories) {
@@ -66,15 +66,14 @@ export default new Command({
                                     type: ChannelType.GuildText,
                                     topic: cCategory.description,
                                     parent: category
-                                })
+                                });
                             }
                         }
-
-                    })
+                    });
 
                 } else { // Criar canais ainda não criados na categoria de recursos
 
-                    const category = categoryResources as CategoryChannelResolvable
+                    const category = categoryResources as CategoryChannelResolvable;
                     let categoryIndex = 0;
 
                     for (const cCategory of config.resources.categories) {
@@ -89,8 +88,8 @@ export default new Command({
                                     topic: cCategory.description,
                                     parent: category,
                                     position: categoryIndex + channelIndex
-                                })
-                            };
+                                });
+                            }
                         }
                     }
                 }
@@ -99,28 +98,28 @@ export default new Command({
             case "jsonmessage": {
                 if (interaction.channel instanceof TextChannel) {
                     new ReplyBuilder(interaction, true)
-                    .setContent(`Digite a mensagem ou apenas \`cancelar\``)
-                    .send()
+                    .setContent("Digite a mensagem ou apenas \`cancelar\`")
+                    .send();
 
                     const collector = DiscordCreate.messageCollector(interaction.channel, {}, (message) => {
                         if (message.member?.id != interaction.user.id) return;
                         
                         const content = message.content;
-                        message.delete().catch(() => {})
+                        message.delete().catch(() => {});
 
                         if (content.toLowerCase().trim() == "cancelar") {
                             new ReplyBuilder(interaction)
                             .setContent("Ação cancelada!")
-                            .send(true)
-                            collector.stop()
+                            .send(true);
+                            collector.stop();
                             return;
                         }
 
                         new ReplyBuilder(interaction)
                         .setContent(codeBlock(JSON.stringify(message.content)))
-                        .send(true)
-                        collector.stop()
-                    })
+                        .send(true);
+                        collector.stop();
+                    });
                 } else {
                     new Interruption(interaction, "Você precista estar em um chat de texto para usar este comando!");
                 }
@@ -136,7 +135,7 @@ export default new Command({
 
                 interaction.deferReply({ephemeral: true});
 
-                const {title, description, footer, image, thumbnail } = informations
+                const {title, description, footer, image, thumbnail } = informations;
 
                 
 
@@ -151,7 +150,7 @@ export default new Command({
                 const row = new ActionRowBuilder<ButtonBuilder>({components: [
                     new ButtonBuilder({customId: "information-index", label: "Índice de informações", style: ButtonStyle.Primary}),
                     new ButtonBuilder({url: cTerms.url, label: "Termos", emoji: "📜", style: ButtonStyle.Link})
-                ]})
+                ]});
 
                 cInfo.send({embeds: [embed], components: [row]});
             }
@@ -171,7 +170,7 @@ export default new Command({
                     return;
                 }
 
-                const onwer = guild.members.cache.get(guild.ownerId)
+                const onwer = guild.members.cache.get(guild.ownerId);
 
                 const embed = new EmbedBuilder()
                 .setTitle("Registrar")
@@ -185,22 +184,22 @@ export default new Command({
                 Se a interação falhar contate ${onwer} via DM.
                 Após se registrar vá para ${cGeneral}
                 `)
-                .setImage(config.images.text.register)
+                .setImage(config.images.text.register);
 
                 const row = new ActionRowBuilder<ButtonBuilder>({components: [
                     new ButtonBuilder({customId: "register-member-button", label: "Registrar", emoji: "📝", style: ButtonStyle.Success}),
                     new ButtonBuilder({url: cTerms.url, label: "Termos", emoji: "📜", style: ButtonStyle.Link}),
                     new ButtonBuilder({url: cInfo.url, label: "Informações", emoji: "📑", style: ButtonStyle.Link}),
-                ]})
+                ]});
 
                 cRegister.send({ embeds: [embed], components: [row] });
 
                 new ReplyBuilder(interaction, true)
                 .setContent(`Mensagem do chat registrar definida! ${cRegister}`)
-                .send()
+                .send();
                 return;
             }
         }
 
     },
-})
+});

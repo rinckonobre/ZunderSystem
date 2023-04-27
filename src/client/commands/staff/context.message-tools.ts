@@ -1,7 +1,6 @@
+import { Command, db, DocumentPlayer, BreakInteraction } from "@/app";
+import { stringSelectCollector, awaitButton } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ComponentType, StringSelectMenuBuilder } from "discord.js";
-import { db } from "../../../app";
-import { stringSelectCollector, awaitButton } from "../../../app/functions";
-import { Command, DocumentPlayer, BreakInteraction } from "../../../app/structs";
 
 export default new Command({
     name: "Message Tools", nameLocalizations: {"pt-BR": "📩 Ferramentas de mensagem"},
@@ -20,12 +19,12 @@ export default new Command({
         const rows = [
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>()
-        ]
+        ];
 
         const buttons = {
             confirm: new ButtonBuilder({customId: "message-tools-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
             cancel: new ButtonBuilder({customId: "message-tools-cancel-button", label: "Cancelar", style: ButtonStyle.Danger}),
-        }
+        };
 
         const messageToolsSelect = new StringSelectMenuBuilder({
             customId: "message-tools-select",
@@ -35,7 +34,7 @@ export default new Command({
                 {label: "Alertar", value: "alert", description: "Alterar membro usando a mensagem", emoji: "🚨"},
                 {label: "Json", value: "json", description: "Converter conteúdo em json", emoji: "📄"},
             ]
-        })
+        });
         rows[0].setComponents(messageToolsSelect);
         const msg = await interaction.reply({ephemeral: true, components: [rows[0]], fetchReply: true});
 
@@ -72,12 +71,12 @@ export default new Command({
                         const fileName = `embed-${index}`;
                         const data = JSON.stringify(embed, null, 2);
                         files.push(new AttachmentBuilder(Buffer.from(data, "utf-8"), {name: fileName + ".json"}));
-                    })
+                    });
 
-                    subInteraction.reply({ephemeral: true, content: "Arquivos", files})
+                    subInteraction.reply({ephemeral: true, content: "Arquivos", files});
                     return;
                 }
             }
-        })
+        });
     },
-})
+});

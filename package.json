@@ -3,18 +3,33 @@
   "displayName": "Zunder System Bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node .",
-    "dev": "ts-node src/index.ts"
+    "start": "npm run build && node .",
+    "dev": "ts-node src/index.ts",
+    "build": "tsc --project tsconfig.json && npm run paths",
+    "paths":"tscpaths -p tsconfig.json -s ./src -o ./dist",
+    "old:dev": "ts-node src/index.ts"
   },
-  "keywords": ["bot", "discord", "discord.js", "system", "economy", "management", "administration"],
+  "keywords": [
+    "bot",
+    "discord",
+    "discord.js",
+    "system",
+    "economy",
+    "management",
+    "administration"
+  ],
   "author": "Rincko Dev",
   "license": "ISC",
   "devDependencies": {
     "@types/node-cron": "^3.0.7",
-    "ts-node": "^10.9.1"
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
+    "eslint": "^8.38.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "tscpaths": "^0.0.9"
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.39",

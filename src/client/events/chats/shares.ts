@@ -1,6 +1,5 @@
+import { BreakInteraction, DocumentPlayer, Event, Firestore, client, config } from "@/app";
 import { ChannelType } from "discord.js";
-import { client, config } from "../../../app";
-import { Firestore, DocumentPlayer, BreakInteraction, Event } from "../../../app/structs";
 
 const playerColl = new Firestore("players");
 
@@ -15,29 +14,29 @@ export default new Event({name: "messageCreate", async run(message){
 
     const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
     if (!memberData) {
-        new BreakInteraction(message, "Apenas membros registrados podem divulgar conteúdos aqui!")
+        new BreakInteraction(message, "Apenas membros registrados podem divulgar conteúdos aqui!");
         return;
     }
 
     if (attachments.size > 1) 
-    return new BreakInteraction(message,  'Envie no máximo uma imagem por mensagem!')
+    return new BreakInteraction(message,  "Envie no máximo uma imagem por mensagem!");
 
-    if (content.includes('<@') || content.includes('<#'))
-    return new BreakInteraction(message, 'Não mencione cargos ou membros aqui!')
+    if (content.includes("<@") || content.includes("<#"))
+    return new BreakInteraction(message, "Não mencione cargos ou membros aqui!");
     
     if (message.content.length < 20) 
-    return new BreakInteraction(message, 'Sua mensagem é muito pequena!')
+    return new BreakInteraction(message, "Sua mensagem é muito pequena!");
 
     if (memberData.stats) {
-        const currShares = memberData.stats.shares || 1
+        const currShares = memberData.stats.shares || 1;
         memberData.stats.shares = currShares + 1;
     } else {
         memberData.stats = {
             shares: 1
-        }
+        };
     }
 
-    await message.react('👍')
-    await message.react('👎')
-    await message.react('❗')
-}})
+    await message.react("👍");
+    await message.react("👎");
+    await message.react("❗");
+}});
