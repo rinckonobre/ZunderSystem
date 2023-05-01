@@ -3,12 +3,9 @@
     "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
-    
-    "lib": [
-      "ESNext"
-    ],
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "lib": ["ESNext"],
+    "rootDir": "src",
+    "outDir": "dist",
     "target": "ESNext",
     "module": "CommonJS",
     "moduleResolution": "Node",
@@ -35,7 +32,6 @@
       "@/structs/*": ["./src/app/structs/*"],
       "@/tasks/*": ["./src/app/tasks/*"],
       "@/config/*": ["./src/config/*"]
-
     }
   },
   "include": [

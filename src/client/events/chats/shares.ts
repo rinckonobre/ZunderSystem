@@ -1,7 +1,5 @@
-import { BreakInteraction, DocumentPlayer, Event, Firestore, client, config } from "@/app";
+import { BreakInteraction, DocumentPlayer, Event, Firestore, client, config, db } from "@/app";
 import { ChannelType } from "discord.js";
-
-const playerColl = new Firestore("players");
 
 export default new Event({name: "messageCreate", async run(message){
     if (message.channel.type != ChannelType.GuildText ||
@@ -12,14 +10,14 @@ export default new Event({name: "messageCreate", async run(message){
     
     const { content, attachments, member } = message;
 
-    const memberData = await playerColl.getDocData(member.id) as DocumentPlayer | undefined;
+    const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
     if (!memberData) {
         new BreakInteraction(message, "Apenas membros registrados podem divulgar conteúdos aqui!");
         return;
     }
 
     if (attachments.size > 1) 
-    return new BreakInteraction(message,  "Envie no máximo uma imagem por mensagem!");
+    return new BreakInteraction(message, "Envie no máximo uma imagem por mensagem!");
 
     if (content.includes("<@") || content.includes("<#"))
     return new BreakInteraction(message, "Não mencione cargos ou membros aqui!");

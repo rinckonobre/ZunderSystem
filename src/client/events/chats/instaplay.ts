@@ -6,6 +6,7 @@ export default new Event({
     name: "messageCreate",
     async run(message){
         const { channel, guild, member } = message;
+
         if (channel.type != ChannelType.GuildText ||
             channel.name != config.guild.channels.instaplay ||
             !guild || guild.id != client.mainGuildID ||

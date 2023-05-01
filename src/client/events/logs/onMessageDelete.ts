@@ -1,5 +1,6 @@
-import { client, config, Event, ServerManager } from "@/app";
-import { ChannelType, TextChannel } from "discord.js";
+import { client, config, Event } from "@/app";
+import { findChannel } from "@/app/functions";
+import { ChannelType } from "discord.js";
 
 const excludeChannels = [
     config.guild.channels.staff,
@@ -8,11 +9,11 @@ const excludeChannels = [
     config.guild.channels.logs
 ];
 
-export default new Event({name: "messageDelete", async run(message){
+export default new Event({ name: "messageDelete", async run(message){
     const { guild, channel, member } = message;
     if (!guild || guild.id != client.mainGuildID || channel.type != ChannelType.GuildText || member?.id == client.onwerID) return;
 
-    const cLogs = ServerManager.findChannel(guild, config.guild.channels.logs, ChannelType.GuildText) as TextChannel | undefined; 
+    const cLogs = findChannel(guild, config.guild.channels.logs, ChannelType.GuildText); 
 
     if (!cLogs) return;
     if (excludeChannels.includes(channel.name)) return;

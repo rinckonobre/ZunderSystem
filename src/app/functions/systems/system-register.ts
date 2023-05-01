@@ -1,8 +1,6 @@
 import { GuildMember } from "discord.js";
 import { DocumentPlayer, db } from "../..";
 
-//const playerColl = new Firestore("players");
-
 export const systemRegister = {
     /**
      * @param member Membro que será registrado
@@ -18,6 +16,9 @@ export const systemRegister = {
             device, type, level: 1
         }};
 
-        db.players.create({id: member.id, data});
+        db.players.create({id: member.id, data})
+        .catch(() => {
+            console.log(`An error occurred when trying to register ${member.displayName}`.red);    
+        });
     }
 };

@@ -1,8 +1,6 @@
-import { Canvas, createCanvas, Image, SKRSContext2D } from "@napi-rs/canvas";
+import { Canvas, Image, SKRSContext2D } from "@napi-rs/canvas";
 
 type CanvasStyle = string | CanvasGradient | CanvasPattern;
-
-type RGBA = [red: number, blue: number, green: number, alpha?: number];
 
 interface Coords { x: number; y: number; }
 interface Sizes { width: number; height: number; }

@@ -1,12 +1,12 @@
 import { config, Event, GuildManager } from "@/app";
+import { findChannel } from "@/app/functions";
 import { ChannelType, chatInputApplicationCommandMention, ChatInputCommandInteraction, CommandInteractionOptionResolver, ComponentType, InteractionType, MessageContextMenuCommandInteraction, TextChannel, UserContextMenuCommandInteraction } from "discord.js";
 
 export default new Event({name: "interactionCreate", async run(interaction){
+    if (!interaction.inCachedGuild()) return;
     const { id, channel, guild, user, type } = interaction;
-    if (!guild) return;
 
-    const guildManager = new GuildManager(guild);
-    const cLogs = guildManager.findChannel<TextChannel>(config.guild.channels.logs, ChannelType.GuildText);
+    const cLogs = findChannel(guild, config.guild.channels.logs, ChannelType.GuildText);
     if (!cLogs) return;
 
     const time = `<t:${~~(Date.now() / 1000)}:t>`;

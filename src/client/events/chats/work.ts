@@ -1,15 +1,15 @@
-import { DocumentPlayer, Event, Firestore, ServerManager, client, config } from "@/app";
+import { DocumentPlayer, Event, Firestore, ServerManager, client, config, db } from "@/app";
+import { findChannel } from "@/app/functions";
 import { systemWork } from "@/app/functions/systems/system-work";
 import { works } from "@/config/jsons";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, TextChannel } from "discord.js";
 
-const playersColl = new Firestore("players");
-
 export default new Event({name: "messageCreate", async run(message){
-    if (message.channel.type != ChannelType.GuildText ||
-        message.channel.name != config.guild.channels.work ||
-        !message.guild || message.guild?.id != client.mainGuildID ||
-        !message.member || message.member.user.bot
+    const { channel, guild, member } = message;
+    if (channel.type != ChannelType.GuildText ||
+        channel.name != config.guild.channels.work ||
+        !guild || guild?.id != client.mainGuildID ||
+        !member || member.user.bot
     ) return;
     
     const attach = message.attachments.at(0);
@@ -24,13 +24,13 @@ export default new Event({name: "messageCreate", async run(message){
         return;
     }
     
-    const cWork = ServerManager.findChannel(message.guild, config.guild.channels.work, ChannelType.GuildText) as TextChannel | undefined;
+    const cWork = findChannel(guild, config.guild.channels.work, ChannelType.GuildText);
     if (!cWork) {
         message.delete().catch(() => {});
         return;
     }
 
-    const memberData = await playersColl.getDocData(message.member.id) as DocumentPlayer | undefined;
+    const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
     if (!memberData || !memberData.work) {
         message.delete().catch(() => {});
         return;
@@ -38,7 +38,7 @@ export default new Event({name: "messageCreate", async run(message){
     
     if (memberData.work.level >= 20 || (memberData.registry?.level || 1) >= 3) {
         message.delete().catch(() => {});
-        systemWork.accept(message.member, attach, memberData);
+        systemWork.accept(member, attach, memberData);
         return;
     }
 
@@ -55,5 +55,5 @@ export default new Event({name: "messageCreate", async run(message){
         new ButtonBuilder({url: message.url, label: profession.name, emoji: profession.emoji, style: ButtonStyle.Link})
     ]});
     
-    cWork.send({content: message.member.id, files: [attach], components: [row]});
+    cWork.send({content: member.id, files: [attach], components: [row]});
 }});

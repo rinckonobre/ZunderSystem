@@ -36,8 +36,7 @@ export default new Command({
         }
     ],
     async run({interaction, options, client}) {
-        if (!(interaction instanceof ChatInputCommandInteraction)) return;
-        
+        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;        
 
         const subCommand = options.getSubcommand();
         const mention = options.getMember("membro") as GuildMember;

@@ -1,5 +1,5 @@
 import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, ServerManager, client, config, db } from "@/app";
-import { convertHex, stringSelectCollector, buttonCollector, logger, wait, systemRecords, systemRegister } from "@/app/functions";
+import { convertHex, stringSelectCollector, buttonCollector, logger, wait, systemRecords, systemRegister, findRole, findEmoji } from "@/app/functions";
 import { devices, registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
 
@@ -21,7 +21,7 @@ export default new Command({
     ],
     async run({client, interaction, options}) {
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { member, guild, channel } = interaction;
+        const { member, guild } = interaction;
         
         if (guild.id != client.mainGuildID) {
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
@@ -36,15 +36,15 @@ export default new Command({
             return;
         }
 
-        // if (memberData.registry.type == "zunder") {
-        //     new BreakInteraction(interaction, "Você já está registrado como membro Zunder!");
-        //     return;
-        // }
+        if (memberData.registry.type == "zunder") {
+            new BreakInteraction(interaction, "Você já está registrado como membro Zunder!");
+            return;
+        }
 
-        // if (memberData?.requests && memberData.requests.zunder) {
-        //     new BreakInteraction(interaction, "Você já fez uma solicitação de registro Zunder!");
-        //     return;
-        // }
+        if (memberData?.requests && memberData.requests.zunder) {
+            new BreakInteraction(interaction, "Você já fez uma solicitação de registro Zunder!");
+            return;
+        }
 
         if (!nick.endsWith("Z_")){
             new BreakInteraction(interaction, "É necessário um nick com Z_ no final para se registrar como Zunder!");
@@ -87,7 +87,7 @@ export default new Command({
             thumbnail: { url: member.displayAvatarURL() },
             description: `> Você está tentando se registrar usando o nick \`${nick}\`
             Selecione um dispositivo para se registrar`,
-            footer: {text: "Administração Zunder", iconURL: guild.iconURL() || undefined }
+            footer: { text: "Administração Zunder", iconURL: guild.iconURL() || undefined }
         });
 
         const message = await interaction.reply({ephemeral: true, embeds: [embed], components: [rows[0]], fetchReply: true});
@@ -118,7 +118,7 @@ export default new Command({
                     return;
                 }
 
-                await db.players.update(member.id, "requests.zunder", {device: selectedDevice.id, nick });
+                await db.players.update(member.id, "requests.zunder", { device: selectedDevice.id, nick });
 
                 embed.setFooter(null);
                 embed.setDescription(`> Você fez uma solicitação de registro Zunder
@@ -139,8 +139,8 @@ export default new Command({
                     customId: "register-request-zunder-manage",
                     placeholder: "Aprove ou recuse",
                     options: [
-                        {label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: emojis.get("check")?.id}},
-                        {label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: emojis.get("cancel")?.id}}
+                        { label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: emojis.get("check")?.id}},
+                        { label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: emojis.get("cancel")?.id}}
                     ]
                 });
 
@@ -188,8 +188,6 @@ export default new Command({
                 breakInteraction("O membro não foi localizado no servidor!");
                 if (mentionData && mentionData.requests?.zunder) {
                     await db.players.update(mentionID, "requests.zunder", "delete");
-                    // delete mentionData.requests.zunder;
-                    // playerColl.saveDocData(mentionID, mentionData);
                 }
                 return;
             }
@@ -242,28 +240,27 @@ export default new Command({
                 - Pode participar de clans, guildas e facções da Zunder em qualquer jogo!
                 `);
                 
-                const roleZunder = ServerManager.findRole(guild, "Membro Zunder");
-                const roleDiscord = ServerManager.findRole(guild, "Membro Discord");
+                const roleZunder = findRole(guild, "Membro Zunder");
+                const roleDiscord = findRole(guild, "Membro Discord");
 
                 if (mentionData.registry.level < 2) {
-                    if (roleDiscord) await member.roles.remove(roleDiscord);
                     if (roleZunder) await member.roles.add(roleZunder);
+                    if (roleDiscord) await member.roles.remove(roleDiscord);
                 }
                 
-                const roleStaffZunder = ServerManager.findRole(guild, "Staff Zunder");
-                const roleStaffDiscord = ServerManager.findRole(guild, "Staff Discord");
+                const roleStaffZunder = findRole(guild, "Staff Zunder");
+                const roleStaffDiscord = findRole(guild, "Staff Discord");
                 if ((mentionData.interaction?.level || 1) > 1) {
-                    
-                    if (roleStaffDiscord) await member.roles.remove(roleStaffDiscord);
                     if (roleStaffZunder) await member.roles.add(roleStaffZunder);
+                    if (roleStaffDiscord) await member.roles.remove(roleStaffDiscord);
                 }
 
                 systemRecords.send(guild, {system: {title: "📝 Sistema de registro", color: config.colors.zunder, style: "FULL" },
                     staff: member, mention, details: `> ${mention.roles.highest} ${mention} **${mention.user.tag}**
-                    Registrado como: ${ServerManager.findEmoji(guild, "register_zunder_member")} ${roleZunder}
+                    Registrado como: ${findEmoji(client, "register_zunder_member")} ${roleZunder}
                     ✏️ Nick: \` ${nick} \`
-                    Tipo de registro ${ServerManager.findEmoji(guild, "zunder")} Zunder
-                    Dispositivo: ${ServerManager.findEmoji(guild, device.emoji)} ${device.name}`
+                    Tipo de registro ${findEmoji(client, "zunder")} Zunder
+                    Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}`
                 }); 
 
                 interaction.update({embeds: [
@@ -278,7 +275,7 @@ export default new Command({
                 .setFooter({text: "Administração Zunder"})
                 .setTimestamp()
                 .setDescription(`Sua solicitação de registro Zunder foi recusada!
-                Dispositivo: ${ServerManager.findEmoji(guild, device.emoji)} **${device.name}**
+                Dispositivo: ${findEmoji(client, device.emoji)} **${device.name}**
                 Nick:  \` ${nick} \`
     
                 Motivos para sua solicitação ter sido recusada:

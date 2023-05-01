@@ -141,7 +141,7 @@ export default new Command({
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { guild, member, channel } = interaction;
 
-        if (!(channel instanceof TextChannel)){
+        if (channel?.type !== ChannelType.GuildText){
             new BreakInteraction(interaction, "Este comando não pode ser usado neste chat!");
             return;
         }
