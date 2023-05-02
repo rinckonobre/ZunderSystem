@@ -1,16 +1,17 @@
 import { ActionRowBuilder, Attachment, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
 
-import { DocumentPlayer, DocumentResource, GuildManager, ServerManager, ZunderResourceEditProps, ZunderResourceUploadProps } from "..";
+import { DocumentPlayer, DocumentResource, ZunderResourceEditProps, ZunderResourceUploadProps } from "..";
 import { config, db } from "../..";
+import { findChannel } from "../functions";
 export class ResourceManager {
     public static tempUpload: Map<string, ZunderResourceUploadProps> = new Map();
     public static tempEdit: Map<string, ZunderResourceEditProps> = new Map();
     public static tempReport: Map<string, string> = new Map();
     
     public static async findMessage(id: string, resource: DocumentResource, guild: Guild){
-        const guildManager = new GuildManager(guild);
+        //const guildManager = new GuildManager(guild);
         const channelName = `${resource.category.name}-${resource.category.subCategory}`;
-        const channel = guildManager.findChannelInCategory(channelName, ChannelType.GuildText, config.resources.title) as TextChannel | undefined;
+        const channel = findChannel(guild, channelName, ChannelType.GuildText, config.resources.title);
 
         if (!channel) return undefined;
         return await channel.messages.fetch(id);
@@ -20,8 +21,8 @@ export class ResourceManager {
         if (!resourceData) return {success: false, message: "O recurso não foi encontrado!"};
         
         const channelName = `${resourceData.category.name}-${resourceData.category.subCategory}`;
-        const channel = ServerManager.findChannel(guild, channelName, ChannelType.GuildText) as TextChannel | undefined;
-
+        
+        const channel = findChannel(guild, channelName, ChannelType.GuildText);
         if (!channel) return {success: false, message: "O chat da mensagem não foi encontrado!"};
         
         const msg = await channel.messages.fetch(id);
@@ -50,10 +51,6 @@ export class ResourceManager {
         }
 
         const files = msg.attachments.map(a => new AttachmentBuilder(a.url, {name: a.name}));
-        //const files: Array<Attachment> = []
-        // msg.attachments
-        // .filter(({name}) => name == "thumb.png" || name == "banner.png")
-        // .map(({attachment, name}) => new AttachmentBuilder(attachment, {name: name || "thumb.png"}));
 
         function spliceFile(name: string){
             const index = files.findIndex(a => a.name == name);
@@ -88,7 +85,6 @@ export class ResourceManager {
         if (embedData.image) resourceData.bannerURL = embedData.image.url;
 
         await db.players.setData(id, resourceData);
-        //await resourcesColl.saveDocData(id, resourceData);
         return {success: true, message: "O recurso foi editado com sucesso!"};
     }
     public static async delete(id: string, guild: Guild){
@@ -107,8 +103,6 @@ export class ResourceManager {
         }
 
         if (msg.hasThread) msg.thread?.delete();
-
-        //resourcesColl.deleteDoc(id)
         await db.resources.delete(id);
         msg.delete().catch(() => {});
 

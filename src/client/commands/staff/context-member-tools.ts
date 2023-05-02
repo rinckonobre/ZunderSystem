@@ -1,5 +1,5 @@
-import { Command, BreakInteraction, db, DocumentPlayer, ServerManager, DiscordTools, config } from "@/app";
-import { stringSelectCollector, buttonCollector, systemRecords } from "@/app/functions";
+import { Command, BreakInteraction, db, DocumentPlayer, DiscordTools, config } from "@/app";
+import { stringSelectCollector, buttonCollector, systemRecords, findRole } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 
 export default new Command({
@@ -40,7 +40,7 @@ export default new Command({
         rows[0].setComponents(selectTools);
 
         // Cargos
-        const roleShare = ServerManager.findRole(guild, config.guild.roles.functional.share);
+        const roleShare = findRole(guild, config.guild.roles.functional.share);
 
         //
 

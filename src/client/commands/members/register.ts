@@ -1,7 +1,7 @@
-import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, ServerManager, client, config, db } from "@/app";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
+import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, client, config, db } from "@/app";
 import { convertHex, stringSelectCollector, buttonCollector, logger, wait, systemRecords, systemRegister, findRole, findEmoji } from "@/app/functions";
 import { devices, registries } from "@/config/jsons";
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
 
 export default new Command({
     name: "register",
@@ -170,22 +170,23 @@ export default new Command({
             const embed = new EmbedBuilder(message.embeds[0].data);
             const mentionID = embed.data.fields![0].value;
 
-            const mention = await guild.members.fetch(mentionID).catch(() => undefined);
+            const mention = await guild.members.fetch(mentionID + "test").catch(() => undefined);
             const mentionData = await db.players.get(mentionID) as DocumentPlayer | undefined;
 
-            async function breakInteraction(text: string){
-                embed.setColor(convertHex(config.colors.danger))
-                .setDescription(text)
-                .setFields();
-                interaction.update({embeds: [embed], components: []});
-                await wait(8*1000);
-                message.delete().catch(logger);
-            }
+            // async function breakInteraction(text: string){
+            //     embed.setColor(convertHex(config.colors.danger))
+            //     .setDescription(text)
+            //     .setFields();
+            //     interaction.update({embeds: [embed], components: []});
+            //     await wait(8*1000);
+            //     message.delete().catch(logger);
+            // }
 
             const selected = interaction.values[0] as "approve" | "recuse";
 
             if (!mention) {
-                breakInteraction("O membro não foi localizado no servidor!");
+                new BreakInteraction(interaction, "O membro não foi localizado no servidor!", {deleteTime: 8000, replace: true});
+                //breakInteraction("O membro não foi localizado no servidor!");
                 if (mentionData && mentionData.requests?.zunder) {
                     await db.players.update(mentionID, "requests.zunder", "delete");
                 }
@@ -193,14 +194,16 @@ export default new Command({
             }
 
             if (!mentionData) {
-                breakInteraction("Os dados do membro não foram localizado!");
+                new BreakInteraction(interaction, "Os dados do membro não foram localizado!", {deleteTime: 8000, replace: true});
+                //breakInteraction("Os dados do membro não foram localizado!");
                 return;
             }
 
             const requestZunder = mentionData.requests?.zunder;
 
             if (!requestZunder){
-                breakInteraction("O membro não tem uma requisição de registro Zunder ativa!");
+                new BreakInteraction(interaction, "O membro não tem uma requisição de registro Zunder ativa!", {deleteTime: 8000, replace: true});
+                //breakInteraction("O membro não tem uma requisição de registro Zunder ativa!");
                 return;
             }
             
@@ -212,7 +215,8 @@ export default new Command({
             const device = devices.find(d => d.id == deviceId);
             
             if (!device){
-                breakInteraction("Dispositivo escolhido não foi encontrado no sistema!");
+                new BreakInteraction(interaction, "Dispositivo escolhido não foi encontrado no sistema!", {deleteTime: 8000, replace: true});
+                //breakInteraction("Dispositivo escolhido não foi encontrado no sistema!");
                 return;
             }
 
@@ -229,7 +233,7 @@ export default new Command({
                 .setFooter({text: "Administração Zunder"})
                 .setTimestamp()
                 .setDescription(`Sua solicitação de registro Zunder foi aprovada!
-                Dispositivo: ${ServerManager.findEmoji(guild, device.emoji)} **${device.name}**
+                Dispositivo: ${findEmoji(client, device.emoji)} **${device.name}**
                 Nick:  \` ${nick} \`
     
                 Sendo membro da Zunder você:
@@ -241,32 +245,51 @@ export default new Command({
                 `);
                 
                 const roleZunder = findRole(guild, "Membro Zunder");
-                const roleDiscord = findRole(guild, "Membro Discord");
+                //const roleDiscord = findRole(guild, "Membro Discord");
 
-                if (mentionData.registry.level < 2) {
-                    if (roleZunder) await member.roles.add(roleZunder);
-                    if (roleDiscord) await member.roles.remove(roleDiscord);
+                if (mentionData.registry.level < 2 && roleZunder){
+                    await member.roles.set([
+                        ...member.roles.cache.filter(r => r.name !== "Membro Discord").map(r => r),
+                        roleZunder
+                    ]);
+                    // if (roleZunder) await member.roles.add(roleZunder);
+                    // if (roleDiscord) await member.roles.remove(roleDiscord);
                 }
                 
                 const roleStaffZunder = findRole(guild, "Staff Zunder");
-                const roleStaffDiscord = findRole(guild, "Staff Discord");
-                if ((mentionData.interaction?.level || 1) > 1) {
-                    if (roleStaffZunder) await member.roles.add(roleStaffZunder);
-                    if (roleStaffDiscord) await member.roles.remove(roleStaffDiscord);
+                //const roleStaffDiscord = findRole(guild, "Staff Discord");
+                if (mentionData.registry.level > 1 && roleStaffZunder){
+                    await member.roles.set([
+                        ...member.roles.cache.filter(r => r.name !== "Staff Discord").map(r => r),
+                        roleStaffZunder
+                    ]);
+                    // if (roleStaffZunder) await member.roles.add(roleStaffZunder);
+                    // if (roleStaffDiscord) await member.roles.remove(roleStaffDiscord);
                 }
+                systemRecords.create({
+                    guild, title: "📝 Registro",
+                    color: config.colors.zunder,
+                    style: "Full",
+                    description: `> ${mention} **${mention.user.tag}**
+                    
+                    Registrado como: ${findEmoji(client, "zunder")} ${findEmoji(client, "register_zunder_member")} ${roleZunder}
+                    Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}
+                    ✏️ Nick: \` ${nick} \``
+                });
 
-                systemRecords.send(guild, {system: {title: "📝 Sistema de registro", color: config.colors.zunder, style: "FULL" },
-                    staff: member, mention, details: `> ${mention.roles.highest} ${mention} **${mention.user.tag}**
-                    Registrado como: ${findEmoji(client, "register_zunder_member")} ${roleZunder}
-                    ✏️ Nick: \` ${nick} \`
-                    Tipo de registro ${findEmoji(client, "zunder")} Zunder
-                    Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}`
-                }); 
+                // systemRecords.send(guild, {system: {title: "📝 Sistema de registro", color: config.colors.zunder, style: "FULL" },
+                //     staff: member, mention, details: `> ${mention.roles.highest} ${mention} **${mention.user.tag}**
+                //     Registrado como: ${findEmoji(client, "register_zunder_member")} ${roleZunder}
+                //     ✏️ Nick: \` ${nick} \`
+                //     Tipo de registro ${findEmoji(client, "zunder")} Zunder
+                //     Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}`
+                // }); 
 
                 interaction.update({embeds: [
                     new EmbedBuilder({
                         color: convertHex(config.colors.success),
-                        description: "Esta solicitação de registro foi aprovada!"
+                        description: "Esta solicitação de registro foi aprovada!",
+                        footer: {text: "Administração Zunder"}
                     })
                 ], components: []});
             } else {
@@ -358,7 +381,7 @@ export default new Command({
                 }
             }
             
-            const memberRole = ServerManager.findRole(guild, registries.discord.roles[1].name);
+            const memberRole = findRole(guild, registries.discord.roles[1].name);
             if (!memberRole) {
                 new BreakInteraction(interaction, "O cargo de membro padrão não foi encontrado");
                 return;

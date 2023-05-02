@@ -1,5 +1,6 @@
 import { ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
-import { DocumentPlayer, ServerManager, config, db } from "../..";
+import { DocumentPlayer, config, db } from "../..";
+import { findChannel, findEmoji } from "../discord/guild";
 
 export const systemExperience = {
     getRequiredXp(level: number) {
@@ -53,11 +54,11 @@ export const systemExperience = {
             //     MemberDataManager.add(`inventory.coins`, coinsReward);
             //     memberData.inventory.coins += coinsReward;
             // }
-            const cAudit = ServerManager.findChannel(member.guild, config.guild.channels.audit, ChannelType.GuildText) as TextChannel | undefined;
+            const cAudit = findChannel(member.guild, config.guild.channels.audit, ChannelType.GuildText) as TextChannel | undefined;
             //guildManager.findChannel<TextChannel>(dcGuild.channels.audit, ChannelType.GuildText);
             if (cAudit) {
-                const emojiLevel = ServerManager.findEmoji(member.guild, `${type}Level`);
-                const emojiCoins = ServerManager.findEmoji(member.guild, "coins");
+                const emojiLevel = findEmoji(member.client, `${type}Level`);
+                const emojiCoins = findEmoji(member.client, "coins");
 
                 const embed = new EmbedBuilder()
                 .setColor(config.colors.systems.interaction as ColorResolvable)

@@ -33,9 +33,9 @@
     "description": "Termos do sistema Recursos",
     "prefix": "r",
     "terms": [
-      "Proibido compartilhamento de arquivos fora do contexto inicial, que é jogos e programas.",
       "Proibido compartilhar sem deixar os créditos da fonte.",
-      "Proibido compartilhar qualquer tipo de trapaça ou hack.",
+      "Proibido compartilhar qualquer tipo de trapaça ou hack para jogos online.",
+      "Proibido compartilhamento de arquivos fora do contexto das categorias predefinidas.",
       "Permitido compartilhar arquivos crackeados, contanto que tenha certeza que não trará nenhum dano a ninguém."
     ]
   },

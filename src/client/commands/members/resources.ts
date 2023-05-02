@@ -1,5 +1,5 @@
-import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, Files, ResourceManager, ServerManager, ZunderResourceUploadProps, config, db, oldEmbedMenuBuilder } from "@/app";
-import { logger, convertHex, wait } from "@/app/functions";
+import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, Files, ResourceManager, ZunderResourceUploadProps, config, db, oldEmbedMenuBuilder } from "@/app";
+import { logger, convertHex, wait, findChannel } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, Attachment, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, ColorResolvable, ComponentType, EmbedBuilder, Guild, GuildMember, MessageCollector, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, TextInputStyle, codeBlock } from "discord.js";
 
 export default new Command({
@@ -797,7 +797,7 @@ export default new Command({
                     await subInteraction.deferUpdate({fetchReply: true});
                     
                     const cName = `${zunderResource.category?.name}-${zunderResource.category?.subCategory}`;
-                    const channel = ServerManager.findChannel(guild, cName, ChannelType.GuildText) as TextChannel | undefined;
+                    const channel = findChannel(guild, cName, ChannelType.GuildText);
 
                     if (!channel) {
                         new BreakInteraction(interaction, "O chat para o recurso não está configurado!", {replace: true});

@@ -1,4 +1,4 @@
-import { BreakInteraction, DocumentPlayer, Event, Firestore, client, config, db } from "@/app";
+import { BreakInteraction, DocumentPlayer, Event, client, config, db } from "@/app";
 import { ChannelType } from "discord.js";
 
 export default new Event({name: "messageCreate", async run(message){

@@ -1,8 +1,5 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
-import { BreakInteraction, Command, DocumentPlayer, db } from "../../../app";
-import { findEmoji } from "../../../app/functions";
-import { registries } from "../../../config/jsons";
-import { systemManager } from "@/app/functions/systems/system-manager";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
+import { BreakInteraction, Command, DocumentPlayer, db } from "@/app";
 
 export default new Command({
     name: "manage",
@@ -30,7 +27,7 @@ export default new Command({
             ]
         }
     ],
-    async run({client, interaction, options}) {
+    async run({ interaction, options}) {
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { member, guild } = interaction;
 
@@ -49,7 +46,7 @@ export default new Command({
         switch (options.getSubcommand(true) as SubCommand){
             case "members":{
                 const mention = options.getMember("mention") as GuildMember;
-                systemManager.member(interaction, mention, {member, data: memberData});
+                //systemManager.member(interaction, mention, {member, data: memberData});
                 return;
             }
         }

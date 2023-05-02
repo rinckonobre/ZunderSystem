@@ -1,7 +1,7 @@
+import { BreakInteraction, Command, DocumentPlayer, ReplyBuilder, TextUtils, config, db, oldEmbedMenuBuilder } from "@/app";
+import { buttonCollector, convertHex, findEmoji } from "@/app/functions";
+import { infos, terms } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, ColorResolvable, EmbedBuilder, GuildMember } from "discord.js";
-import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, ReplyBuilder, TextUtils, config, db, oldEmbedMenuBuilder } from "../../../app";
-import { convertHex } from "../../../app/functions";
-import { informations, terms } from "../../../config/jsons";
 
 export default new Command({
     name: "informações",
@@ -109,52 +109,54 @@ export default new Command({
     },
     buttons: new Collection([
         ["information-index", async (interaction) => {
-            const categories = [...informations.categories];
-            categories.reverse();
-
+            const sections = infos.sections.map(s => s).reverse();
             const rows: Array<ActionRowBuilder<ButtonBuilder>> = [];
 
-            for (let currRow = 0; currRow < 5; currRow++) {
+            for (let currRow = 0; currRow < 5; currRow++){
                 const row = new ActionRowBuilder<ButtonBuilder>();
-                for (let currButton = 0; currButton < 4; currButton++) {
-                    const button = categories.pop()?.button;
+                for (let currButton = 0; currButton < 4; currButton++){
+                    const button = sections.pop()?.button;
                     if (!button) break;
                     const { customId, emoji, label, style } = button;
-                    //console.log(customId)
-                    row.addComponents(new ButtonBuilder({ customId, emoji, style, label }));
+                    row.addComponents(new ButtonBuilder({customId, emoji, label, style}));
                 }
                 if (row.components.length < 1) break;
                 rows.push(row);
             }
 
-            const msg = await interaction.reply({ephemeral: true, components: rows, fetchReply: true});
-            
-            DiscordCreate.buttonCollector(msg, async (buttonInteraction) => {
-                const info = informations.categories.find(c => c.button.customId == buttonInteraction.customId);
-                if (!info) {
-                    new BreakInteraction(interaction, "Informações indisponíveis!");
+            const message = await interaction.reply({
+                ephemeral: true, components: rows, fetchReply: true,
+                embeds: [new EmbedBuilder({
+                    title: "Índice de informações",
+                    color: convertHex(config.colors.primary),
+                    description: "Clique nos botões abaixo para ver informações de cada categoria"
+                })]
+            });
+
+            buttonCollector(message).on("collect", (subInteraction) => {
+                const info = infos.sections.find(s => s.button.customId == subInteraction.customId);
+                if (!info){
+                    new BreakInteraction(subInteraction, "Informações indisponíveis");
                     return;
                 }
-                buttonInteraction.deferUpdate();
 
-                const {title, description, color, image, thumbnail } = info;
+                const { title, description, color, image, thumb, fields } = info;
 
-                const embed = new EmbedBuilder()
-                    .setColor(color as ColorResolvable)
-                    .setTitle(title)
-                    .setThumbnail(thumbnail)
-                    .setImage(image)
-                    .setDescription(TextUtils.jsonParse(description) || "erro")
-                    .setFooter(informations.footer);
+                const embed = new EmbedBuilder({
+                    title, description, 
+                    color: (color ? convertHex(color) : convertHex(config.colors.primary)),
+                    fields
+                })
+                .setThumbnail(thumb)
+                .setImage(image);
 
-                interaction.followUp({ephemeral: true, embeds: [embed]});
+                subInteraction.update({embeds: [embed], components: rows});
             });
 
         }],
     ]),
     selects: new Collection([
         ["terms-index", async (interaction) => {
-
             const item = interaction.values[0];
 
             const termsCategory = terms.find(t => t.category == item);
@@ -163,14 +165,18 @@ export default new Command({
                 return;
             }
 
-            const embed = new EmbedBuilder()
-                .setColor(convertHex(config.colors.zunder))
-                .setTitle(termsCategory.description)
-                .setDescription(termsCategory.terms.map((term, index) => {
-                    index += 1;
-                    return `📃**(${termsCategory.prefix}${index < 10 ? "0" + index : index})** ${term}`;
-                }).join("\n\n"))
-                .setFooter({text: "Administração Zunder"});
+            function formatNumber(number: number){
+                return number < 10 ? `0${number}` : `${number}`;
+            }
+
+            const embed = new EmbedBuilder({
+                title: termsCategory.description,
+                color: convertHex(config.colors.zunder),
+                description: termsCategory.terms
+                .map((term, index) => `- 📃 **(${termsCategory.prefix}${formatNumber(index++)})** ${term}`)
+                .join("\n\n"),
+                footer: { text: "Administração Zunder" }
+            });
 
             interaction.reply({ephemeral: true, embeds: [embed]});
         }]

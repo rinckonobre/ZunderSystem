@@ -1,0 +1,93 @@
+{
+    "title":"📄 Informações",
+    "description":"A **Zunder** é uma comunidade que busca unir as pessoas em um ambiente livre de toxidade. Sempre tentando aproximar jogadores, programadores e qualquer tipo de pessoa.\n\nTodos aqui são bem vindos, não importa de onde tenha vindo, poderá interagir com todos no grupo desde que siga os <#621719654892830722> da comunidade para que não haja nenhum conflito ou desavença.\n\n## :discord: Convite oficial do servidor:\nhttp://discord.gg/tTu8dGN\n\n## Acompanhe a gente nas redes sociais\n- <:youtube:700432492938919996> Youtube: <https://www.youtube.com/c/ZunderOficial>\n- <:tiktok:868050304753623070>Tiktok: <https://www.tiktok.com/@zundergroup>\n- <:instagram:816220132400955413>Instagram: <https://www.instagram.com/zundergroup/>\n\n`Entenda áreas e sistemas do servidor clicando no botão abaixo de informações`",
+    "image": null,
+    "thumb":null,
+    "footer": {
+        "text":"Grupo, servidor e bot desenvolvidos por RinckoZ_"
+    },
+    "sections":[
+        {
+            "id": "register",
+            "title": "Sistema de registro",
+            "description": "📋 Aqui temos um sistema de registro de membros para uma melhor organização e sistema avançado de permissões\n\n✏️  Ao entrar no servidor pela primeira vez, o **sistema** irá te registrar automaticamente! Mas se por algum motivo o sistema esteja `offline` no momento em que um novo usuário entra no servidor, ele será registrado quando **enviar uma mensagem, entrar em um call tentar usar um comando**",
+            "image": null,
+            "thumb":null,
+            "color":"#5865f2",
+            "fields":[
+                {"name":"Registro Zunder", "value":"Aqui temos dois tipos de registros: <:discord:947965023798591559>**discord** e <:zunder:1024554031290523668>**zunder**. Novos membros começarão com o registro de discord. Para se tornar membro Zunder é preciso ter uma conta Zunder no <:minecraft:947964977518624799> minecraft! Basta ter uma conta original com `Z_` no final do nick! Por exemplo [RinckoZ_](https://pt.namemc.com/profile/RinckoZ_). Então só é preciso utilizar o comando `/registrar [nick]`. [Confira mais detalhes](https://youtu.be/B97T7ziuQtk?t=32)."},
+                {"name": "Equipe", "value": "Os cargos de equipe são <@&1026946600188256256>, <@&620061582747238400>, <@&620061097654747136> e <@&537818031728885771>.\nA <@&694350304438648903> é responsável pela administração e gerenciamento da <:zpastel:1008453482300317798> Zunder em si e a <@&1021416344484335656> é responsável apenas pelo servidor do discord."}
+            ],
+            "button": {
+                "customId": "information-register",
+                "emoji": "📋",
+                "label": "Registro",
+                "style": 1
+            }
+        },
+        {
+            "id": "resources",
+            "title": "Recursos Zunder",
+            "description": "📁 Os recursos são arquivos que podem ser baixados por qualquer um que são compartilhados pelos membros do servidor. Podem ser 🎮 jogos,  <:packs:1020983782825795654> pacotes,  incrementos, plugins e muito mais. \nVocê pode baixar um recurso clicando no botão **Acessar** dele e indo para o download sem encurtadores ou anúncios.",
+            "image": null,
+            "thumb":null,
+            "color":"#e9a81f",
+            "fields":[
+                {"name": "Como obter", "value": ">>> 🗃️ É simples obter um recurso, você pode explorar nos chats de cada categoria listados em https://discord.com/channels/537817462272557057/1077585797882060830. Caso esteja procurando por um certo recurso pode utilizar o comando `/recursos pesquisar` e digitar o nome do recurso. Você pode obter por id se você souber usando `/recursos obter`. Os membros podem enviar recursos e você pode ver a lista de recursos que eles enviaram usando `/recursos listar [membro]`"},
+                {"name": "Como enviar", "value": ">>> 📦 Para enviar um recurso, antes de tudo é preciso seguir os termos dos recursos listado no chat https://discord.com/channels/537817462272557057/621719654892830722.\nEntão pode usar o comando `/recursos enviar`, no comando é possível definir imagens para a thumbnail e o banner do recurso caso queira, então no formulário que aparecerá na tela, é preciso inserir as informações do recurso como **título**,  **descrição** e **link** de acesso ao recurso. Após você pode conferir se todas as informações estão corretas e selecionar a categoria dele pra confirmar e enviar."},
+                {"name":"Como gerenciar", "value":">>> 🖍️ Você pode editar as informações de um recurso que você enviou usando o comando `/recursos editar [id]`. Caso queira excluir o seu recurso pode utilizar o comando `/recursos deletar [id]`"},
+                {"name":"Fique de olho", "value":">>> 👀 A nossa equipe está sempre de olho nos recursos, então um recurso que não seguir os termos ou que não contenha informações suficientes sobre seu conteúdo pode ser excluído a qualquer momento."}
+            ],
+            "button": {
+                "customId": "information-resources",
+                "emoji": "📁",
+                "label": "Recursos",
+                "style": 3
+            }
+        },
+        {
+            "id": "support",
+            "title": "Suporte",
+            "description": "🔍Nosso grupo conta com um sistema de suporte para ajudar a todos com qualquer problema ou dúvida.\n\n> Utilize o chat https://discord.com/channels/537817462272557057/832829213651763210 para obter ajuda rapidamente.\n> Você pode utilizar o fórum https://discord.com/channels/537817462272557057/1019765099927437373 para criar uma postagem para obter ajuda mais específica.\n\n> Que tipo de questões podem ser tratadas no sistema de suporte?\n> Literalmente qualquer coisa que você precise. Erros em jogos, aplicativos, programas. Dúvidas sobre qualquer assunto, jogos, atividades de escola, como usar programas, dúvidas sobre programação, discord da Zunder, discord em si, qualquer coisa mesmo.\n> \n> Seu tópico pode ser deletado caso ele não seja levado com seriedade.",
+            "image": null,
+            "thumb":null,
+            "fields":[],
+            "button": {
+                "customId": "information-support",
+                "emoji": "🔍",
+                "label": "Suporte",
+                "style": 2
+              }
+        },
+        {
+            "id": "suggests",
+            "title": "Fórum de sugestões",
+            "description": "Fórum de sugestões\n💡 Ajude o grupo a evoluir a cada dia mais dando sugestões\n\nO fórum de sugestões funciona da seguinte forma:\n- Clique em nova postagem\n- Escreva um título e em seguida sua sugestão (Leia as diretrizes do fórum)\n- Defina o tema da sua sugestões através das tags na postagem\n- Sua sugestão será analisada pela staff e receberá uma status\n- Existem 5 status na sugestão: aceita, existente, recusada, em análise, respondida",
+            "color": "#e9a81f",
+            "image": null,
+            "thumb":null,
+            "fields":[],
+            "button": {
+                "customId": "information-suggests",
+                "emoji": "💡",
+                "label": "Sugestões",
+                "style": 2
+            }
+        },
+        {
+            "id": "share",
+            "title": "Compartilhamento",
+            "description": "🔁 O sistema de compartilhamento foi criado para que qualquer um divulgue seus conteúdos.\n\nEnvie seu vídeo, live stream, post do twitter ou qualquer coisa que divulgue o seu conteúdo no chat https://discord.com/channels/537817462272557057/790679553634074665, você só precisa solicitar e permissão com algum staff do grupo.\n\nSó pedimos que siga os termos do compartilhamento no chat https://discord.com/channels/537817462272557057/621719654892830722",
+            "image": null,
+            "thumb":null,
+            "fields":[],
+            "button": {
+                "customId": "information-share",
+                "emoji": "🔁",
+                "label": "Compartilhamento",
+                "style": 2
+            }
+            
+        }
+    ]
+}

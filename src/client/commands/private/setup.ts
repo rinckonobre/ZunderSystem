@@ -1,5 +1,6 @@
-import { Command, ReplyBuilder, DiscordCreate, Interruption, ServerManager, TextUtils, config } from "@/app";
-import { informations } from "@/config/jsons";
+import { Command, ReplyBuilder, DiscordCreate, Interruption, TextUtils, config } from "@/app";
+import { convertHex, findChannel } from "@/app/functions";
+import { infos } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, codeBlock, ColorResolvable, EmbedBuilder, TextChannel } from "discord.js";
 
 
@@ -10,20 +11,20 @@ export default new Command({
     visibility: "private",
     options: [
         {
-            name: "informações",
+            name: "information",
             description: "Define a mensagem base de informações",
             type: ApplicationCommandOptionType.Subcommand
         },
         {
-            name: "recursos",
+            name: "resources",
             description: "Define as configurações iniciais para os recursos",
             type: ApplicationCommandOptionType.Subcommand
         },
-        {
-            name: "registrar",
-            description: "Define a mensagem do chat registrar",
-            type: ApplicationCommandOptionType.Subcommand
-        },
+        // {
+        //     name: "registrar",
+        //     description: "Define a mensagem do chat registrar",
+        //     type: ApplicationCommandOptionType.Subcommand
+        // },
         {
             name: "jsonmessage",
             description: "Converte uma mensagem em uma string JSON",
@@ -36,7 +37,7 @@ export default new Command({
         const guild = interaction.guild;
 
         switch(options.getSubcommand()){
-            case "recursos": {
+            case "resources": {
                 if (!guild?.channels) {
                     interaction.reply({ephemeral: true, content: "A guilda não tem canais"});
                     return;
@@ -125,27 +126,24 @@ export default new Command({
                 }
                 return;
             }
-            case "informações": {
-                const cInfo = ServerManager.findChannel(guild, config.guild.channels.info) as TextChannel | undefined;
-                const cTerms = ServerManager.findChannel(guild, config.guild.channels.terms);
+            case "information": {
+                const cInfo = findChannel(guild, config.guild.channels.info, ChannelType.GuildText);
+                const cTerms = findChannel(guild, config.guild.channels.terms);
                 if (!cInfo || !cTerms) {
-                    new Interruption(interaction, "O de informações não está configurado!");
+                    new Interruption(interaction, "O chat de informações não está configurado!");
                     return;
                 }
 
                 interaction.deferReply({ephemeral: true});
 
-                const {title, description, footer, image, thumbnail } = informations;
+                const {title, description, footer, image, thumb } = infos;
 
-                
-
-                const embed = new EmbedBuilder()
-                .setColor(config.colors.primary as ColorResolvable)
-                .setTitle(title)
-                .setThumbnail(thumbnail)
+                const embed = new EmbedBuilder({
+                    title, description, footer,
+                    color: convertHex(config.colors.primary)
+                })
                 .setImage(image)
-                .setDescription(TextUtils.jsonParse(description) || "erro")
-                .setFooter(footer);
+                .setThumbnail(thumb);
 
                 const row = new ActionRowBuilder<ButtonBuilder>({components: [
                     new ButtonBuilder({customId: "information-index", label: "Índice de informações", style: ButtonStyle.Primary}),
@@ -153,17 +151,18 @@ export default new Command({
                 ]});
 
                 cInfo.send({embeds: [embed], components: [row]});
+                return;
             }
             case "registrar":{
-                const cRegister = ServerManager.findChannel(guild, config.guild.channels.register, ChannelType.GuildText) as TextChannel | undefined;
+                const cRegister = findChannel(guild, config.guild.channels.register, ChannelType.GuildText) as TextChannel | undefined;
                 if (!cRegister) {
                     new Interruption(interaction, "Não foi possível localizar o chat de registro!");
                     return;
                 }
                 
-                const cGeneral = ServerManager.findChannel(guild, config.guild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
-                const cInfo = ServerManager.findChannel(guild, config.guild.channels.info, ChannelType.GuildText) as TextChannel | undefined;
-                const cTerms = ServerManager.findChannel(guild, config.guild.channels.terms, ChannelType.GuildText) as TextChannel | undefined;
+                const cGeneral = findChannel(guild, config.guild.channels.general, ChannelType.GuildText) as TextChannel | undefined;
+                const cInfo = findChannel(guild, config.guild.channels.info, ChannelType.GuildText) as TextChannel | undefined;
+                const cTerms = findChannel(guild, config.guild.channels.terms, ChannelType.GuildText) as TextChannel | undefined;
                 
                 if (!cInfo || !cTerms){
                     new Interruption(interaction, "Não foi possível localizar um dos chats: Informações ou Termos!");

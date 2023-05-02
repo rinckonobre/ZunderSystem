@@ -1,6 +1,6 @@
-import { ApplicationCommandType, AttachmentBuilder, ChannelType, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
-import { convertHex, findChannel } from "@/app/functions";
-import { Command, config } from "@/app";
+import { Command } from "@/app";
+import { findRole } from "@/app/functions";
+import { ApplicationCommandType } from "discord.js";
 
 export default new Command({
     name: "pop",
@@ -15,26 +15,11 @@ export default new Command({
         
         const { member, guild } = interaction;
 
-        const recordsForum = findChannel(guild, "registros-globais", ChannelType.GuildForum);
-        if (!recordsForum) return;
+        const info = {
+            id: String
+        };
 
-        recordsForum.threads.create({
-            name: `Registro - ${member.user.tag}`,
-            appliedTags: [],
-            message: {
-                content: `[ ](Novo membro registrado no servidor ${member} ${member.user.tag})`,
-                embeds: [
-                    new EmbedBuilder({
-                        description: `Novo membro registrado no servidor ${member} ${member.user.tag}`,
-                        color: convertHex(config.colors.primary),
-                        thumbnail: {url: `attachment://avatar-${member.displayName}.png`}
-                    })
-                ],
-                files: [
-                    new AttachmentBuilder(member.displayAvatarURL({extension: "png", size: 128}), {name: `avatar-${member.displayName}.png`})
-                ]
-            }
-        });
+        console.log(info.id);
 
     }
 });

@@ -1,4 +1,4 @@
-import { DocumentPlayer, Event, Firestore, ServerManager, client, config, db } from "@/app";
+import { DocumentPlayer, Event, client, config, db } from "@/app";
 import { findChannel } from "@/app/functions";
 import { systemWork } from "@/app/functions/systems/system-work";
 import { works } from "@/config/jsons";

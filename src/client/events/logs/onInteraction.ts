@@ -1,10 +1,10 @@
-import { config, Event, GuildManager } from "@/app";
+import { config, Event } from "@/app";
 import { findChannel } from "@/app/functions";
 import { ChannelType, chatInputApplicationCommandMention, ChatInputCommandInteraction, CommandInteractionOptionResolver, ComponentType, InteractionType, MessageContextMenuCommandInteraction, TextChannel, UserContextMenuCommandInteraction } from "discord.js";
 
 export default new Event({name: "interactionCreate", async run(interaction){
     if (!interaction.inCachedGuild()) return;
-    const { id, channel, guild, user, type } = interaction;
+    const { channel, guild, user, type } = interaction;
 
     const cLogs = findChannel(guild, config.guild.channels.logs, ChannelType.GuildText);
     if (!cLogs) return;
@@ -46,20 +46,20 @@ export default new Event({name: "interactionCreate", async run(interaction){
         const { customId, componentType } = interaction;
         const formatTypes: Map<ComponentType, string> = new Map([
             [ComponentType.ActionRow, "linha de ação"],
-            [ComponentType.Button, "botão"],
-            [ComponentType.ChannelSelect, "menu de seleção de canais"],
-            [ComponentType.MentionableSelect, "menu de seleção de menção"],
-            [ComponentType.RoleSelect, "menu de seleção de cargos"],
-            [ComponentType.StringSelect, "menu de seleção"],
-            [ComponentType.TextInput, "entrada de text"],
-            [ComponentType.UserSelect, "menu de seleção de usuários"],
+            [ComponentType.Button, "⏺️ botão"],
+            [ComponentType.ChannelSelect, "#️⃣ menu de seleção de canais"],
+            [ComponentType.MentionableSelect, "🗃️ menu de seleção de menção"],
+            [ComponentType.RoleSelect, "🔖 menu de seleção de cargos"],
+            [ComponentType.StringSelect, "🗃️ menu de seleção"],
+            [ComponentType.TextInput, "⌨️ entrada de text"],
+            [ComponentType.UserSelect, "👥 menu de seleção de usuários"],
         ]);
 
         content += `usou ${formatTypes.get(componentType)} \`${customId}\``;
     }
 
     if (type == InteractionType.ModalSubmit) {
-        content += `usou o modal \`${interaction.customId}\``;
+        content += `usou o 📑 modal \`${interaction.customId}\``;
     }
 
     if (channel) {

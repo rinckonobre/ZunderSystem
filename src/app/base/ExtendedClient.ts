@@ -8,7 +8,8 @@ import {
     CommandInteractionOptionResolver,
     GatewayIntentsString,
     IntentsBitField,
-    Partials
+    Partials,
+    version
 } from "discord.js";
 import { CommandType, ComponentsButton, ComponentsSelect, ComponentsModal, EventType, ScheduleType } from ".";
 import { readdirSync } from "fs";
@@ -89,6 +90,7 @@ export class ExtendedClient extends Client {
             " in production mode ".bgGreen.white;
     
             console.log(" ✓ Bot online".green, display);
+            console.log(" discord.js".blue, version.yellow);
             console.log("\u276f ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
             console.log("\u276f ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
             console.log("\u276f 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
