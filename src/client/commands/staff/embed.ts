@@ -1,6 +1,6 @@
 import { BreakInteraction, Command, DocumentPlayer, MemberSaves, config, db } from "@/app";
-import { convertHex } from "@/app/functions";
-import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { awaitMessages, buttonCollector, convertHex, messageCollector, stringSelectCollector } from "@/app/functions";
+import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, MessageCollector, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
 export default new Command({
     name: "embed",
@@ -57,7 +57,12 @@ export default new Command({
 
         // Embed Struct
         const blankEmbedData: EmbedData = {
-            title: "Título básico", description: "Descrição básica de embed",
+            title: "Título básico", description: `Descrição básica de embed 
+            Dicas: 
+            _*Deixe para definir imagens por último!_
+            _*Separe artigos usando fields!_
+            _*Formate seu texto com o markdown do discord!_
+            `,
             color: convertHex(config.colors.success)
         };
         let embedBuild: EmbedBuilder;
@@ -71,6 +76,8 @@ export default new Command({
 
         const maxEmbedSize = 5800;
         // Menu Struct
+
+        const files: Array<AttachmentBuilder> = new Array(); 
 
         const modal = new ModalBuilder({ customId: "embed-input-modal", title: "Modal" });
         const inputs = {
@@ -101,8 +108,8 @@ export default new Command({
                 { label: "Título",      value: "title",         emoji: "✏️", description: "Alterar o título do embed" },
                 { label: "Descrição",   value: "description",   emoji: "📝", description: "Alterar a descrição do embed" },
                 { label: "URL",         value: "url",           emoji: "🔗", description: "Alterar a URL do embed" },
-                //{label: "Thumbnail", value: "thumb", emoji: "🌌", description: "Alterar a thumbnail do embed"},
-                //{label: "Image", value: "image", emoji: "🏞️", description: "Alterar o banner do embed"},
+                { label: "Thumbnail",   value: "thumbnail",     emoji: "🌌", description: "Alterar a thumbnail do embed"},
+                { label: "Banner",      value: "banner",        emoji: "🏞️", description: "Alterar o banner do embed"},
                 { label: "Cor",         value: "color",         emoji: "💙", description: "Alterar a cor do embed" },
                 { label: "Autor",       value: "author",        emoji: "👤", description: "Alterar o autor do embed" },
                 { label: "Fields",      value: "fields",        emoji: "🗂️", description: "Alterar os fields do embed" },
@@ -132,8 +139,11 @@ export default new Command({
             color: convertHex(config.colors.default), description: "Selecione um elemento"
         });
 
-        const currents: { element: EmbedSection, index: number; } = {
-            element: "title", index: 0
+        interface EmbedCreatorCurrents { 
+            element: EmbedSection, index: number, messageCollector: MessageCollector | undefined 
+        }
+        const currents: EmbedCreatorCurrents = {
+            element: "title", index: 0, messageCollector: undefined
         };
 
         function getEmbedSize(){
@@ -158,7 +168,7 @@ export default new Command({
                 embeds: [embedBuild, embedDisplay], components: [
                     rows.first.setComponents(elementsSelect),
                     rows.second.setComponents(buttons.send, buttons.options, buttons.close)
-                ]
+                ], files
             };
         }
 
@@ -177,7 +187,7 @@ export default new Command({
             } else {
                 buttons.remove.setDisabled(true);
                 rows.first.setComponents(buttons.add, buttons.remove, buttons.back);
-                return { embeds: [embedBuild, embedDisplay], components: [rows.first] };
+                return { embeds: [embedBuild, embedDisplay], components: [rows.first], files };
             }
         }
 
@@ -190,19 +200,19 @@ export default new Command({
             }
             buttons.toggle.setLabel("Em linha");
             rows.first.setComponents(buttons.change, buttons.remove, buttons.toggle, buttons.back);
-            return {embeds: [embedBuild, embedDisplay], components: [rows.first]};
+            return {embeds: [embedBuild, embedDisplay], components: [rows.first], files};
         }
 
         function getOptionsMenu(){
             embedDisplay.setColor(convertHex(config.colors.default))
             .setDescription("Escolha o que deseja fazer");
             rows.first.setComponents(buttons.save, buttons.load, buttons.reset, buttons.back);
-            return { embeds: [embedBuild, embedDisplay], components: [rows.first] };
+            return { embeds: [embedBuild, embedDisplay], components: [rows.first], files };
         }
 
         function getElementMenu(noEditDisplay: boolean = false) {
             rows.first.setComponents(buttons.change, buttons.remove, buttons.back);
-            const { title, description, color, url, author, footer, fields } = embedBuild.data;
+            const { title, description, color, url, author, footer, fields, thumbnail, image } = embedBuild.data;
 
             buttons.remove.setDisabled(false);
 
@@ -253,18 +263,27 @@ export default new Command({
                     text += `o field **(${currents.index})**`;
                     break;
                 }
+                case "thumbnail": {
+                    if (!thumbnail) buttons.remove.setDisabled(true);
+                    text += "a thumbnail";
+                    break;
+                }
+                case "banner": {
+                    if (!image) buttons.remove.setDisabled(true);
+                    text += "o banner";
+                    break;
+                }
             }
             if (!noEditDisplay) embedDisplay.setColor(convertHex(config.colors.default)).setDescription(text);
-            return { embeds: [embedBuild, embedDisplay], components: [rows.first] };
+            return { embeds: [embedBuild, embedDisplay], components: [rows.first], files };
         }
-
-        // execution
+        
         const message = await interaction.editReply(getMainMenu());
 
-        message.createMessageComponentCollector({ componentType: ComponentType.Button })
-        .on("collect", async (subInteraction) => {
+        buttonCollector(message).on("collect", async (subInteraction) => {
             switch (subInteraction.customId) {
                 case "embed-back-button": {
+                    currents.messageCollector?.stop();
                     switch (currents.element) {
                         case "field": {
                             currents.element = "fields";
@@ -365,11 +384,11 @@ export default new Command({
                         }
                         case "description": {
                             inputs.first.setLabel("Descrição").setMaxLength(4000).setStyle(TextInputStyle.Paragraph)
-                                .setPlaceholder("Digite a descrição do embed");
+                            .setPlaceholder("Digite a descrição do embed");
                             if (description) inputs.first.setValue(description); else inputs.first.setValue("");
 
                             modal.setTitle("Editar descrição")
-                                .setComponents(new ActionRowBuilder({ components: [inputs.first] }));
+                            .setComponents(new ActionRowBuilder({ components: [inputs.first] }));
                             await subInteraction.showModal(modal);
 
                             modalInteraction = await getModalResponse(subInteraction);
@@ -390,11 +409,11 @@ export default new Command({
                         }
                         case "color": {
                             inputs.first.setLabel("Cor").setMaxLength(10).setStyle(TextInputStyle.Short)
-                                .setPlaceholder("Insira a cor do embed. Ex: #32a852");
+                            .setPlaceholder("Insira a cor do embed. Ex: #32a852");
                             if (color) inputs.first.setValue(String(color)); else inputs.first.setValue("");
 
                             modal.setTitle("Editar cor")
-                                .setComponents(new ActionRowBuilder({ components: [inputs.first] }));
+                            .setComponents(new ActionRowBuilder({ components: [inputs.first] }));
                             await subInteraction.showModal(modal);
 
                             modalInteraction = await getModalResponse(subInteraction);
@@ -413,11 +432,11 @@ export default new Command({
                         }
                         case "url": {
                             inputs.first.setLabel("Url").setMaxLength(4000).setStyle(TextInputStyle.Short)
-                                .setPlaceholder("Insira uma url para embed");
+                            .setPlaceholder("Insira uma url para embed");
                             if (url) inputs.first.setValue(url); else inputs.first.setValue("");
 
                             modal.setTitle("Editar url")
-                                .setComponents(new ActionRowBuilder({ components: [inputs.first] }));
+                            .setComponents(new ActionRowBuilder({ components: [inputs.first] }));
                             await subInteraction.showModal(modal);
 
                             modalInteraction = await getModalResponse(subInteraction);
@@ -436,23 +455,23 @@ export default new Command({
                         }
                         case "author": {
                             inputs.first.setLabel("Nome").setPlaceholder("Digite o nome do autor")
-                                .setRequired(true).setStyle(TextInputStyle.Short).setMaxLength(256).setValue("");
+                            .setRequired(true).setStyle(TextInputStyle.Short).setMaxLength(256).setValue("");
                             if (author?.name) inputs.first.setValue(author.name);
 
                             inputs.second.setLabel("Ícone").setPlaceholder("Digite a url do ícone")
-                                .setRequired(false).setStyle(TextInputStyle.Short).setMaxLength(4000).setValue("");
+                            .setRequired(false).setStyle(TextInputStyle.Short).setMaxLength(4000).setValue("");
                             if (author?.icon_url) inputs.second.setValue(author.icon_url);
 
                             inputs.third.setLabel("Link").setPlaceholder("Digite o url do link")
-                                .setRequired(false).setStyle(TextInputStyle.Short).setMaxLength(4000).setValue("");
+                            .setRequired(false).setStyle(TextInputStyle.Short).setMaxLength(4000).setValue("");
                             if (author?.url) inputs.third.setValue(author.url);
 
                             modal.setTitle("Editar autor")
-                                .setComponents(
-                                    new ActionRowBuilder<TextInputBuilder>({ components: [inputs.first] }),
-                                    new ActionRowBuilder<TextInputBuilder>({ components: [inputs.second] }),
-                                    new ActionRowBuilder<TextInputBuilder>({ components: [inputs.third] })
-                                );
+                            .setComponents(
+                                new ActionRowBuilder<TextInputBuilder>({ components: [inputs.first] }),
+                                new ActionRowBuilder<TextInputBuilder>({ components: [inputs.second] }),
+                                new ActionRowBuilder<TextInputBuilder>({ components: [inputs.third] })
+                            );
 
                             subInteraction.showModal(modal);
                             modalInteraction = await getModalResponse(subInteraction);
@@ -562,6 +581,72 @@ export default new Command({
                             }
                             break;
                         }
+                        case "thumbnail":{
+                            embedDisplay.setDescription("Envie a imagem para a thumbnail no chat!");
+                            subInteraction.update({ embeds: [embedBuild, embedDisplay], components: [
+                                rows.first.setComponents(buttons.back)
+                            ]});
+
+                            currents.messageCollector = messageCollector(channel, {filter: m => m.author.id == member.id})
+                            .on("collect", message => {
+                                const { attachments } = message;
+                                message.delete().catch(() => {});
+                                const attach = attachments.first();
+
+                                console.log(attach?.contentType);
+
+                                if (!attach || attach.contentType !== "image/png"){
+                                    embedDisplay.setDescription("Envie pelo menos uma imagem para a thumbnail")
+                                    .setColor(convertHex(config.colors.danger));
+                                    subInteraction.editReply({ embeds: [embedBuild, embedDisplay] });
+                                    return;
+                                }
+
+                                currents.messageCollector?.stop();
+
+                                const index = files.findIndex(a => a.name === "thumbnail.png");
+                                if (index !== -1) {
+                                    files.splice(index, 1);
+                                }
+
+                                files.push(new AttachmentBuilder(attach.url, {name: "thumbnail.png"}));
+                                embedBuild.setThumbnail("attachment://thumbnail.png");
+                                subInteraction.editReply(getElementMenu(true));
+                            });
+                            return;
+                        }
+                        case "banner":{
+                            embedDisplay.setDescription("Envie a imagem para o banner no chat!");
+                            subInteraction.update({ embeds: [embedBuild, embedDisplay], components: [
+                                rows.first.setComponents(buttons.back)
+                            ]});
+
+                            currents.messageCollector = messageCollector(channel, {filter: m => m.author.id == member.id})
+                            .on("collect", message => {
+                                const { attachments } = message;
+                                message.delete().catch(() => {});
+                                const attach = attachments.first();
+
+                                if (!attach){
+                                    embedDisplay.setDescription("Envie pelo menos uma imagem para o banner")
+                                    .setColor(convertHex(config.colors.danger));
+                                    subInteraction.editReply({ embeds: [embedBuild, embedDisplay] });
+                                    return;
+                                }
+
+                                currents.messageCollector?.stop();
+
+                                const index = files.findIndex(a => a.name === "banner.png");
+                                if (index !== -1) {
+                                    files.splice(index, 1);
+                                }
+
+                                files.push(new AttachmentBuilder(attach.url, {name: "banner.png"}));
+                                embedBuild.setImage("attachment://banner.png");
+                                subInteraction.editReply(getElementMenu(true));
+                            });
+                            return;
+                        }
                     }
                     interaction.editReply(getElementMenu(noEditDisplay));
                     return;
@@ -598,6 +683,22 @@ export default new Command({
                             embedBuild.spliceFields(currents.index, 1);
                             subInteraction.update(getFieldsMenu());
                             return;
+                        }
+                        case "thumbnail":{
+                            const index = files.findIndex(a => a.name === "thumbnail.png");
+                            if (index !== -1) {
+                                files.splice(index, 1);
+                            }
+                            embedBuild.setThumbnail(null);
+                            break;
+                        }
+                        case "banner":{
+                            const index = files.findIndex(a => a.name === "banner.png");
+                            if (index !== -1) {
+                                files.splice(index, 1);
+                            }
+                            embedBuild.setImage(null);
+                            break;
                         }
                     }
                     subInteraction.update(getElementMenu());
@@ -653,6 +754,7 @@ export default new Command({
                 case "embed-reset-button":{
                     embedBuild = new EmbedBuilder({title: "reset"});
                     embedBuild = new EmbedBuilder(blankEmbedData);
+                    files.length = 0;
                     subInteraction.update(getOptionsMenu());
                     return;
                 }
@@ -681,10 +783,14 @@ export default new Command({
                     interaction.editReply({embeds: [embedBuild, embedDisplay], components: [rows.first, rows.second]});
                     return;
                 }
+                case "embed-close-button":{
+                    interaction.deleteReply().catch(() => {});
+                    return;
+                }
             }
         });
-        message.createMessageComponentCollector({ componentType: ComponentType.StringSelect })
-        .on("collect", async (subInteraction) => {
+
+        stringSelectCollector(message).on("collect", async (subInteraction) => {
             switch (subInteraction.customId) {
                 case "embed-elements-select": {
                     currents.element = subInteraction.values[0] as EmbedSection;
@@ -720,7 +826,7 @@ export default new Command({
                         return;
                     }
 
-                    webhook.send({embeds: [embedBuild]})
+                    webhook.send({embeds: [embedBuild], files})
                     .then((msg) => {
                         embedDisplay.setColor(convertHex(config.colors.success))
                         .setDescription(`Sua mensagem embed foi enviada no chat ${msg.channel}! [Confira](${msg.url})`);
@@ -740,4 +846,4 @@ export default new Command({
 
 // Command config
 type EmbedSection = "title" | "description" | "color" |
-    "thumbnail" | "url" | "image" | "author" | "fields" | "field" | "footer";
+    "thumbnail" | "url" | "banner" | "author" | "fields" | "field" | "footer";

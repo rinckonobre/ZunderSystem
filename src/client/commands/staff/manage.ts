@@ -3,7 +3,7 @@ import { convertHex, findRole, systemRecords } from "@/app/functions";
 import { registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember, ModalBuilder, RoleResolvable, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
-
+// Command statics
 const manager = {
     nicks: new Collection() as Collection<string, string>
 };
