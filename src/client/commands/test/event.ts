@@ -1,5 +1,5 @@
 import { Command } from "@/app";
-import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Events, GuildMember } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, Events, GuildMember } from "discord.js";
 
 
 export default new Command({

@@ -1,7 +1,7 @@
-import { Command, ReplyBuilder, DiscordCreate, Interruption, TextUtils, config } from "@/app";
+import { Command, DiscordCreate, Interruption, ReplyBuilder, config } from "@/app";
 import { convertHex, findChannel } from "@/app/functions";
 import { infos } from "@/config/jsons";
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, codeBlock, ColorResolvable, EmbedBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, TextChannel, codeBlock } from "discord.js";
 
 
 export default new Command({

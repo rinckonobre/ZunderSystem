@@ -9,7 +9,6 @@ export class ResourceManager {
     public static tempReport: Map<string, string> = new Map();
     
     public static async findMessage(id: string, resource: DocumentResource, guild: Guild){
-        //const guildManager = new GuildManager(guild);
         const channelName = `${resource.category.name}-${resource.category.subCategory}`;
         const channel = findChannel(guild, channelName, ChannelType.GuildText, config.resources.title);
 
@@ -21,7 +20,7 @@ export class ResourceManager {
         if (!resourceData) return {success: false, message: "O recurso não foi encontrado!"};
         
         const channelName = `${resourceData.category.name}-${resourceData.category.subCategory}`;
-        
+
         const channel = findChannel(guild, channelName, ChannelType.GuildText);
         if (!channel) return {success: false, message: "O chat da mensagem não foi encontrado!"};
         

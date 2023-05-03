@@ -1,7 +1,7 @@
 import { BreakInteraction, Command, DocumentPlayer, ReplyBuilder, TextUtils, config, db, oldEmbedMenuBuilder } from "@/app";
-import { buttonCollector, convertHex, findEmoji } from "@/app/functions";
+import { buttonCollector, convertHex } from "@/app/functions";
 import { infos, terms } from "@/config/jsons";
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, ColorResolvable, EmbedBuilder, GuildMember } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember } from "discord.js";
 
 export default new Command({
     name: "informações",

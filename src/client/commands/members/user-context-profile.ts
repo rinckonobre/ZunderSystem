@@ -1,6 +1,6 @@
-import { ApplicationCommandType, GuildMember } from "discord.js";
-import { Command, BreakInteraction, db, DocumentPlayer } from "@/app";
+import { BreakInteraction, Command, DocumentPlayer, db } from "@/app";
 import { systemProfile } from "@/app/functions";
+import { ApplicationCommandType, GuildMember } from "discord.js";
 
 export default new Command({
     name: "Zunder Profile",

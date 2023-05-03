@@ -1,5 +1,5 @@
-import { ApplicationCommandType, ColorResolvable, EmbedBuilder } from "discord.js";
 import { Command, ReplyBuilder, config } from "@/app";
+import { ApplicationCommandType, ColorResolvable, EmbedBuilder } from "discord.js";
 
 export default new Command({
     name: "bot",

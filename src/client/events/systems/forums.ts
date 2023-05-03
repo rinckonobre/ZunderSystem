@@ -1,7 +1,5 @@
 import { Event, config } from "@/app";
 
-
-
 export default new Event({
     name: "threadCreate",
     async run(thread) {

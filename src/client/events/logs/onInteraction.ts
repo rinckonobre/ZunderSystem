@@ -1,6 +1,6 @@
 import { config, Event } from "@/app";
 import { findChannel } from "@/app/functions";
-import { ChannelType, chatInputApplicationCommandMention, ChatInputCommandInteraction, CommandInteractionOptionResolver, ComponentType, InteractionType, MessageContextMenuCommandInteraction, TextChannel, UserContextMenuCommandInteraction } from "discord.js";
+import { ChannelType, chatInputApplicationCommandMention, ChatInputCommandInteraction, CommandInteractionOptionResolver, ComponentType, InteractionType, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 
 export default new Event({name: "interactionCreate", async run(interaction){
     if (!interaction.inCachedGuild()) return;

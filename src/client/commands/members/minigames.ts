@@ -1,6 +1,6 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
-import { convertHex, awaitButton, wait, logger } from "../../../app/functions";
 import { Command, config } from "@/app";
+import { convertHex, awaitButton, wait, logger } from "@/app/functions";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 
 export default new Command({
     name: "minigame",

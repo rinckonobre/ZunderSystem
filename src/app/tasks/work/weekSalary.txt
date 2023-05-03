@@ -1,7 +1,6 @@
-import { EmbedBuilder, TextChannel } from "discord.js";
-import { DiscordCreate, DocumentPlayer, Firestore, Schedule, ServerManager, client, config } from "../..";
-
-const playersColl = new Firestore("players");
+import { ChannelType, EmbedBuilder, TextChannel } from "discord.js";
+import { DiscordCreate, DocumentPlayer, Schedule, client, config, db } from "../..";
+import { findChannel, findRole } from "@/app/functions";
 
 export default new Schedule({
     name: "Salário de trabalho",
@@ -13,16 +12,16 @@ export default new Schedule({
         const guild = client.guilds.cache.get(client.mainGuildID);
         if (!guild) return;
 
-        const cAudit = ServerManager.findChannel(guild, config.guild.channels.audit) as TextChannel | undefined;
+        const cAudit = findChannel(guild, config.guild.channels.audit, ChannelType.GuildText);
         if (!cAudit) return;
 
-        const roleWork = ServerManager.findRole(guild, config.guild.roles.functional.work);
+        const roleWork = findRole(guild, config.guild.roles.functional.work);
         if (!roleWork) return;
 
         const embeds: Array<EmbedBuilder> = [];
 
         roleWork.members.forEach(async member => {
-            const memberData = await playersColl.getDocData(member.id) as DocumentPlayer | undefined;
+            const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
 
             const registry = memberData?.registry;
             const inventory = memberData?.inventory;

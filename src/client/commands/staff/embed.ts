@@ -1,6 +1,6 @@
-import { Command, db, DocumentPlayer, BreakInteraction, MemberSaves, config } from "@/app";
+import { BreakInteraction, Command, DocumentPlayer, MemberSaves, config, db } from "@/app";
 import { convertHex } from "@/app/functions";
-import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, InteractionType, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputComponentData, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
 export default new Command({
     name: "embed",

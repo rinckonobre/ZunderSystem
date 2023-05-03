@@ -1,7 +1,7 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
 import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, client, config, db } from "@/app";
-import { convertHex, stringSelectCollector, buttonCollector, logger, wait, systemRecords, systemRegister, findRole, findEmoji } from "@/app/functions";
+import { buttonCollector, convertHex, findEmoji, findRole, logger, stringSelectCollector, systemRecords, systemRegister, wait } from "@/app/functions";
 import { devices, registries } from "@/config/jsons";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
 
 export default new Command({
     name: "register",

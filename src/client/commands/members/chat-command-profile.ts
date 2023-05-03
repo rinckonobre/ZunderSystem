@@ -1,6 +1,6 @@
+import { BreakInteraction, Command, DocumentPlayer, db } from "@/app";
+import { logger, systemProfile } from "@/app/functions";
 import { ApplicationCommandOptionType, ApplicationCommandType, Collection, GuildMember } from "discord.js";
-import { Command, BreakInteraction, db, DocumentPlayer } from "@/app";
-import { systemProfile, logger } from "@/app/functions";
 
 export default  new Command({
     name: "profile",

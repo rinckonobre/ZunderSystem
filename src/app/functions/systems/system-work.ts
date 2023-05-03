@@ -1,10 +1,8 @@
 import { Attachment, ChannelType, ColorResolvable, EmbedBuilder, GuildMember } from "discord.js";
 import { systemExperience } from "./system-experience";
-import { DocumentPlayer, Firestore, config, db } from "../..";
+import { DocumentPlayer, config, db } from "../..";
 import { works } from "../../../config/jsons";
 import { findChannel } from "../discord/guild";
-
-const playersColl = new Firestore("players");
 
 export const systemWork = {
     async accept(member: GuildMember, image: Attachment, memberData: DocumentPlayer){
@@ -30,7 +28,7 @@ export const systemWork = {
 
         cWork.send({embeds: [embed], files: [image]});
 
-        const MemberDataManager = playersColl.getDocManager(member.id);
+        //const MemberDataManager = await db.players.get(member.id) as DocumentPlayer | undefined;
 
         const xp = profession.exp;
         const salary = memberData.work?.salary || 0;

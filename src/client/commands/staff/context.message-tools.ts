@@ -1,6 +1,6 @@
-import { Command, db, DocumentPlayer, BreakInteraction } from "@/app";
-import { stringSelectCollector, awaitButton } from "@/app/functions";
-import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ComponentType, StringSelectMenuBuilder } from "discord.js";
+import { BreakInteraction, Command, DocumentPlayer, db } from "@/app";
+import { awaitButton, stringSelectCollector } from "@/app/functions";
+import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from "discord.js";
 
 export default new Command({
     name: "Message Tools", nameLocalizations: {"pt-BR": "📩 Ferramentas de mensagem"},
