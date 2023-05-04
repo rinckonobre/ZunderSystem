@@ -1,5 +1,6 @@
-import { BreakInteraction, Command, DocumentPlayer, ReplyBuilder, TextUtils, config, db, oldEmbedMenuBuilder } from "@/app";
-import { buttonCollector, convertHex } from "@/app/functions";
+import { Command, config, db, DocumentPlayer } from "@/app";
+import { oldEmbedMenuBuilder, TextUtils, BreakInteraction } from "@/app/classes";
+import { convertHex, buttonCollector } from "@/app/functions";
 import { infos, terms } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember } from "discord.js";
 
@@ -74,35 +75,33 @@ export default new Command({
                 return;
             }
             case "bot": {
-                const embed = new EmbedBuilder()
-                    .setColor(convertHex(config.colors.zunder))
-                    .setTitle("Bot da Zunder")
-                    .setThumbnail(client.user?.displayAvatarURL() || null)
-                    .setDescription(` ${client.user}
-                    > Conta um sistemas de interação, economia e administração.
-                    - Sistemas de interação incluem envio de trabalhos, 
-                    compartilhamento de recursos, sugestões e imagens.
-                    - Sistemas de economia incluem comandos de perfil, 
-                    níveis e xp, moedas, rankings e loja.
-                    - Sistemas de administração incluem gerenciamento 
-                    completo de membros pela staff, proteções contra 
-                    ataques ao servidor, contra flood e spam.
-                    Registro de membros e de logs no servidor 
-
-                    Desenvolvido por [Rincko](https://github.com/ricknobre)
-                    Linguagem: Typescript
-                    Libs:
-                    - discord.js V14
-                    - distube
-                    - firebase-admin
-                    - fs
-                    - dotenv
-                    - node-cron
-                    `);
-
-                new ReplyBuilder(interaction, true)
-                    .addEmbed(embed)
-                    .send();
+                interaction.reply({ephemeral: true, embeds: [
+                    new EmbedBuilder({
+                        title: "Bot da Zunder",
+                        color: convertHex(config.colors.zunder),
+                        thumbnail: {url: client.user!.displayAvatarURL() },
+                        description: ` ${client.user}
+                        > Conta um sistemas de interação, economia e administração.
+                        - Sistemas de interação incluem envio de trabalhos, 
+                        compartilhamento de recursos, sugestões e imagens.
+                        - Sistemas de economia incluem comandos de perfil, 
+                        níveis e xp, moedas, rankings e loja.
+                        - Sistemas de administração incluem gerenciamento 
+                        completo de membros pela staff, proteções contra 
+                        ataques ao servidor, contra flood e spam.
+                        Registro de membros e de logs no servidor 
+    
+                        Desenvolvido por [Rincko](https://github.com/ricknobre)
+                        Linguagem: Typescript
+                        Libs:
+                        - discord.js V14
+                        - distube
+                        - firebase-admin
+                        - fs
+                        - dotenv
+                        - node-cron`
+                    })
+                ]});
                 return;
             }
         }

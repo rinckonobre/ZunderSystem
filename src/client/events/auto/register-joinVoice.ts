@@ -1,6 +1,7 @@
 import { DocumentPlayer, Event, client, config, db } from "@/app";
-import { findRole, systemRecords, systemRegister } from "@/app/functions";
+import { systemRegister, findRole, systemRecords } from "@/app/functions";
 import { registries } from "@/config/jsons";
+
 
 export default new Event({name: "voiceStateUpdate", async run(oldState, newState){
 	if (newState?.guild?.id != client.mainGuildID || oldState.channel === newState.channel) return;

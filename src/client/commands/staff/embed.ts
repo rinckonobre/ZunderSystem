@@ -1,5 +1,7 @@
-import { BreakInteraction, Command, DocumentPlayer, MemberSaves, config, db } from "@/app";
-import { awaitMessages, buttonCollector, convertHex, messageCollector, stringSelectCollector } from "@/app/functions";
+import { Command, db, DocumentPlayer, config } from "@/app";
+import { BreakInteraction } from "@/app/classes";
+import { convertHex, buttonCollector, messageCollector, stringSelectCollector } from "@/app/functions";
+import { MemberSaves } from "@/app/manager/MemberManager";
 import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, MessageCollector, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
 export default new Command({

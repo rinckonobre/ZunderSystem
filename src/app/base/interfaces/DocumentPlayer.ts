@@ -48,7 +48,6 @@ interface DocumentPlayerRequests {
          * Nick utilizado para se registrar como membro Zunder
          */
         nick: string,
-        //auto: boolean, // Depreciar
         /**
          * Dispositivos habilitados para registro Zunder
          * - minecraft
@@ -94,8 +93,13 @@ export interface DocumentPlayerWork {
 }
 
 interface DocumentPlayerConfig {
+    /** Limits configuration */
     limits?: {
         coins?: number
+    }
+    /** Profile configuration */
+    profile?: {
+        about?: string
     }
 }
 
@@ -128,4 +132,4 @@ export type DocumentPlayerPaths =
 "requests" | "requests.zunder" | 
 "stats" | "stats.events" | "stats.msg" | "stats.shares" | "stats.donated" | 
 "work" | "work.level" | "work.xp" | "work.dones" | "work.gameID" | "work.profession" | "work.salary" |
-"config" | "config.limits" | "config.limits.coins"
+"config" | "config.limits" | "config.limits.coins" | "config.profile" | "config.profile.about"

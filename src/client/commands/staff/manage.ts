@@ -1,5 +1,6 @@
-import { BreakInteraction, Command, DocumentPlayer, MenuBuilder, config, db } from "@/app";
-import { convertHex, findRole, systemRecords } from "@/app/functions";
+import { Command, db, DocumentPlayer, config } from "@/app";
+import { BreakInteraction, MenuBuilder } from "@/app/classes";
+import { findRole, convertHex, systemRecords } from "@/app/functions";
 import { registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember, ModalBuilder, RoleResolvable, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 

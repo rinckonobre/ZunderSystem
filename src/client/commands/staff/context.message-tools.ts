@@ -1,5 +1,6 @@
-import { BreakInteraction, Command, DocumentPlayer, db } from "@/app";
-import { awaitButton, stringSelectCollector } from "@/app/functions";
+import { Command, db, DocumentPlayer } from "@/app";
+import { BreakInteraction } from "@/app/classes";
+import { stringSelectCollector, awaitButton } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from "discord.js";
 
 export default new Command({

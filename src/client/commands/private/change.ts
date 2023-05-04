@@ -1,4 +1,4 @@
-import { Command, DocumentPlayer, DocumentPlayerPaths, db } from "@/app";
+import { Command, DocumentPlayerPaths, db, DocumentPlayer } from "@/app";
 import { devices } from "@/config/jsons";
 import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
 

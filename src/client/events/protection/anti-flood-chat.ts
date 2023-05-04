@@ -1,5 +1,5 @@
 import { Event, client, config } from "@/app";
-import { convertHex, findChannel, logger, wait } from "@/app/functions";
+import { findChannel, convertHex, wait, logger } from "@/app/functions";
 import { ChannelType, Collection, EmbedBuilder, italic } from "discord.js";
 
 const members: Collection<string, number> = new Collection();

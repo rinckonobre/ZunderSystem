@@ -15,7 +15,8 @@ dotenv.config();
 // 	firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
 // }
 
-import { Database, ExtendedClient } from "./app";
+import { ExtendedClient } from "./app";
+import { Database } from "./app/classes";
 
 const client = new ExtendedClient();
 client.start();

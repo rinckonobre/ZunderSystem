@@ -1,5 +1,7 @@
-import { Command, DiscordCreate, Interruption, ReplyBuilder, config } from "@/app";
-import { convertHex, findChannel } from "@/app/functions";
+
+import { Command, config } from "@/app";
+import { DiscordCreate, Interruption } from "@/app/classes";
+import { findChannel, convertHex } from "@/app/functions";
 import { infos } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, TextChannel, codeBlock } from "discord.js";
 
@@ -98,9 +100,8 @@ export default new Command({
             }
             case "jsonmessage": {
                 if (interaction.channel instanceof TextChannel) {
-                    new ReplyBuilder(interaction, true)
-                    .setContent("Digite a mensagem ou apenas \`cancelar\`")
-                    .send();
+
+                    interaction.reply({ephemeral: true, content: "Digite a mensagem ou apenas \`cancelar\`"});
 
                     const collector = DiscordCreate.messageCollector(interaction.channel, {}, (message) => {
                         if (message.member?.id != interaction.user.id) return;
@@ -109,16 +110,16 @@ export default new Command({
                         message.delete().catch(() => {});
 
                         if (content.toLowerCase().trim() == "cancelar") {
-                            new ReplyBuilder(interaction)
-                            .setContent("Ação cancelada!")
-                            .send(true);
+                            // new ReplyBuilder(interaction)
+                            // .setContent("Ação cancelada!")
+                            // .send(true);
                             collector.stop();
                             return;
                         }
 
-                        new ReplyBuilder(interaction)
-                        .setContent(codeBlock(JSON.stringify(message.content)))
-                        .send(true);
+                        // new ReplyBuilder(interaction)
+                        // .setContent(codeBlock(JSON.stringify(message.content)))
+                        // .send(true);
                         collector.stop();
                     });
                 } else {
@@ -193,10 +194,11 @@ export default new Command({
 
                 cRegister.send({ embeds: [embed], components: [row] });
 
-                new ReplyBuilder(interaction, true)
-                .setContent(`Mensagem do chat registrar definida! ${cRegister}`)
-                .send();
-                return;
+                interaction.reply({ephemeral: true, content: `Mensagem do chat registrar definida! ${cRegister}`});
+                // new ReplyBuilder(interaction, true)
+                // .setContent(`Mensagem do chat registrar definida! ${cRegister}`)
+                // .send();
+                // return;
             }
         }
 

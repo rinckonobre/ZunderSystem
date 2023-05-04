@@ -1,5 +1,6 @@
-import { BreakInteraction, Command, DiscordCreate, DocumentPlayer, DocumentPlayerRegistry, client, config, db } from "@/app";
-import { buttonCollector, convertHex, findEmoji, findRole, logger, stringSelectCollector, systemRecords, systemRegister, wait } from "@/app/functions";
+import { Command, db, DocumentPlayer, DocumentPlayerRegistry, client, config } from "@/app";
+import { BreakInteraction, DiscordCreate } from "@/app/classes";
+import { convertHex, stringSelectCollector, buttonCollector, logger, findEmoji, findRole, systemRecords, wait, systemRegister } from "@/app/functions";
 import { devices, registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
 

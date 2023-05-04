@@ -1,5 +1,7 @@
-import { DocumentPlayer, Event, MemberCooldowns, NumberUtils, client, db } from "@/app";
+import { DocumentPlayer, Event, client, db } from "@/app";
+import { NumberUtils } from "@/app/classes";
 import { systemCoins, wait, systemExperience } from "@/app/functions";
+import { MemberCooldowns } from "@/app/manager/MemberManager";
 import { ChannelType, GuildMember } from "discord.js";
 
 export default new Event({

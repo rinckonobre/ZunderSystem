@@ -1,4 +1,4 @@
-import { client, config, Event } from "@/app";
+import { Event, client, config } from "@/app";
 import { findChannel } from "@/app/functions";
 import { ChannelType } from "discord.js";
 
@@ -11,7 +11,11 @@ const excludeChannels = [
 
 export default new Event({ name: "messageDelete", async run(message){
     const { guild, channel, member } = message;
-    if (!guild || guild.id != client.mainGuildID || channel.type != ChannelType.GuildText || member?.id == client.onwerID) return;
+    if (!guild || guild.id != client.mainGuildID || 
+        channel.type != ChannelType.GuildText || 
+        !member || member.id == client.onwerID || 
+        member.id === client.user?.id
+    ) return;
 
     const cLogs = findChannel(guild, config.guild.channels.logs, ChannelType.GuildText); 
 

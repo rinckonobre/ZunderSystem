@@ -1,7 +1,9 @@
-import { BreakInteraction, DocumentPlayer, client, db } from "@/app";
 import { ActionRowBuilder, CommandInteraction, EmbedBuilder, GuildMember, StringSelectMenuBuilder } from "discord.js";
 import { systemRegister } from "./system-register";
 import { registries } from "@/config/jsons";
+import { db, client } from "@/app";
+import { DocumentPlayer } from "@/app/base";
+import { BreakInteraction } from "@/app/classes";
 import { findEmoji } from "../discord/guild";
 
 export const systemManager = {

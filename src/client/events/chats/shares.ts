@@ -1,4 +1,5 @@
-import { BreakInteraction, DocumentPlayer, Event, client, config, db } from "@/app";
+import { DocumentPlayer, Event, client, config, db } from "@/app";
+import { BreakInteraction } from "@/app/classes";
 import { ChannelType } from "discord.js";
 
 export default new Event({name: "messageCreate", async run(message){

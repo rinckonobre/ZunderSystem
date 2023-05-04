@@ -1,4 +1,5 @@
-import { BreakInteraction, Command, DocumentPlayer, db } from "@/app";
+import { Command, db, DocumentPlayer } from "@/app";
+import { BreakInteraction } from "@/app/classes";
 import { systemProfile } from "@/app/functions";
 import { ApplicationCommandType, GuildMember } from "discord.js";
 

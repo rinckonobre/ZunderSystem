@@ -1,5 +1,7 @@
-import { BreakInteraction, Command, DiscordCreate, DiscordTools, DocumentPlayer, DocumentResource, Files, ResourceManager, ZunderResourceUploadProps, config, db, oldEmbedMenuBuilder } from "@/app";
-import { convertHex, findChannel, logger, wait } from "@/app/functions";
+import { Command, db, DocumentResource, DocumentPlayer, ZunderResourceUploadProps, config } from "@/app";
+import { BreakInteraction, DiscordCreate, Files, oldEmbedMenuBuilder, DiscordTools } from "@/app/classes";
+import { logger, convertHex, findChannel, wait } from "@/app/functions";
+import { ResourceManager } from "@/app/manager/ResourceManager";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, Attachment, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, ColorResolvable, ComponentType, EmbedBuilder, Guild, GuildMember, MessageCollector, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, TextInputStyle, codeBlock } from "discord.js";
 
 export default new Command({

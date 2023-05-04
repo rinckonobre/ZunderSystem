@@ -1,5 +1,6 @@
-import { BreakInteraction, Command, DiscordTools, DocumentPlayer, config, db } from "@/app";
-import { buttonCollector, findRole, stringSelectCollector, systemRecords } from "@/app/functions";
+import { Command, config, db, DocumentPlayer } from "@/app";
+import { BreakInteraction, DiscordTools } from "@/app/classes";
+import { findRole, stringSelectCollector, buttonCollector, systemRecords } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
 
 export default new Command({

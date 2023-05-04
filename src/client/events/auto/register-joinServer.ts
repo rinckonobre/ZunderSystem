@@ -1,6 +1,7 @@
 import { DocumentPlayer, Event, config, db } from "@/app";
-import { findRole, systemRecords, systemRegister } from "@/app/functions";
+import { systemRegister, findRole, systemRecords } from "@/app/functions";
 import { registries } from "@/config/jsons";
+
 
 export default new Event({name: "guildMemberAdd", async run(member){
     const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;

@@ -28,7 +28,7 @@
       "@/functions/*": ["./src/app/functions/*"],
       "@/classes/*": ["./src/app/classes/*"],
       "@/interfaces/*": ["./src/app/interfaces/*"],
-      "@/manages/*": ["./src/app/manages/*"],
+      "@/manager/*": ["./src/app/manager/*"],
       "@/structs/*": ["./src/app/structs/*"],
       "@/tasks/*": ["./src/app/tasks/*"],
       "@/config/*": ["./src/config/*"]

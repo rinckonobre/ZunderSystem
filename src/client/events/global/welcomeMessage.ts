@@ -1,5 +1,6 @@
 
-import { CanvasBuilder, CanvasFontBuilder, DocumentPlayer, Event, client, config, db } from "@/app";
+import { DocumentPlayer, Event, client, config, db } from "@/app";
+import { CanvasFontBuilder, CanvasBuilder } from "@/app/classes";
 import { registries } from "@/config/jsons";
 import { loadImage } from "@napi-rs/canvas";
 import { AttachmentBuilder, ChannelType } from "discord.js";
