@@ -1,5 +1,5 @@
-import { Command } from "@/app";
-import { ApplicationCommandType } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+import { Command } from "../../../app/base";
 
 export default new Command({
     name: "pop",
@@ -9,9 +9,16 @@ export default new Command({
     },
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
-    async run({ interaction }) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { member, guild } = interaction;
+    options: [
+        {
+            name: "usuario",
+            description: "usuario",
+            type: ApplicationCommandOptionType.User
+        }
+    ],
+    async run(interaction) {
+        //if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
+        const { guild, member } = interaction;
         
     }
 });

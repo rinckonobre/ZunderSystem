@@ -1,4 +1,4 @@
-import config from "@/config/config.json";
+import config from "./settings/config.json";
 import dotenv from "dotenv";
 export * from "colors";
 dotenv.config();
@@ -15,7 +15,8 @@ dotenv.config();
 // 	firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
 // }
 
-import { ExtendedClient } from "./app";
+// import { ExtendedClient } from "./app";
+import { ExtendedClient } from "./app/base";
 import { Database } from "./app/classes";
 
 const client = new ExtendedClient();

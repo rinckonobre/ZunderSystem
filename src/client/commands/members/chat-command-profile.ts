@@ -1,9 +1,11 @@
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, Collection, GuildMember, ModalBuilder, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
-import { Command, DocumentPlayer, DocumentPlayerPaths, db } from "@/app";
-import { logger, stringSelectCollector, systemProfile } from "@/app/functions";
-import { BreakInteraction } from "@/app/classes";
+import { db } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction } from "../../../app/classes";
+import { systemProfile, logger, stringSelectCollector } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
 
-export default  new Command({
+export default new Command({
     name: "profile",
     nameLocalizations: {"pt-BR": "perfil"},
     description: "Show a member profile",
@@ -17,18 +19,13 @@ export default  new Command({
             type: ApplicationCommandOptionType.User,
         }
     ],
-    async run({interaction, options}) {
-        if (!interaction.isChatInputCommand()) return;
-
-        const member = interaction.member as GuildMember;
-        const mention = options.getMember("membro") as GuildMember | undefined;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { member, options } = interaction;
+        //const member = interaction.member as GuildMember;
+        const mention = options.getMember("membro");
         
-        let profileMember: GuildMember;
-        if (mention) {
-            profileMember = mention;
-        } else {
-            profileMember = member;
-        }
+        const profileMember = mention || member;
         
         if (profileMember.user.bot) {
             new BreakInteraction(interaction, "Bots não podem ter um perfil");
@@ -47,29 +44,29 @@ export default  new Command({
         systemProfile.showMember(interaction, profileMember, memberData);
 
     },
-    buttons: new Collection([
-        ["profile-close-button", async (interaction) => {
+    buttons: {
+        "profile-close-button": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             interaction.deferUpdate();
-
+    
             const { member, message: { embeds }} = interaction;
             const executorId = embeds[0].footer?.text;
-
+    
             if (!executorId || executorId !== member.id) return;
             
             interaction.message.delete().catch(logger);
-        }],
-        ["profile-config-button", async (interaction) => {
+        },
+        "profile-config-button": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
-
+    
             const { member, message: { embeds }} = interaction;
             const executorId = embeds[0].footer?.text;
-
+    
             if (!executorId || executorId !== member.id) {
                 new BreakInteraction(interaction, "Você não pode configurar o perfil de outro membro!");
                 return;
             }
-
+    
             const row = new ActionRowBuilder<StringSelectMenuBuilder>({components: [
                 new StringSelectMenuBuilder({
                     customId: "profile-config-select",
@@ -79,12 +76,12 @@ export default  new Command({
                     ]
                 })
             ]});
-
+    
             const message = await interaction.reply({ephemeral: true, components: [row], fetchReply: true});
-
+    
             stringSelectCollector(message).on("collect", subInteraction => {
                 const selected = subInteraction.values[0];
-
+    
                 switch(selected){
                     case "about": {
                         subInteraction.showModal(new ModalBuilder({
@@ -107,10 +104,10 @@ export default  new Command({
                     }
                 }
             });
-        }]
-    ]),
-    modals: new Collection([
-        ["profile-config-about-modal", async interaction => {
+        }
+    },
+    modals: {
+        "profile-config-about-modal": async interaction => {
             if (!interaction.inCachedGuild()) return;
             const { member } = interaction;          
             const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
@@ -118,9 +115,9 @@ export default  new Command({
                 new BreakInteraction(interaction, "Você não está registrado!");
                 return;
             }
-
+    
             await interaction.deferReply({ephemeral: true});
-
+    
             const newAbout = interaction.fields.getTextInputValue("profile-new-about-input");
             db.players.update(member.id, "config.profile.about", newAbout)
             .then(() => {
@@ -129,6 +126,6 @@ export default  new Command({
             .catch(() => {
                 interaction.editReply({content: "Ocorreu um erro ao tentar alterar o sobre mim do seu perfil! Contate o dev"});
             });
-        }]
-    ])
+        }
+    }
 });

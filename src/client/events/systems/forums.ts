@@ -1,4 +1,5 @@
-import { Event, config } from "@/app";
+import { config } from "../../..";
+import { Event } from "../../../app/base";
 
 export default new Event({
     name: "threadCreate",

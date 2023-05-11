@@ -1,11 +1,13 @@
-import { DocumentPlayer } from "@/app/base";
 import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, EmbedBuilder, GuildMember, codeBlock } from "discord.js";
+import { registries } from "../../../settings/jsons";
+import { DocumentPlayer } from "../../interfaces";
+import { logger } from "../app/logger";
 import { findEmoji, findRole } from "../discord/guild";
-import { registries } from "@/config/jsons";
-import { config } from "@/app";
+import { config } from "../../..";
+
 
 export const systemProfile = {
-    showMember(interaction: CommandInteraction, member: GuildMember, memberData: DocumentPlayer){
+    async showMember(interaction: CommandInteraction, member: GuildMember, memberData: DocumentPlayer){
         const { client } = interaction;
         const { guild } = member;
         const { registry, config: memberConfig } = memberData;
@@ -83,6 +85,9 @@ export const systemProfile = {
 
         const row = new ActionRowBuilder<ButtonBuilder>({components: [buttons.config, buttons.close]});
 
-        interaction.reply({embeds: [embed], components: [row]});
+        const message = await interaction.reply({embeds: [embed], components: [row], fetchReply: true});
+        setTimeout(() => {
+            message.delete().catch(logger);
+        }, 60 * 2 * 1000);
     }
 };

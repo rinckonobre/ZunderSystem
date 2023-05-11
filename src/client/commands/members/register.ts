@@ -1,8 +1,10 @@
-import { Command, db, DocumentPlayer, DocumentPlayerRegistry, client, config } from "@/app";
-import { BreakInteraction, DiscordCreate } from "@/app/classes";
-import { convertHex, stringSelectCollector, buttonCollector, logger, findEmoji, findRole, systemRecords, wait, systemRegister } from "@/app/functions";
-import { devices, registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
+import { client, db, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction, DiscordCreate } from "../../../app/classes";
+import { convertHex, stringSelectCollector, buttonCollector, logger, findEmoji, findRole, systemRecords, wait, systemRegister } from "../../../app/functions";
+import { DocumentPlayer, DocumentPlayerRegistry } from "../../../app/interfaces";
+import { devices, registries } from "../../../settings/jsons";
 
 export default new Command({
     name: "register",
@@ -20,9 +22,9 @@ export default new Command({
             required: true,
         },
     ],
-    async run({client, interaction, options}) {
+    async run(interaction) {
         if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { member, guild } = interaction;
+        const { member, guild, options } = interaction;
         
         if (guild.id != client.mainGuildID) {
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
@@ -164,47 +166,35 @@ export default new Command({
         });
 
     },
-    selects: new Collection([
-        ["register-request-zunder-manage", async (interaction) => {
+    stringSelects: {
+        "register-request-zunder-manage": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild, message } = interaction;
             const embed = new EmbedBuilder(message.embeds[0].data);
             const mentionID = embed.data.fields![0].value;
-
-            const mention = await guild.members.fetch(mentionID + "test").catch(() => undefined);
+    
+            const mention = await guild.members.fetch(mentionID).catch(() => undefined);
             const mentionData = await db.players.get(mentionID) as DocumentPlayer | undefined;
-
-            // async function breakInteraction(text: string){
-            //     embed.setColor(convertHex(config.colors.danger))
-            //     .setDescription(text)
-            //     .setFields();
-            //     interaction.update({embeds: [embed], components: []});
-            //     await wait(8*1000);
-            //     message.delete().catch(logger);
-            // }
-
+    
             const selected = interaction.values[0] as "approve" | "recuse";
-
+    
             if (!mention) {
                 new BreakInteraction(interaction, "O membro não foi localizado no servidor!", {deleteTime: 8000, replace: true});
-                //breakInteraction("O membro não foi localizado no servidor!");
                 if (mentionData && mentionData.requests?.zunder) {
                     await db.players.update(mentionID, "requests.zunder", "delete");
                 }
                 return;
             }
-
+    
             if (!mentionData) {
                 new BreakInteraction(interaction, "Os dados do membro não foram localizado!", {deleteTime: 8000, replace: true});
-                //breakInteraction("Os dados do membro não foram localizado!");
                 return;
             }
-
+    
             const requestZunder = mentionData.requests?.zunder;
-
+    
             if (!requestZunder){
                 new BreakInteraction(interaction, "O membro não tem uma requisição de registro Zunder ativa!", {deleteTime: 8000, replace: true});
-                //breakInteraction("O membro não tem uma requisição de registro Zunder ativa!");
                 return;
             }
             
@@ -217,18 +207,17 @@ export default new Command({
             
             if (!device){
                 new BreakInteraction(interaction, "Dispositivo escolhido não foi encontrado no sistema!", {deleteTime: 8000, replace: true});
-                //breakInteraction("Dispositivo escolhido não foi encontrado no sistema!");
                 return;
             }
-
+    
             if (selected == "approve") {
-
+    
                 const newRegistry: DocumentPlayerRegistry = {
                     nick, device: deviceId, type: "zunder", level: mentionData.registry.level,
                 };
-
+    
                 await db.players.update(mention.id, "registry", newRegistry);
-
+    
                 embed.setTitle("💛 Solicitação aprovada")
                 .setColor(convertHex(config.colors.zunder))
                 .setFooter({text: "Administração Zunder"})
@@ -247,7 +236,7 @@ export default new Command({
                 
                 const roleZunder = findRole(guild, "Membro Zunder");
                 //const roleDiscord = findRole(guild, "Membro Discord");
-
+    
                 if (mentionData.registry.level < 2 && roleZunder){
                     await member.roles.set([
                         ...member.roles.cache.filter(r => r.name !== "Membro Discord").map(r => r),
@@ -277,7 +266,7 @@ export default new Command({
                     Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}
                     ✏️ Nick: \` ${nick} \``
                 });
-
+    
                 // systemRecords.send(guild, {system: {title: "📝 Sistema de registro", color: config.colors.zunder, style: "FULL" },
                 //     staff: member, mention, details: `> ${mention.roles.highest} ${mention} **${mention.user.tag}**
                 //     Registrado como: ${findEmoji(client, "register_zunder_member")} ${roleZunder}
@@ -285,7 +274,7 @@ export default new Command({
                 //     Tipo de registro ${findEmoji(client, "zunder")} Zunder
                 //     Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}`
                 // }); 
-
+    
                 interaction.update({embeds: [
                     new EmbedBuilder({
                         color: convertHex(config.colors.success),
@@ -306,7 +295,7 @@ export default new Command({
                 ${device.declined}
                 - Seu nick não se encaixa nas [regras para nick Zunder](https://zunderoficial.gitbook.io/zundergroup/a-zunder/zndr-member)
                 `);
-
+    
                 interaction.update({embeds: [
                     new EmbedBuilder({
                         color: convertHex(config.colors.danger),
@@ -314,30 +303,27 @@ export default new Command({
                     })
                 ], components: []});
             }
-
+    
             mention.send({embeds: [embed]}).catch(() => {});
             
             await wait(8000);
             message.delete().catch(() => {});
-
-        }]
-    ]),
-    buttons: new Collection([
-        ["test", async (interaction) => {
-        
-        }],
-        ["register-member-button", async (interaction) => {
+    
+        }
+    },
+    buttons: {
+        "register-member-button": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild } = interaction;
             const cGeneral = guild.channels.cache.find(c => c.name === config.guild.channels.general);
-
+    
             const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
             if (memberData) {
                 client.emit("guildMemberAdd", member);
                 new BreakInteraction(interaction, `Você já está registrado! Acesse o chat ${cGeneral}`);
                 return;
             }
-
+    
             const modal = new ModalBuilder({
                 customId: "register-member-modal",
                 title: "Registrar",
@@ -352,12 +338,12 @@ export default new Command({
                     })
                 ]
             });
-
+    
             interaction.showModal(modal);
-        }]
-    ]),
-    modals: new Collection([
-        ["register-member-modal", async (interaction) => {
+        }
+    },
+    modals: {
+        "register-member-modal": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild } = interaction;
             const nick = interaction.fields.getTextInputValue("register-member-nick-input"); 
@@ -367,7 +353,7 @@ export default new Command({
                 new BreakInteraction(interaction, "Digite seu nick sem espaços");
                 return;
             }
-
+    
             const blackListChars = [
                 "@", "/", "*", "-", "&", "!", "<", ">", "#",
                 ":", ";", "(", ")", "$", "%", "`", "[", "]", "+",
@@ -400,8 +386,8 @@ export default new Command({
                 mention: member,
                 staff: client,
             });
-
+    
             interaction.reply({ephemeral: true, content: `Você foi registrado! Acesse o chat ${cGeneral}`});            
-        }]
-    ]),
+        }
+    }
 });

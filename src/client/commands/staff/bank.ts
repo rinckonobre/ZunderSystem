@@ -1,7 +1,9 @@
-import { Command, db, DocumentPlayer, DocumentGuild, config } from "@/app";
-import { BreakInteraction } from "@/app/classes";
-import { convertHex, buttonCollector } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, GuildMember } from "discord.js";
+import { client, db, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction } from "../../../app/classes";
+import { convertHex, buttonCollector } from "../../../app/functions";
+import { DocumentPlayer, DocumentGuild } from "../../../app/interfaces";
 
 const ephemeral = true;
 
@@ -57,9 +59,9 @@ export default new Command({
         }
     ],
     visibility: "staff",
-    async run({client, interaction, options}) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { member, guild, channel } = interaction;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { member, guild, options } = interaction;
 
         if (guild.id != client.mainGuildID){
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal");

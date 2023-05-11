@@ -1,5 +1,6 @@
 import { GuildMember } from "discord.js";
-import { DocumentPlayer, db } from "../..";
+import { db } from "../../..";
+import { DocumentPlayer } from "../../interfaces";
 
 export const systemCoins = {
     async give(member: GuildMember, value: number){

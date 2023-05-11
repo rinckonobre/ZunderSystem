@@ -1,6 +1,7 @@
-import { Event, config } from "@/app";
-import { convertHex, wait } from "@/app/functions";
 import { EmbedBuilder } from "discord.js";
+import { Event } from "../../../app/base";
+import { convertHex, wait } from "../../../app/functions";
+import { config } from "../../..";
 
 export default new Event({
     name: "messageCreate",

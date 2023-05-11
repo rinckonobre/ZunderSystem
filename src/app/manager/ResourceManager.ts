@@ -1,8 +1,9 @@
 import { ActionRowBuilder, Attachment, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
 
-import { DocumentPlayer, DocumentResource, ZunderResourceEditProps, ZunderResourceUploadProps } from "..";
+// import { DocumentPlayer, DocumentResource, ZunderResourceEditProps, ZunderResourceUploadProps } from "../manager";
 import { config, db } from "../..";
 import { findChannel } from "../functions";
+import { ZunderResourceUploadProps, ZunderResourceEditProps, DocumentResource, DocumentPlayer } from "../interfaces";
 export class ResourceManager {
     public static tempUpload: Map<string, ZunderResourceUploadProps> = new Map();
     public static tempEdit: Map<string, ZunderResourceEditProps> = new Map();

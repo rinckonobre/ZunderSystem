@@ -1,5 +1,5 @@
 import { ChannelType, Client, ColorResolvable, EmbedBuilder, Guild, GuildMember, User } from "discord.js";
-import { client, config } from "../..";
+import { client, config } from "../../..";
 import { findChannel } from "../discord/guild";
 import { convertHex } from "../app/convert";
 

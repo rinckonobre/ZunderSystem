@@ -1,7 +1,7 @@
-
-import { Event, client } from "@/app";
-import { findChannel, findEmoji } from "@/app/functions";
 import { ChannelType } from "discord.js";
+import { Event } from "../../../app/base";
+import { client } from "../../..";
+import { findChannel, findEmoji } from "../../../app/functions";
 
 export default new Event({name: "voiceStateUpdate", async run(oldState, newState){
 	if (newState.guild.id != client.mainGuildID || oldState.channel === newState.channel) return;

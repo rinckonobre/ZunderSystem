@@ -1,8 +1,10 @@
-import { Command, db, DocumentResource, DocumentPlayer, ZunderResourceUploadProps, config } from "@/app";
-import { BreakInteraction, DiscordCreate, Files, oldEmbedMenuBuilder, DiscordTools } from "@/app/classes";
-import { logger, convertHex, findChannel, wait } from "@/app/functions";
-import { ResourceManager } from "@/app/manager/ResourceManager";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, Attachment, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, ColorResolvable, ComponentType, EmbedBuilder, Guild, GuildMember, MessageCollector, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, TextInputStyle, codeBlock } from "discord.js";
+import { db, client, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction, DiscordCreate, Files, MenuBuilder, DiscordTools } from "../../../app/classes";
+import { convertHex, logger, findChannel, wait } from "../../../app/functions";
+import { DocumentResource, DocumentPlayer, ZunderResourceUploadProps } from "../../../app/interfaces";
+import { ResourceManager } from "../../../app/manager";
 
 export default new Command({
     name: "resources",
@@ -116,8 +118,8 @@ export default new Command({
             ]
         }
     ],
-    async autocomplete({interaction, options}) {
-        const focusedValue = options.getFocused(true);
+    async autoComplete(interaction) {
+        const focusedValue = interaction.options.getFocused(true);
         switch (focusedValue.name){
             case "title": {
                 const collection = await db.resources.collection.get();
@@ -139,9 +141,9 @@ export default new Command({
         }
 
     },
-    async run({client, interaction, options}) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { guild, member, channel } = interaction;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { guild, member, channel, options } = interaction;
 
         if (channel?.type !== ChannelType.GuildText){
             new BreakInteraction(interaction, "Este comando não pode ser usado neste chat!");
@@ -255,21 +257,42 @@ export default new Command({
                     return;
                 }
 
-                new oldEmbedMenuBuilder({ title: "📁 Lista de recursos", maxItems: 6, type: "BLOCK_LIST" })
-                .setItems(snapshot.docs.map(doc => {
-                    const resource = doc.data() as DocumentResource;
+                new MenuBuilder({
+                    mainEmbed: new EmbedBuilder({
+                        title: "📁 Lista de recursos",
+                        description: `Exibindo todos os recursos de ${mention}
+                        // > Total: \`${snapshot.docs.length}\` recursos`,
+                        color: convertHex(config.colors.systems.resources)
+                    }),
+                    maxItemsPerPage: 6,
+                    type: "Blocks",
+                    ephemeral: true,
+                    items: snapshot.docs.map(doc => {
+                        const resource = doc.data() as DocumentResource;
+                        return {
+                            title: resource.title,
+                            description: `> [Acessar o recurso](${resource.messageURL})
+                            > ID \`${doc.id}\``,
+                            thumbnail: resource.thumbURL,
+                            color: convertHex(config.colors.systems.resources)
+                        };
+                    })
+                }).show(interaction, member);
+                // new oldEmbedMenuBuilder({ title: "📁 Lista de recursos", maxItems: 6, type: "BLOCK_LIST" })
+                // .setItems(snapshot.docs.map(doc => {
+                //     const resource = doc.data() as DocumentResource;
                     
-                    return {
-                        title: resource.title,
-                        content: `> [Acessar o recurso](${resource.messageURL})
-                        > ID \`${doc.id}\``,
-                        thumb: resource.thumbURL,
-                        color: config.colors.systems.resources as ColorResolvable
-                    };
-                }))
-                .editEmbed((embed) => embed.setDescription(`Exibindo todos os recursos de ${mention}
-                > Total: \`${snapshot.docs.length}\` recursos`))
-                .send(interaction, member);
+                //     return {
+                //         title: resource.title,
+                //         content: `> [Acessar o recurso](${resource.messageURL})
+                //         > ID \`${doc.id}\``,
+                //         thumb: resource.thumbURL,
+                //         color: config.colors.systems.resources as ColorResolvable
+                //     };
+                // }))
+                // .editEmbed((embed) => embed.setDescription(`Exibindo todos os recursos de ${mention}
+                // > Total: \`${snapshot.docs.length}\` recursos`))
+                // .send(interaction, member);
 
 
                 // const cooldown = new Cooldown(4, "MINUTES");
@@ -665,8 +688,8 @@ export default new Command({
             }
         }
     },
-    modals: new Collection([
-        ["resource-upload-modal", async (interaction) => {
+    modals: {
+        "resource-upload-modal": async (interaction) => {
             const member = interaction.member as GuildMember;
             const guild = interaction.guild as Guild;
             
@@ -848,8 +871,8 @@ export default new Command({
                     return;
                 }
             }});
-        }]
-    ])
+        }
+    }
 });
 
 // Command Config

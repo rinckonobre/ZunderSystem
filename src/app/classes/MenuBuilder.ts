@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ColorResolvable, CommandInteraction, EmbedBuilder, GuildMember, InteractionResponse, Message, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextChannel, User } from "discord.js";
-import { config } from "..";
+import { config } from "../..";
 import { buttonCollector, convertHex, stringSelectCollector } from "../functions";
 
 interface EmbedMenuItem {

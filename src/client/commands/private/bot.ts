@@ -1,13 +1,14 @@
-import { Command, config } from "@/app";
-import { convertHex } from "@/app/functions";
 import { ApplicationCommandType, ColorResolvable, EmbedBuilder } from "discord.js";
+import { client, config } from "../../..";
+import { Command } from "../../../app/base";
+import { convertHex } from "../../../app/functions";
 
 export default new Command({
     name: "bot",
     description: "Mostra informações sobre o bot",
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
-    async run({client, interaction }) {
+    async run(interaction) {
         const { heapTotal, heapUsed } = process.memoryUsage();
         const cpuUsage = process.cpuUsage();
 

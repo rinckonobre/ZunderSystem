@@ -1,6 +1,6 @@
 import { ChannelType, codeBlock } from "discord.js";
-import { client, config } from "../..";
 import { findChannel } from "../discord/guild";
+import { client, config } from "../../..";
 
 export function logger(message: string){
 

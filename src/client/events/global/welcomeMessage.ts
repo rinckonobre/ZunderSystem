@@ -1,9 +1,10 @@
-
-import { DocumentPlayer, Event, client, config, db } from "@/app";
-import { CanvasFontBuilder, CanvasBuilder } from "@/app/classes";
-import { registries } from "@/config/jsons";
 import { loadImage } from "@napi-rs/canvas";
 import { AttachmentBuilder, ChannelType } from "discord.js";
+import { Event } from "../../../app/base";
+import { client, db, config } from "../../..";
+import { CanvasFontBuilder, CanvasBuilder } from "../../../app/classes";
+import { DocumentPlayer } from "../../../app/interfaces";
+import { registries } from "../../../settings/jsons";
 
 export default new Event({name: "guildMemberAdd", async run(member){
     if (member.guild.id != client.mainGuildID ) return;

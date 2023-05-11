@@ -1,14 +1,16 @@
-import { Command, config, db, DocumentPlayer } from "@/app";
-import { BreakInteraction, DiscordTools } from "@/app/classes";
-import { findRole, stringSelectCollector, buttonCollector, systemRecords } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
+import { db, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction, DiscordTools } from "../../../app/classes";
+import { findRole, stringSelectCollector, buttonCollector, systemRecords } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
 
 export default new Command({
     name: "Member Tools",
     nameLocalizations: {"pt-BR": "👤 Ferramentas de membro"},
     type: ApplicationCommandType.User,
     visibility: "staff",
-    async run({interaction}) {
+    async run(interaction) {
         if (!interaction.isUserContextMenuCommand() || !interaction.inCachedGuild()) return;
 
         const { member, guild, targetMember: target } = interaction;

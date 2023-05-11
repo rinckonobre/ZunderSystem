@@ -3,6 +3,7 @@ export * from "./systems/system-coins";
 export * from "./systems/system-records";
 export * from "./systems/system-register";
 export * from "./systems/system-profile";
+export * from "./systems/system-work";
 
 export * from "./discord/components";
 export * from "./discord/collectors";

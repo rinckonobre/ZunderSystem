@@ -1,5 +1,6 @@
-import { Command } from "@/app";
 import { ApplicationCommandOptionType, ApplicationCommandType, Events, GuildMember } from "discord.js";
+import { client } from "../../..";
+import { Command } from "../../../app/base";
 
 
 export default new Command({
@@ -35,9 +36,9 @@ export default new Command({
             ]
         }
     ],
-    async run({interaction, options, client}) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;        
-
+    async run(interaction) {
+        //if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;        
+        const { options } = interaction;
         const subCommand = options.getSubcommand();
         const mention = options.getMember("membro") as GuildMember;
 

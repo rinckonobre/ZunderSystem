@@ -1,8 +1,9 @@
 import { Attachment, ChannelType, ColorResolvable, EmbedBuilder, GuildMember } from "discord.js";
-import { systemExperience } from "./system-experience";
-import { DocumentPlayer, config, db } from "../..";
-import { works } from "../../../config/jsons";
+import { db, config } from "../../..";
+import { works } from "../../../settings/jsons";
+import { DocumentPlayer } from "../../interfaces";
 import { findChannel } from "../discord/guild";
+import { systemExperience } from "./system-experience";
 
 export const systemWork = {
     async accept(member: GuildMember, image: Attachment, memberData: DocumentPlayer){

@@ -1,8 +1,10 @@
-import { Command, config, db, DocumentPlayer } from "@/app";
-import { oldEmbedMenuBuilder, TextUtils, BreakInteraction } from "@/app/classes";
-import { convertHex, buttonCollector } from "@/app/functions";
-import { infos, terms } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember } from "discord.js";
+import { db, client, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction } from "../../../app/classes";
+import { convertHex, buttonCollector } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
+import { infos, terms } from "../../../settings/jsons";
 
 export default new Command({
     name: "informações",
@@ -21,9 +23,9 @@ export default new Command({
             type: ApplicationCommandOptionType.Subcommand,
         }
     ],
-    async run({client, interaction, options}) {
-        if (!interaction.isChatInputCommand()) return;
-        const member = interaction.member as GuildMember;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { member, options } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         
@@ -31,43 +33,43 @@ export default new Command({
 
         switch (subCommand) {
             case "comandos": {
-                const commandInfoMenu = new oldEmbedMenuBuilder({title: "⌨️ Comandos", maxItems: 8, type: "GRID_2"})
-                    .editEmbed(embed => embed.setColor(convertHex(config.colors.primary)));
-                client.commands.forEach(command => {
+                // const commandInfoMenu = new oldEmbedMenuBuilder({title: "⌨️ Comandos", maxItems: 8, type: "GRID_2"})
+                //     .editEmbed(embed => embed.setColor(convertHex(config.colors.primary)));
+                // client.commands.forEach(command => {
 
-                    const typeIcons = {
-                        1: "⌨️",
-                        2: "👤",
-                        3: "✉️"
-                    };
-                    const visibility = {
-                        "public": "Pública",
-                        "private": "Privada",
-                        "staff": "Somente staffs"
-                    };
-                    const typeUsages = {
-                        1: "/",
-                        2: "Usuário/Apps/",
-                        3: "Mensagem/Apps/"
-                    };
-                    const title = `${typeIcons[command.type || 1]} ${TextUtils.captalize(command.name)}`;
-                    const usage = `\`${typeUsages[command.type || 1]}${command.name}\``;
-                    const description = (command.type == ApplicationCommandType.ChatInput) ? command.description : "Comando de aplicativo";
-                    const content = `> Visibilidade: __${visibility[command.visibility || "public"]}__ \n> ${usage} \n> \`\`\`${description}\`\`\``;
+                //     const typeIcons = {
+                //         1: "⌨️",
+                //         2: "👤",
+                //         3: "✉️"
+                //     };
+                //     const visibility = {
+                //         "public": "Pública",
+                //         "private": "Privada",
+                //         "staff": "Somente staffs"
+                //     };
+                //     const typeUsages = {
+                //         1: "/",
+                //         2: "Usuário/Apps/",
+                //         3: "Mensagem/Apps/"
+                //     };
+                //     const title = `${typeIcons[command.type || 1]} ${TextUtils.captalize(command.name)}`;
+                //     const usage = `\`${typeUsages[command.type || 1]}${command.name}\``;
+                //     const description = (command.type == ApplicationCommandType.ChatInput) ? command.description : "Comando de aplicativo";
+                //     const content = `> Visibilidade: __${visibility[command.visibility || "public"]}__ \n> ${usage} \n> \`\`\`${description}\`\`\``;
 
-                    if (command.visibility == "private" && member.id == member.guild.ownerId) {
-                        commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.danger)});
-                    } 
-                    if (command.visibility == "staff" && (memberData?.registry?.level || 1) > 1) {
-                        commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.primary) });
-                    }
-                    if (command.visibility == "public") {
-                        commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.success) });
-                    }
-                });
+                //     if (command.visibility == "private" && member.id == member.guild.ownerId) {
+                //         commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.danger)});
+                //     } 
+                //     if (command.visibility == "staff" && (memberData?.registry?.level || 1) > 1) {
+                //         commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.primary) });
+                //     }
+                //     if (command.visibility == "public") {
+                //         commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.success) });
+                //     }
+                // });
 
-                commandInfoMenu.setEphemeral(true)
-                    .send(interaction, member);
+                // commandInfoMenu.setEphemeral(true)
+                //     .send(interaction, member);
                     
 
                 //PaginatedEmbeds({interaction, embed, maxItemsPerPage: 6, colluns: 2, items: commands});
@@ -106,8 +108,8 @@ export default new Command({
             }
         }
     },
-    buttons: new Collection([
-        ["information-index", async (interaction) => {
+    buttons: {
+        "information-index": async (interaction) => {
             const sections = infos.sections.map(s => s).reverse();
             const rows: Array<ActionRowBuilder<ButtonBuilder>> = [];
 
@@ -152,10 +154,10 @@ export default new Command({
                 subInteraction.update({embeds: [embed], components: rows});
             });
 
-        }],
-    ]),
-    selects: new Collection([
-        ["terms-index", async (interaction) => {
+        }
+    },
+    stringSelects: {
+        "terms-index": async (interaction) => {
             const item = interaction.values[0];
 
             const termsCategory = terms.find(t => t.category == item);
@@ -178,6 +180,6 @@ export default new Command({
             });
 
             interaction.reply({ephemeral: true, embeds: [embed]});
-        }]
-    ])
+        }
+    }
 });

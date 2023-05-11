@@ -1,10 +1,10 @@
 
-import { Command, config } from "@/app";
-import { DiscordCreate, Interruption } from "@/app/classes";
-import { findChannel, convertHex } from "@/app/functions";
-import { infos } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, TextChannel, codeBlock } from "discord.js";
-
+import { Command } from "../../../app/base";
+import { DiscordCreate, Interruption } from "../../../app/classes";
+import { findChannel, convertHex } from "../../../app/functions";
+import { infos } from "../../../settings/jsons";
+import { config } from "../../..";
 
 export default new Command({
     name: "setup",
@@ -33,21 +33,23 @@ export default new Command({
             type: ApplicationCommandOptionType.Subcommand,
         }
     ],
-    async run({interaction, options}) {
-        if (!(interaction instanceof ChatInputCommandInteraction)) return;
-        //const member = interaction.member as GuildMember;
-        const guild = interaction.guild;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        // if (!(interaction instanceof ChatInputCommandInteraction)) return;
+        // //const member = interaction.member as GuildMember;
+        // const guild = interaction.guild;
+
+        const { options, guild } = interaction;
 
         switch(options.getSubcommand()){
             case "resources": {
-                if (!guild?.channels) {
-                    interaction.reply({ephemeral: true, content: "A guilda não tem canais"});
-                    return;
-                }
+                // if (!guild?.channels) {
+                //     interaction.reply({ephemeral: true, content: "A guilda não tem canais"});
+                //     return;
+                // }
 
                 const categoryResources = guild.channels.cache.find(c => c.name == config.resources.title && c.type == ChannelType.GuildCategory);
                 
-
                 // Criar categoria recursos caso não existir e criar canais
                 if (!categoryResources) {
                     guild.channels.create({

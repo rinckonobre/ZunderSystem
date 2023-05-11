@@ -1,6 +1,8 @@
-import { Event, client, config } from "@/app";
-import { logger } from "@/app/functions";
+
 import { ChannelType } from "discord.js";
+import { Event } from "../../../app/base";
+import { client, config } from "../../..";
+import { logger } from "../../../app/functions";
 
 export default new Event({
     name: "messageCreate",

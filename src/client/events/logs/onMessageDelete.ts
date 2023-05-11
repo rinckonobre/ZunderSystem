@@ -1,6 +1,7 @@
-import { Event, client, config } from "@/app";
-import { findChannel } from "@/app/functions";
 import { ChannelType } from "discord.js";
+import { client, config } from "../../..";
+import { Event } from "../../../app/base";
+import { findChannel } from "../../../app/functions";
 
 const excludeChannels = [
     config.guild.channels.staff,

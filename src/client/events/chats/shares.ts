@@ -1,6 +1,8 @@
-import { DocumentPlayer, Event, client, config, db } from "@/app";
-import { BreakInteraction } from "@/app/classes";
 import { ChannelType } from "discord.js";
+import { Event } from "../../../app/base";
+import { client, db, config } from "../../..";
+import { BreakInteraction } from "../../../app/classes";
+import { DocumentPlayer } from "../../../app/interfaces";
 
 export default new Event({name: "messageCreate", async run(message){
     if (message.channel.type != ChannelType.GuildText ||

@@ -1,7 +1,7 @@
-
-import { Event, config } from "@/app";
-import { systemRecords } from "@/app/functions";
 import { AuditLogEvent, TimestampStyles, User, time } from "discord.js";
+import { Event } from "../../../app/base";
+import { systemRecords } from "../../../app/functions";
+import { config } from "../../..";
 
 export default new Event({
     name: "guildAuditLogEntryCreate",

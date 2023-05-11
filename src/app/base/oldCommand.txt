@@ -1,0 +1,64 @@
+import { ApplicationCommandData, ApplicationCommandType, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Collection, Guild, MessageContextMenuCommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction, UserContextMenuCommandInteraction } from "discord.js";
+
+interface SlashCommand {
+    type: ApplicationCommandType.ChatInput
+    onlyGuild: false
+    run(interaction: ChatInputCommandInteraction): Promise<any>
+}
+interface UserContextCommand {
+    type: ApplicationCommandType.User
+    run(interaction: UserContextMenuCommandInteraction): Promise<any>
+    onlyGuild: false
+}
+interface MessageContextCommand {
+    onlyGuild: false
+    type: ApplicationCommandType.Message
+    run(interaction: MessageContextMenuCommandInteraction): Promise<any>
+}
+interface GuildSlashCommand {
+    onlyGuild: true
+    type: ApplicationCommandType.ChatInput
+    run(interaction: ChatInputCommandInteraction<"cached">): Promise<any>
+}
+interface GuildUserContextCommand {
+    onlyGuild: true
+    type: ApplicationCommandType.User
+    run(interaction: UserContextMenuCommandInteraction<"cached">): Promise<any>
+}
+interface GuildMessageContextCommand {
+    onlyGuild: true
+    type: ApplicationCommandType.Message
+    run(interaction: MessageContextMenuCommandInteraction<"cached">): Promise<any>
+}
+
+// Components
+export type ComponentsButton = Collection<string, (interaction: ButtonInteraction) => any>
+export type ComponentsSelect = Collection<string, (interaction: StringSelectMenuInteraction) => any>
+export type ComponentsModal = Collection<string, (interaction: ModalSubmitInteraction) => any>
+
+interface CommandComponents {
+    buttons?: ComponentsButton,
+    selects?: ComponentsSelect,
+    modals?: ComponentsModal
+}
+
+type CommandProps = SlashCommand 
+| UserContextCommand 
+| MessageContextCommand 
+| GuildSlashCommand
+| GuildMessageContextCommand
+| GuildUserContextCommand
+
+export type CommandType = ApplicationCommandData & CommandProps & CommandComponents & {
+    onlyGuild: boolean;
+    visibility: "private" | "public" | "staff",
+    autocomplete?: (interaction: AutocompleteInteraction) => any;
+};
+export class Command {
+    constructor(options: CommandType){
+        if (!options.dmPermission) {
+            options.dmPermission = false;
+        }
+        Object.assign(this, options);
+    }
+}

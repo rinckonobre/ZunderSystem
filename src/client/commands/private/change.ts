@@ -1,6 +1,8 @@
-import { Command, DocumentPlayerPaths, db, DocumentPlayer } from "@/app";
-import { devices } from "@/config/jsons";
 import { ApplicationCommandOptionType, ApplicationCommandType, GuildMember } from "discord.js";
+import { db } from "../../..";
+import { Command } from "../../../app/base";
+import { DocumentPlayerPaths, DocumentPlayer } from "../../../app/interfaces";
+import { devices } from "../../../settings/jsons";
 
 export default new Command({
     name: "change",
@@ -132,9 +134,9 @@ export default new Command({
             ],
         }
     ],
-    async run({interaction, options}) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { member, guild, channel } = interaction;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { member, guild, channel, options } = interaction;
 
         await interaction.deferReply({ephemeral: true});
 

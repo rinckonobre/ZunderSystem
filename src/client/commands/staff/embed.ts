@@ -1,14 +1,17 @@
-import { Command, db, DocumentPlayer, config } from "@/app";
-import { BreakInteraction } from "@/app/classes";
-import { convertHex, buttonCollector, messageCollector, stringSelectCollector } from "@/app/functions";
-import { MemberSaves } from "@/app/manager/MemberManager";
-import { ActionRowBuilder, ApplicationCommandOptionType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, MessageCollector, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ColorResolvable, ComponentType, EmbedBuilder, EmbedData, MessageCollector, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { db, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction } from "../../../app/classes";
+import { convertHex, buttonCollector, messageCollector, stringSelectCollector } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
+import { MemberSaves } from "../../../app/manager";
 
 export default new Command({
     name: "embed",
     description: "Create a embed message",
     descriptionLocalizations: { "pt-BR": "Cria uma mensagem embed" },
     visibility: "staff",
+    type: ApplicationCommandType.ChatInput,
     options: [
         {
             name: "data", nameLocalizations: { "pt-BR": "dados" },
@@ -24,20 +27,20 @@ export default new Command({
             autocomplete: true,
         },
     ],
-    async autocomplete({ interaction, options }) {
-        const focusedValue = options.getFocused(true);
-        switch (focusedValue.name) {
-            case "color": {
-                const choices = Object.entries(config.colors.defaults).map(([name, value]) => ({ name, value }));
-                const filtered = choices.filter(c => c.name.startsWith(focusedValue.value));
-                await interaction.respond(filtered.slice(0, 25).map(c => ({ name: c.name, value: c.value })));
-                return;
-            }
-        }
-    },
-    async run({ interaction, options }) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { guild, channel, member } = interaction;
+    // async autocomplete({ interaction, options }) {
+    //     const focusedValue = options.getFocused(true);
+    //     switch (focusedValue.name) {
+    //         case "color": {
+    //             const choices = Object.entries(config.colors.defaults).map(([name, value]) => ({ name, value }));
+    //             const filtered = choices.filter(c => c.name.startsWith(focusedValue.value));
+    //             await interaction.respond(filtered.slice(0, 25).map(c => ({ name: c.name, value: c.value })));
+    //             return;
+    //         }
+    //     }
+    // },
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { guild, channel, member, options } = interaction;
         
         // Checks
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;

@@ -21,18 +21,18 @@
     "resolveJsonModule": true,
     "importHelpers": true,
     "experimentalDecorators": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@base/*": ["./src/app/base/*"],
-      "@/functions/*": ["./src/app/functions/*"],
-      "@/classes/*": ["./src/app/classes/*"],
-      "@/interfaces/*": ["./src/app/interfaces/*"],
-      "@/manager/*": ["./src/app/manager/*"],
-      "@/structs/*": ["./src/app/structs/*"],
-      "@/tasks/*": ["./src/app/tasks/*"],
-      "@/config/*": ["./src/config/*"]
-    }
+    // "baseUrl": ".",
+    // "paths": {
+    //   "src/*": ["./src/*"],
+    //   "@base/*": ["./src/app/base/*"],
+    //   "functions/*": ["./src/app/functions/*"],
+    //   "@/classes/*": ["./src/app/classes/*"],
+    //   "@/interfaces/*": ["./src/app/interfaces/*"],
+    //   "@/manager/*": ["./src/app/manager/*"],
+    //   "@/structs/*": ["./src/app/structs/*"],
+    //   "@/tasks/*": ["./src/app/tasks/*"],
+    //   "@/config/*": ["./src/config/*"]
+    // }
   },
   "include": [
     "src"

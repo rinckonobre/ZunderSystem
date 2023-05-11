@@ -1,8 +1,10 @@
-import { DocumentPlayer, Event, client, config, db } from "@/app";
-import { findChannel } from "@/app/functions";
-import { systemWork } from "@/app/functions/systems/system-work";
-import { works } from "@/config/jsons";
+
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } from "discord.js";
+import { Event } from "../../../app/base";
+import { client, config, db } from "../../..";
+import { findChannel, systemWork } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
+import { works } from "../../../settings/jsons";
 
 export default new Event({name: "messageCreate", async run(message){
     const { channel, guild, member } = message;

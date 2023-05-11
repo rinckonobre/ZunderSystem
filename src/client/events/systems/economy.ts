@@ -1,8 +1,10 @@
-import { DocumentPlayer, Event, client, db } from "@/app";
-import { NumberUtils } from "@/app/classes";
-import { systemCoins, wait, systemExperience } from "@/app/functions";
-import { MemberCooldowns } from "@/app/manager/MemberManager";
 import { ChannelType, GuildMember } from "discord.js";
+import { Event } from "../../../app/base";
+import { client, db } from "../../..";
+import { NumberUtils } from "../../../app/classes";
+import { systemCoins, wait, systemExperience } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
+import { MemberCooldowns } from "../../../app/manager";
 
 export default new Event({
     name: "messageCreate", async run(message) {

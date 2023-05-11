@@ -1,13 +1,15 @@
-import { Command, db, DocumentPlayer } from "@/app";
-import { BreakInteraction } from "@/app/classes";
-import { stringSelectCollector, awaitButton } from "@/app/functions";
 import { ActionRowBuilder, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from "discord.js";
+import { db } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction } from "../../../app/classes";
+import { stringSelectCollector, awaitButton } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
 
 export default new Command({
     name: "Message Tools", nameLocalizations: {"pt-BR": "📩 Ferramentas de mensagem"},
     type: ApplicationCommandType.Message,
     visibility: "staff",
-    async run({interaction}) {
+    async run(interaction) {
         if (!interaction.isMessageContextMenuCommand() || !interaction.inCachedGuild()) return;
         const { member, targetMessage, guild, channel } = interaction;
 

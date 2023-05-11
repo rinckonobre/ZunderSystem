@@ -1,5 +1,6 @@
 import { ChannelType, ColorResolvable, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
-import { DocumentPlayer, config, db } from "../..";
+import { config, db } from "../../..";
+import { DocumentPlayer } from "../../interfaces";
 import { findChannel, findEmoji } from "../discord/guild";
 
 export const systemExperience = {

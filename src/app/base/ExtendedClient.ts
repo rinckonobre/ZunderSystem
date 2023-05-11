@@ -1,37 +1,23 @@
+import { ApplicationCommandDataResolvable, ApplicationCommandType, BitFieldResolvable, Client, ClientEvents, Collection, GatewayIntentsString, IntentsBitField, Partials, version } from "discord.js";
+import { ButtonComponents, CommandType, EventType, ModalComponents, ScheduleType, StringSelectComponents } from ".";
 import { GlobalFonts } from "@napi-rs/canvas";
-import {
-    ApplicationCommandDataResolvable,
-    BitFieldResolvable,
-    Client,
-    ClientEvents,
-    Collection,
-    CommandInteractionOptionResolver,
-    GatewayIntentsString,
-    IntentsBitField,
-    Partials,
-    version
-} from "discord.js";
-import { CommandType, ComponentsButton, ComponentsSelect, ComponentsModal, EventType, ScheduleType } from ".";
-import { readdirSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import cron from "node-cron";
-import path from "path";
 import dotenv from "dotenv";
+import path from "path";
 dotenv.config();
 
 import firebase, { ServiceAccount, credential } from "firebase-admin";
-
-import devFirestoreAccount from "@/config/development/firebase.json";
-import prodFirestoreAccount from "@/config/production/firebase.json";
+import devfbAccount from "../../settings/development/firebase.json";
+import prodfbAccount from "../../settings/production/firebase.json";
 
 const enviroment = process.env.ENV as "Development" | "Production";
 
 if (enviroment == "Development"){
-    firebase.initializeApp({ credential: credential.cert(devFirestoreAccount as ServiceAccount) });
+    firebase.initializeApp({ credential: credential.cert(devfbAccount as ServiceAccount) });
 } else {
-    firebase.initializeApp({ credential: credential.cert(prodFirestoreAccount as ServiceAccount) });
+    firebase.initializeApp({ credential: credential.cert(prodfbAccount as ServiceAccount) });
 }
-
-
 const clientFolderPath = path.join(__dirname, "../../client/");
 const fileCondition = (fileName: string) => fileName.endsWith(".js") || fileName.endsWith(".ts");
 
@@ -39,9 +25,9 @@ export class ExtendedClient extends Client {
     public onwerID: string;
     public mainGuildID: string;
     public commands: Collection<String, CommandType> = new Collection();
-    public buttons: ComponentsButton = new Collection();
-    public selects: ComponentsSelect = new Collection();
-    public modals: ComponentsModal = new Collection();
+    public buttons: ButtonComponents = {};
+    public stringSelects: StringSelectComponents = {};
+    public modals: ModalComponents = {};
     public enviroment: "Development" | "Production";
     private slashCommands: Array<ApplicationCommandDataResolvable> = [];
 
@@ -74,16 +60,16 @@ export class ExtendedClient extends Client {
         this.on("ready", () => {
             this.registerCommands();
 
-            const [commands, buttons, selects, modals] = [
-                this.commands.size,
-                this.buttons.size,
-                this.selects.size,
-                this.modals.size
-            ];
+            // const [commands, buttons, selects, modals] = [
+            //     this.commands.size,
+            //     this.buttons.size,
+            //     this.selects.size,
+            //     this.modals.size
+            // ];
     
-            function formatNumber(number: number) {
-                return number < 10 ? `0${number}` : `${number}`;
-            }
+            // function formatNumber(number: number) {
+            //     return number < 10 ? `0${number}` : `${number}`;
+            // }
     
             const display = (this.enviroment == "Development") ?
             " in development mode ".bgCyan.black:
@@ -91,35 +77,35 @@ export class ExtendedClient extends Client {
     
             console.log(" ✓ Bot online".green, display);
             console.log(" discord.js".blue, version.yellow);
-            console.log("\u276f ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
-            console.log("\u276f ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
-            console.log("\u276f 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
-            console.log("\u276f 📑 Modals loaded:".cyan, `${formatNumber(modals) || "nenhum"}`);
+            // console.log("\u276f ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
+            // console.log("\u276f ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
+            // console.log("\u276f 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
+            // console.log("\u276f 📑 Modals loaded:".cyan, `${formatNumber(modals) || "nenhum"}`);
         });
     }
 
     private registerSchedules() {
+        const tasksFolderPath = path.join(clientFolderPath, "tasks");
+        if (!existsSync(tasksFolderPath)) return;
+        readdirSync(tasksFolderPath).forEach(local => {
 
-        const tasksPath = path.join(__dirname, "..", "tasks");
-        readdirSync(tasksPath).forEach(local => {
+            readdirSync(`${tasksFolderPath}/${local}/`)
+            .filter(file => file.endsWith(".ts") || file.endsWith(".js"))
+            .forEach(async (filename) => {
+                const schedule: ScheduleType = (await import(`../../client/tasks/${local}/${filename}`))?.default;
 
-            readdirSync(`${tasksPath}/${local}/`)
-                .filter(file => file.endsWith(".ts") || file.endsWith(".js"))
-                .forEach(async (filename) => {
-                    const schedule: ScheduleType = (await import(`../tasks/${local}/${filename}`))?.default;
+                const { name, display: consoleDisplay, enable, frequency, execute } = schedule;
 
-                    const { name, display: consoleDisplay, enable, frequency, execute } = schedule;
-
-                    if (enable) {
-                        if (cron.validate(frequency)) {
-                            cron.schedule(frequency, execute);
-                            console.log("⏱️  " + name.green + " " + consoleDisplay);
-                        } else {
-                            console.log(`❌ A tarefa ${name} não tem a frequência válida!`.red);
-                        }
+                if (enable) {
+                    if (cron.validate(frequency)) {
+                        cron.schedule(frequency, execute);
+                        console.log("⏱️  " + name.green + " " + consoleDisplay);
+                    } else {
+                        console.log(`❌ A tarefa ${name} não tem a frequência válida!`.red);
                     }
+                }
 
-                });
+            });
         });
     }
     private loadCommands(){
@@ -134,14 +120,23 @@ export class ExtendedClient extends Client {
                 //console.log("◌ Loaded".green, fileName.yellow);
 
                 const command: CommandType = (await import(`../../client/commands/${subFolder}/${fileName}`))?.default;
-                const { name, buttons, selects, modals } = command;
+                if (!command.name) return;
+                const { name, buttons, stringSelects, modals } = command;
 
-                this.slashCommands.push(command);
                 this.commands.set(name, command);
 
-                if (buttons) buttons.forEach((run, key) => this.buttons.set(key, run));
-                if (selects) selects.forEach((run, key) => this.selects.set(key, run));
-                if (modals) modals.forEach((run, key) => this.modals.set(key, run));
+                if (buttons) this.buttons = {...this.buttons, ...buttons};
+                if (stringSelects) this.stringSelects = {...this.stringSelects, ...stringSelects};
+                if (modals) this.modals = {...this.modals, ...modals};
+                // const command: CommandType = (await import(`../../client/commands/${subFolder}/${fileName}`))?.default;
+                // //const { name, buttons, selects, modals } = command;
+                // const { name, buttons, selects, modals } = command;
+                // this.slashCommands.push(command);
+                // this.commands.set(name, command);
+
+                // if (buttons) buttons.forEach((run, key) => this.buttons.set(key, run));
+                // if (selects) selects.forEach((run, key) => this.selects.set(key, run));
+                // if (modals) modals.forEach((run, key) => this.modals.set(key, run));
             });
         });
     }
@@ -153,19 +148,35 @@ export class ExtendedClient extends Client {
         .catch((error) => {
             console.log(`✘ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
         });
-        
+    }
+    private registerListeners(){
         this.on("interactionCreate", (interaction) => {
-            if (!interaction.isCommand()) return;
+            if (interaction.isCommand()){
+                const command = this.commands.get(interaction.commandName);
+                if (!command) return;
+                const { type } = command;
+                const { ChatInput, Message, User } = ApplicationCommandType;
 
-            const { commandName, options } = interaction;
-
-            const command = this.commands.get(commandName);
-            if (!command) {
-                interaction.reply({ephemeral: true, content: "Este comando não está configurado!"});
+                if (interaction.isChatInputCommand() && type == ChatInput) command.run(interaction);
+                if (interaction.isUserContextMenuCommand() && type == User) command.run(interaction);
+                if (interaction.isMessageContextMenuCommand() && type == Message) command.run(interaction);
                 return;
             }
-
-            command.run({client: this, interaction, options: options as CommandInteractionOptionResolver});
+            if (interaction.isButton()){
+                const onClick = this.buttons[interaction.customId];
+                if (onClick) onClick(interaction);
+                return;
+            }
+            if (interaction.isStringSelectMenu()){
+                const onSelect = this.stringSelects[interaction.customId];
+                if (onSelect) onSelect(interaction);
+                return;
+            }
+            if (interaction.isModalSubmit()){
+                const onSubmit = this.modals[interaction.customId];
+                if (onSubmit) onSubmit(interaction);
+                return;
+            }
 
         });
     }
@@ -206,29 +217,29 @@ export class ExtendedClient extends Client {
             });
         });
     }
-    private registerListeners(){
-        this.on("interactionCreate", interaction => {
-            if (interaction.isModalSubmit()) {
-                const { customId } = interaction;
-                const clientModal = this.modals.get(customId);
-                if (clientModal) clientModal(interaction);
-                return;
-            }
+    // private registerListeners(){
+    //     this.on("interactionCreate", interaction => {
+    //         if (interaction.isModalSubmit()) {
+    //             const { customId } = interaction;
+    //             const clientModal = this.modals.get(customId);
+    //             if (clientModal) clientModal(interaction);
+    //             return;
+    //         }
     
-            if (!interaction.isMessageComponent()) return;
-            const { customId } = interaction;
+    //         if (!interaction.isMessageComponent()) return;
+    //         const { customId } = interaction;
         
-            if (interaction.isButton()){
-                const clientButton = this.buttons.get(customId);
-                if (clientButton) clientButton(interaction);
-                return;
-            }
-            if (interaction.isStringSelectMenu()){
-                const clientSelect = this.selects.get(customId);
-                if (clientSelect) clientSelect(interaction);
-                return;
-            }
-        });
-    }
+    //         if (interaction.isButton()){
+    //             const clientButton = this.buttons.get(customId);
+    //             if (clientButton) clientButton(interaction);
+    //             return;
+    //         }
+    //         if (interaction.isStringSelectMenu()){
+    //             const clientSelect = this.selects.get(customId);
+    //             if (clientSelect) clientSelect(interaction);
+    //             return;
+    //         }
+    //     });
+    // }
 }
 

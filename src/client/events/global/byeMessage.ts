@@ -1,7 +1,8 @@
-import { Event, client, config } from "@/app";
-import { canvasDrawImage, canvasDrawRect, canvasDrawText, canvasSetFont } from "@/app/functions";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { AttachmentBuilder, ChannelType } from "discord.js";
+import { Event } from "../../../app/base";
+import { client, config } from "../../..";
+import { canvasDrawImage, canvasDrawRect, canvasSetFont, canvasDrawText } from "../../../app/functions";
 
 export default new Event({name: "guildMemberRemove", async run(member){
     if (member.guild.id != client.mainGuildID ) return;
