@@ -23,7 +23,7 @@ export default new Command({
         },
     ],
     async run(interaction) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
+        if (!interaction.inCachedGuild()) return;
         const { member, guild, options } = interaction;
         
         if (guild.id != client.mainGuildID) {
@@ -54,11 +54,13 @@ export default new Command({
             return;
         }
 
-        const emojis: Collection<string, GuildEmoji | undefined> = new Collection(
-            devices.map(d => ([d.emoji, client.emojis.cache.find(e => e.name == d.emoji)]))
-        );
-        emojis.set("check", client.emojis.cache.find(e => e.name == "check"));
-        emojis.set("cancel", client.emojis.cache.find(e => e.name == "cancel"));
+        // const emojis: Collection<string, GuildEmoji | undefined> = new Collection(
+        //     devices.map(d => ([d.emoji, client.emojis.cache.find(e => e.name == d.emoji)]))
+        // );
+        const emojis = {
+            check: findEmoji(client, "check"),
+            cancel: findEmoji(client, "cancel"),
+        };
 
         const rows = [
             new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>()
@@ -72,14 +74,11 @@ export default new Command({
         const deviceSelect = new StringSelectMenuBuilder({
             customId: "register-devices-select",
             placeholder: "Selecione o dispositivo",
-            options: devices.filter(d => d.id != "discord").map(d => {
-                const { name, emoji, id } = d;
-                return {
-                    label: name, value: id, 
-                    description: `Registrar usando o dispositivo ${d.name}`, 
-                    emoji: {id: emojis.get(emoji)?.id}
-                };
-            })
+            options: devices.filter(d => d.id != "discord").map(d => ({
+                label: d.name, value: d.id,
+                description: `Registrar usando o dispositivo ${d.name}`,
+                emoji: { id: findEmoji(client, d.emoji)?.id }
+            }))
         });
 
         rows[0].setComponents(deviceSelect);
@@ -104,7 +103,7 @@ export default new Command({
                 return;
             }
 
-            const emoji = emojis.get(selectedDevice.emoji);
+            const emoji = findEmoji(client, selectedDevice.emoji);
 
             embed.setDescription(`O dispositivo selecionado foi ${emoji} **${selectedDevice.name}**
             Deseja confirmar a solicitação de registro?`);
@@ -142,8 +141,8 @@ export default new Command({
                     customId: "register-request-zunder-manage",
                     placeholder: "Aprove ou recuse",
                     options: [
-                        { label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: emojis.get("check")?.id}},
-                        { label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: emojis.get("cancel")?.id}}
+                        { label: "Aprovar", value: "approve", description: "Aprovar registro Zunder", emoji: {id: emojis.check?.id}},
+                        { label: "Recusar", value: "recuse", description: "Recusar registro Zunder", emoji: {id: emojis.cancel?.id}}
                     ]
                 });
 
@@ -151,7 +150,7 @@ export default new Command({
     
                 embed.setTitle("📝 Solicitação de registro Zunder")
                 .setDescription(`> Member: ${member} **${member.user.tag}**
-                Dispositivo: ${emojis.get(selectedDevice.emoji)} **${selectedDevice.name}**
+                Dispositivo: ${findEmoji(client, selectedDevice.emoji)} **${selectedDevice.name}**
                 ✏️ Nick: \` ${nick} \`
 
                 ${selectedDevice.instructions.staff}`)
@@ -170,6 +169,7 @@ export default new Command({
         "register-request-zunder-manage": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild, message } = interaction;
+            
             const embed = new EmbedBuilder(message.embeds[0].data);
             const mentionID = embed.data.fields![0].value;
     
@@ -181,7 +181,7 @@ export default new Command({
             if (!mention) {
                 new BreakInteraction(interaction, "O membro não foi localizado no servidor!", {deleteTime: 8000, replace: true});
                 if (mentionData && mentionData.requests?.zunder) {
-                    await db.players.update(mentionID, "requests.zunder", "delete");
+                    await db.players.update(mentionID, "requests.zunder", {}, "delete");
                 }
                 return;
             }
@@ -199,10 +199,7 @@ export default new Command({
             }
             
             await db.players.update(mentionID, "requests.zunder", {}, "delete");
-            
-            const nick = requestZunder.nick;
-            const deviceId = requestZunder.device;
-            
+            const { nick, device: deviceId } = requestZunder;
             const device = devices.find(d => d.id == deviceId);
             
             if (!device){
@@ -235,26 +232,21 @@ export default new Command({
                 `);
                 
                 const roleZunder = findRole(guild, "Membro Zunder");
-                //const roleDiscord = findRole(guild, "Membro Discord");
     
                 if (mentionData.registry.level < 2 && roleZunder){
                     await member.roles.set([
                         ...member.roles.cache.filter(r => r.name !== "Membro Discord").map(r => r),
                         roleZunder
                     ]);
-                    // if (roleZunder) await member.roles.add(roleZunder);
-                    // if (roleDiscord) await member.roles.remove(roleDiscord);
                 }
                 
                 const roleStaffZunder = findRole(guild, "Staff Zunder");
-                //const roleStaffDiscord = findRole(guild, "Staff Discord");
+
                 if (mentionData.registry.level > 1 && roleStaffZunder){
                     await member.roles.set([
                         ...member.roles.cache.filter(r => r.name !== "Staff Discord").map(r => r),
                         roleStaffZunder
                     ]);
-                    // if (roleStaffZunder) await member.roles.add(roleStaffZunder);
-                    // if (roleStaffDiscord) await member.roles.remove(roleStaffDiscord);
                 }
                 systemRecords.create({
                     guild, title: "📝 Registro",
@@ -267,19 +259,11 @@ export default new Command({
                     ✏️ Nick: \` ${nick} \``
                 });
     
-                // systemRecords.send(guild, {system: {title: "📝 Sistema de registro", color: config.colors.zunder, style: "FULL" },
-                //     staff: member, mention, details: `> ${mention.roles.highest} ${mention} **${mention.user.tag}**
-                //     Registrado como: ${findEmoji(client, "register_zunder_member")} ${roleZunder}
-                //     ✏️ Nick: \` ${nick} \`
-                //     Tipo de registro ${findEmoji(client, "zunder")} Zunder
-                //     Dispositivo: ${findEmoji(client, device.emoji)} ${device.name}`
-                // }); 
-    
                 interaction.update({embeds: [
                     new EmbedBuilder({
                         color: convertHex(config.colors.success),
                         description: "Esta solicitação de registro foi aprovada!",
-                        footer: {text: "Administração Zunder"}
+                        footer: { text: "Administração Zunder" }
                     })
                 ], components: []});
             } else {

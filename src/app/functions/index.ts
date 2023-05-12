@@ -13,3 +13,6 @@ export * from "./app/logger";
 export * from "./app/wait";
 export * from "./app/convert";
 export * from "./app/canvas";
+
+export * from "./utils/format";
+export * from "./utils/math";

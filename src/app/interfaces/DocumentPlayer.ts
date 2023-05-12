@@ -13,43 +13,51 @@ interface DocumentPlayerCooldowns {
 }
 
 interface DocumentPlayerInteraction {
-    /** Current player level */
+    /** Player's current interaction level */
     level?: number;
-    /** Current player exp */
+    /** Player's current interaction exp */
     xp: number;
 }
 interface DocumentPlayerInventory {
     /**
-     * Player's total coins
+     * @deprecated
+     * Total player coins
      */
     coins: number;
-    /** Player's amplifier level */
+    /** Player amp level */
     amplifier: number;
 }
 
 interface DocumentPlayerWallet {
-    /** Player's total coins */
+    /** Total player coins */
     coins: number;
 }
 
 export interface DocumentPlayerRegistry {
-    /** Player's registry level */
+    /** 
+     * Player registration level 
+     * - [1] Member
+     * - [2] Helper
+     * - [3] Mod
+     * - [4] Admin
+     * - [5] Leader 
+    */
     level: 1 | 2 | 3 | 4 | 5;
-    /** Player's nick */
+    /** Player's nickname */
     nick: string;
-    /** Player's registry type */
+    /** Player registration type */
     type: "zunder" | "discord";
-    /** Player's registry decive */
+    /** Player registration device */
     device: string;
 }
 interface DocumentPlayerRequests {
     zunder?: {
         /**
-         * Nick utilizado para se registrar como membro Zunder
+         * Nickname used to register as a Zunder member
          */
         nick: string,
         /**
-         * Dispositivos habilitados para registro Zunder
+         * Device used to perform the Zunder registration request
          * - minecraft
          * - steam
          * - epicgames
@@ -57,16 +65,16 @@ interface DocumentPlayerRequests {
         device: string
     }
 }
-interface DocumentPlayerStaff {
-    daily: {
-        check: boolean;
-        messages: number;
-        call: number;
-    }
-    decrease: number;
-    manages: number;
-    score: number;
-}
+// interface DocumentPlayerStaff {
+//     daily: {
+//         check: boolean;
+//         messages: number;
+//         call: number;
+//     }
+//     decrease: number;
+//     manages: number;
+//     score: number;
+// }
 interface DocumentPlayerStats {
     /** Total de eventos participados */
     events?: number;
@@ -93,35 +101,39 @@ export interface DocumentPlayerWork {
 }
 
 interface DocumentPlayerConfig {
-    /** Limits configuration */
+    /** limit settings */
     limits?: {
+        /** Player coin limit */
         coins?: number
     }
-    /** Profile configuration */
+    /** Profile settings */
     profile?: {
+        /** Profile "About" field text */
         about?: string
     }
 }
 
 export interface DocumentPlayer {
-    /** Informações de registro */
+    /** Registration information */
     registry: DocumentPlayerRegistry;
-    /** Cooldowns para utilizar comandos e funções */
+    /** Cooldowns for using commands and functions */
     cooldowns?: DocumentPlayerCooldowns;
-    /** Interação */
+    /** Interaction */
     interaction?: DocumentPlayerInteraction;
-    /** Inventário de itens*/
+    /** Player inventory */
     inventory?: DocumentPlayerInventory;
-    /** Carteira do membro */
+    /** Player wallet */
     wallet?: DocumentPlayerWallet;
-    /** Pedidos */
+    /** Requests */
     requests?: DocumentPlayerRequests;
-    /** Lista de ids de recursos enviados */
+    /** List of resource ids posted by the player */
     resources?: Array<{id: string}>;
-    staff?: DocumentPlayerStaff;
-    /** Estatisticas do membro */
+    //staff?: DocumentPlayerStaff;
+    /** Player stats */
     stats?: DocumentPlayerStats;
+    /** Player job information */
     work?: DocumentPlayerWork;
+    /** Player settings */
     config?: DocumentPlayerConfig;
 }
 

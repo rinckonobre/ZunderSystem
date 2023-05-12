@@ -1,10 +1,11 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember, codeBlock } from "discord.js";
 import { db, client, config } from "../../..";
 import { Command } from "../../../app/base";
-import { BreakInteraction } from "../../../app/classes";
+import { BreakInteraction, MenuBuilder } from "../../../app/classes";
 import { convertHex, buttonCollector } from "../../../app/functions";
 import { DocumentPlayer } from "../../../app/interfaces";
 import { infos, terms } from "../../../settings/jsons";
+import { zeroPad } from "../../../app/functions/utils/format";
 
 export default new Command({
     name: "informações",
@@ -25,7 +26,7 @@ export default new Command({
     ],
     async run(interaction) {
         if (!interaction.inCachedGuild()) return;
-        const { member, options } = interaction;
+        const { member, options, locale } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         
@@ -33,47 +34,43 @@ export default new Command({
 
         switch (subCommand) {
             case "comandos": {
-                // const commandInfoMenu = new oldEmbedMenuBuilder({title: "⌨️ Comandos", maxItems: 8, type: "GRID_2"})
-                //     .editEmbed(embed => embed.setColor(convertHex(config.colors.primary)));
-                // client.commands.forEach(command => {
+                new MenuBuilder({
+                    mainEmbed: new EmbedBuilder({
+                        title: "⌨️ Comandos",
+                        color: convertHex(config.colors.primary)
+                    }),
+                    maxItemsPerPage: 8,
+                    type: "Grid_2",
+                    ephemeral: true,
+                    items: client.commands.map(command => {
+                        const typeIcons = { 1: "⌨️", 2: "👤",3: "✉️" };
+                        const visibility = {
+                            "public": "Pública",
+                            "private": "Privada",
+                            "staff": "Somente staffs"
+                        };
 
-                //     const typeIcons = {
-                //         1: "⌨️",
-                //         2: "👤",
-                //         3: "✉️"
-                //     };
-                //     const visibility = {
-                //         "public": "Pública",
-                //         "private": "Privada",
-                //         "staff": "Somente staffs"
-                //     };
-                //     const typeUsages = {
-                //         1: "/",
-                //         2: "Usuário/Apps/",
-                //         3: "Mensagem/Apps/"
-                //     };
-                //     const title = `${typeIcons[command.type || 1]} ${TextUtils.captalize(command.name)}`;
-                //     const usage = `\`${typeUsages[command.type || 1]}${command.name}\``;
-                //     const description = (command.type == ApplicationCommandType.ChatInput) ? command.description : "Comando de aplicativo";
-                //     const content = `> Visibilidade: __${visibility[command.visibility || "public"]}__ \n> ${usage} \n> \`\`\`${description}\`\`\``;
+                        const description = (command.type == ApplicationCommandType.ChatInput) 
+                        ? command.descriptionLocalizations?.[locale] || command.description
+                        : "Comando de aplicativo";
 
-                //     if (command.visibility == "private" && member.id == member.guild.ownerId) {
-                //         commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.danger)});
-                //     } 
-                //     if (command.visibility == "staff" && (memberData?.registry?.level || 1) > 1) {
-                //         commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.primary) });
-                //     }
-                //     if (command.visibility == "public") {
-                //         commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.success) });
-                //     }
-                // });
-
-                // commandInfoMenu.setEphemeral(true)
-                //     .send(interaction, member);
-                    
-
-                //PaginatedEmbeds({interaction, embed, maxItemsPerPage: 6, colluns: 2, items: commands});
-
+                        const typeUsages = { 1: "/", 2: "Usuário/Apps/", 3: "Mensagem/Apps/" };
+                        const title = `${typeIcons[command.type]} ${command.nameLocalizations?.[locale] || command.name}`;
+                        const usage = `\`${typeUsages[command.type]}${command.nameLocalizations?.[locale] || command.name}\``;
+                        const content = `> Visibilidade: __${visibility[command.visibility]}__ \n> ${usage} \n${codeBlock(description)}`;
+                        
+                        if (command.visibility == "private" && member.id == member.guild.ownerId) {
+                            return {title, description: content, color: convertHex(config.colors.danger) };
+                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.danger)});
+                        } else if (command.visibility == "staff" && (memberData?.registry?.level || 1) > 1) {
+                            return {title, description: content, color: convertHex(config.colors.primary) };
+                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.primary) });
+                        } else {
+                            return {title, description: content, color: convertHex(config.colors.success) };
+                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.success) });
+                        }
+                    })
+                }).show(interaction, member);
                 return;
             }
             case "bot": {
@@ -118,8 +115,8 @@ export default new Command({
                 for (let currButton = 0; currButton < 4; currButton++){
                     const button = sections.pop()?.button;
                     if (!button) break;
-                    const { customId, emoji, label, style } = button;
-                    row.addComponents(new ButtonBuilder({customId, emoji, label, style}));
+                    // const { customId, emoji, label, style } = button;
+                    row.addComponents(new ButtonBuilder(button));
                 }
                 if (row.components.length < 1) break;
                 rows.push(row);
@@ -166,15 +163,11 @@ export default new Command({
                 return;
             }
 
-            function formatNumber(number: number){
-                return number < 10 ? `0${number}` : `${number}`;
-            }
-
             const embed = new EmbedBuilder({
                 title: termsCategory.description,
                 color: convertHex(config.colors.zunder),
                 description: termsCategory.terms
-                .map((term, index) => `- 📃 **(${termsCategory.prefix}${formatNumber(index++)})** ${term}`)
+                .map((term, index) => `- 📃 **(${termsCategory.prefix}${zeroPad(index++)})** ${term}`)
                 .join("\n\n"),
                 footer: { text: "Administração Zunder" }
             });

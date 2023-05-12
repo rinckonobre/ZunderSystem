@@ -1,5 +1,5 @@
 {
-  "name": "zundersystem",
+  "name": "zunder-system",
   "displayName": "Zunder System Bot",
   "version": "1.0.0",
   
@@ -8,9 +8,7 @@
   "scripts": {
     "start": "npm run build && node .",
     "dev": "ts-node src/index.ts",
-    "build": "tsc --project tsconfig.json && npm run paths",
-    "paths": "tscpaths -p tsconfig.json -s ./src -o ./dist",
-    "old:dev": "ts-node src/index.ts"
+    "build": "tsc"
   },
   "keywords": [
     "bot",

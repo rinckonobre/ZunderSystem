@@ -5,6 +5,7 @@ import { existsSync, readdirSync } from "fs";
 import cron from "node-cron";
 import dotenv from "dotenv";
 import path from "path";
+import { log, clear } from "console";
 dotenv.config();
 
 import firebase, { ServiceAccount, credential } from "firebase-admin";
@@ -29,7 +30,6 @@ export class ExtendedClient extends Client {
     public stringSelects: StringSelectComponents = {};
     public modals: ModalComponents = {};
     public enviroment: "Development" | "Production";
-    private slashCommands: Array<ApplicationCommandDataResolvable> = [];
 
     constructor() {
         super({
@@ -50,38 +50,13 @@ export class ExtendedClient extends Client {
         process.env.DEV_BOT_TOKEN as string : 
         process.env.PROD_BOT_TOKEN as string;
 
-        this.login(token);
         this.loadCommands();
         this.registerEvents();
         this.registerFonts();
         this.registerSchedules();
         this.registerListeners();
-
-        this.on("ready", () => {
-            this.registerCommands();
-
-            // const [commands, buttons, selects, modals] = [
-            //     this.commands.size,
-            //     this.buttons.size,
-            //     this.selects.size,
-            //     this.modals.size
-            // ];
-    
-            // function formatNumber(number: number) {
-            //     return number < 10 ? `0${number}` : `${number}`;
-            // }
-    
-            const display = (this.enviroment == "Development") ?
-            " in development mode ".bgCyan.black:
-            " in production mode ".bgGreen.white;
-    
-            console.log(" ✓ Bot online".green, display);
-            console.log(" discord.js".blue, version.yellow);
-            // console.log("\u276f ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
-            // console.log("\u276f ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
-            // console.log("\u276f 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
-            // console.log("\u276f 📑 Modals loaded:".cyan, `${formatNumber(modals) || "nenhum"}`);
-        });
+        this.once("ready", this.whenReady);
+        this.login(token);
     }
 
     private registerSchedules() {
@@ -128,29 +103,18 @@ export class ExtendedClient extends Client {
                 if (buttons) this.buttons = {...this.buttons, ...buttons};
                 if (stringSelects) this.stringSelects = {...this.stringSelects, ...stringSelects};
                 if (modals) this.modals = {...this.modals, ...modals};
-                // const command: CommandType = (await import(`../../client/commands/${subFolder}/${fileName}`))?.default;
-                // //const { name, buttons, selects, modals } = command;
-                // const { name, buttons, selects, modals } = command;
-                // this.slashCommands.push(command);
-                // this.commands.set(name, command);
-
-                // if (buttons) buttons.forEach((run, key) => this.buttons.set(key, run));
-                // if (selects) selects.forEach((run, key) => this.selects.set(key, run));
-                // if (modals) modals.forEach((run, key) => this.modals.set(key, run));
             });
-        });
-    }
-    private registerCommands() {
-        this.application?.commands.set(this.slashCommands)
-        .then(() => {
-            console.log("✓ Slash Commands (/) defined".green);
-        })
-        .catch((error) => {
-            console.log(`✘ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
         });
     }
     private registerListeners(){
         this.on("interactionCreate", (interaction) => {
+            if (interaction.isAutocomplete()){
+                const command = this.commands.get(interaction.commandName);
+                if (!command || !command.autoComplete) return;
+                
+                command.autoComplete(interaction);
+                return;
+            }
             if (interaction.isCommand()){
                 const command = this.commands.get(interaction.commandName);
                 if (!command) return;
@@ -217,6 +181,18 @@ export class ExtendedClient extends Client {
             });
         });
     }
+    private whenReady(){
+        clear();
+        const display = (this.enviroment == "Development") 
+        ? " in development mode ".bgCyan.black
+        : " in production mode ".bgGreen.white;
+    
+        log(" ✓ Bot online".green, display);
+        log(" discord.js".blue, version.yellow);
+        this.application?.commands.set(this.commands.map(c => c))
+        .then((commands) => log("⟨ / ⟩".cyan, `${commands.size} commands defined successfully!`.green))
+        .catch((err) => log("An error occurred while trying to set the commands\n".red, err));
+    }
     // private registerListeners(){
     //     this.on("interactionCreate", interaction => {
     //         if (interaction.isModalSubmit()) {
@@ -241,5 +217,39 @@ export class ExtendedClient extends Client {
     //         }
     //     });
     // }
+    // private registerCommands() {
+    //     this.application?.commands.set(this.slashCommands)
+    //     .then(() => {
+    //         console.log("✓ Slash Commands (/) defined".green);
+    //     })
+    //     .catch((error) => {
+    //         console.log(`✘ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
+    //     });
+    // }
+    // this.on("ready", () => {
+    //     // this.registerCommands();
+
+    //     // const [commands, buttons, selects, modals] = [
+    //     //     this.commands.size,
+    //     //     this.buttons.size,
+    //     //     this.selects.size,
+    //     //     this.modals.size
+    //     // ];
+
+    //     // function formatNumber(number: number) {
+    //     //     return number < 10 ? `0${number}` : `${number}`;
+    //     // }
+
+    //     const display = (this.enviroment == "Development") ?
+    //     " in development mode ".bgCyan.black:
+    //     " in production mode ".bgGreen.white;
+
+    //     console.log(" ✓ Bot online".green, display);
+    //     console.log(" discord.js".blue, version.yellow);
+    //     // console.log("\u276f ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
+    //     // console.log("\u276f ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
+    //     // console.log("\u276f 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
+    //     // console.log("\u276f 📑 Modals loaded:".cyan, `${formatNumber(modals) || "nenhum"}`);
+    // });
 }
 

@@ -1,10 +1,10 @@
-import { ChannelType, GuildMember } from "discord.js";
-import { Event } from "../../../app/base";
+import { ChannelType, Collection, GuildMember } from "discord.js";
 import { client, db } from "../../..";
-import { NumberUtils } from "../../../app/classes";
-import { systemCoins, wait, systemExperience } from "../../../app/functions";
+import { Event } from "../../../app/base";
+import { randomNumber, systemCoins, systemExperience, wait } from "../../../app/functions";
 import { DocumentPlayer } from "../../../app/interfaces";
-import { MemberCooldowns } from "../../../app/manager";
+
+const members: Collection<string, boolean> = new Collection();
 
 export default new Event({
     name: "messageCreate", async run(message) {
@@ -16,22 +16,24 @@ export default new Event({
         const member = message.member as GuildMember;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
-        if (!memberData?.registry) return;
+        if (!memberData) return;
 
         db.players.update(member.id, "stats.msg", 1, "increment");
 
-        if (MemberCooldowns.Economy.get(member)) return;
-
-        const randomXp = NumberUtils.random(1, 8);
-        const randomCoins = NumberUtils.random(1, 4);
+        if (members.has(member.id)) return;
+        // if (MemberCooldowns.Economy.get(member)) return;
+        const randomXp = randomNumber(1, 8);//NumberUtils.random(1, 8);
+        const randomCoins = randomNumber(1, 4); //NumberUtils.random(1, 4);
 
         await systemCoins.give(member, randomCoins);
-        MemberCooldowns.Economy.set(member, 1);
+        members.set(member.id, true);
+        // MemberCooldowns.Economy.set(member, 1);
 
         await wait(5000);
 
         systemExperience.give(member, randomXp, "interaction");
-        MemberCooldowns.Economy.delete(member);
+        members.delete(member.id);
+        // MemberCooldowns.Economy.delete(member);
 
     }
 });
