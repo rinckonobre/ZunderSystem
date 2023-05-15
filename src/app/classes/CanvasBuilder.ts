@@ -24,10 +24,6 @@ interface FontOptions {
     textAlign?: CanvasTextAlign,
     textBaseLine?: CanvasTextBaseline;
 }
-interface Global {
-    width: number;
-    height: number;
-}
 interface DrawRectOptions extends Coords, Sizes, Omit<DrawOptions, "radius"> {
     radius?: number | CornerRadius;
 }

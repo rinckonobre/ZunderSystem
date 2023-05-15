@@ -1,8 +1,8 @@
 
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, CategoryChannelResolvable, ChannelType, ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, TextChannel, codeBlock } from "discord.js";
 import { Command } from "../../../app/base";
-import { DiscordCreate, Interruption } from "../../../app/classes";
-import { findChannel, convertHex } from "../../../app/functions";
+import { Interruption } from "../../../app/classes";
+import { findChannel, convertHex, messageCollector } from "../../../app/functions";
 import { infos } from "../../../settings/jsons";
 import { config } from "../../..";
 
@@ -22,32 +22,14 @@ export default new Command({
             description: "Define as configurações iniciais para os recursos",
             type: ApplicationCommandOptionType.Subcommand
         },
-        // {
-        //     name: "registrar",
-        //     description: "Define a mensagem do chat registrar",
-        //     type: ApplicationCommandOptionType.Subcommand
-        // },
-        {
-            name: "jsonmessage",
-            description: "Converte uma mensagem em uma string JSON",
-            type: ApplicationCommandOptionType.Subcommand,
-        }
     ],
     async run(interaction) {
         if (!interaction.inCachedGuild()) return;
-        // if (!(interaction instanceof ChatInputCommandInteraction)) return;
-        // //const member = interaction.member as GuildMember;
-        // const guild = interaction.guild;
 
         const { options, guild } = interaction;
 
         switch(options.getSubcommand()){
             case "resources": {
-                // if (!guild?.channels) {
-                //     interaction.reply({ephemeral: true, content: "A guilda não tem canais"});
-                //     return;
-                // }
-
                 const categoryResources = guild.channels.cache.find(c => c.name == config.resources.title && c.type == ChannelType.GuildCategory);
                 
                 // Criar categoria recursos caso não existir e criar canais
@@ -97,35 +79,6 @@ export default new Command({
                             }
                         }
                     }
-                }
-                return;
-            }
-            case "jsonmessage": {
-                if (interaction.channel instanceof TextChannel) {
-
-                    interaction.reply({ephemeral: true, content: "Digite a mensagem ou apenas \`cancelar\`"});
-
-                    const collector = DiscordCreate.messageCollector(interaction.channel, {}, (message) => {
-                        if (message.member?.id != interaction.user.id) return;
-                        
-                        const content = message.content;
-                        message.delete().catch(() => {});
-
-                        if (content.toLowerCase().trim() == "cancelar") {
-                            // new ReplyBuilder(interaction)
-                            // .setContent("Ação cancelada!")
-                            // .send(true);
-                            collector.stop();
-                            return;
-                        }
-
-                        // new ReplyBuilder(interaction)
-                        // .setContent(codeBlock(JSON.stringify(message.content)))
-                        // .send(true);
-                        collector.stop();
-                    });
-                } else {
-                    new Interruption(interaction, "Você precista estar em um chat de texto para usar este comando!");
                 }
                 return;
             }

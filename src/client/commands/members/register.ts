@@ -1,7 +1,7 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildEmoji, ModalBuilder, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { client, db, config } from "../../..";
 import { Command } from "../../../app/base";
-import { BreakInteraction, DiscordCreate } from "../../../app/classes";
+import { BreakInteraction } from "../../../app/classes";
 import { convertHex, stringSelectCollector, buttonCollector, logger, findEmoji, findRole, systemRecords, wait, systemRegister } from "../../../app/functions";
 import { DocumentPlayer, DocumentPlayerRegistry } from "../../../app/interfaces";
 import { devices, registries } from "../../../settings/jsons";
@@ -312,14 +312,16 @@ export default new Command({
                 customId: "register-member-modal",
                 title: "Registrar",
                 components: [
-                    DiscordCreate.textInput({type: ComponentType.TextInput,
-                        customId: "register-member-nick-input",
-                        label: "Nick",
-                        placeholder: "Digite seu nick...",
-                        style: TextInputStyle.Short,
-                        required: true,
-                        minLength: 3,
-                    })
+                    new ActionRowBuilder<TextInputBuilder>({components: [
+                        new TextInputBuilder({
+                            customId: "register-member-nick-input",
+                            label: "Nick",
+                            placeholder: "Digite seu nick...",
+                            style: TextInputStyle.Short,
+                            required: true,
+                            minLength: 3,
+                        })
+                    ]})
                 ]
             });
     

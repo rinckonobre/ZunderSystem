@@ -6,7 +6,7 @@ import { BreakInteraction, MenuBuilder } from "../../../app/classes";
 import { buttonCollector, convertHex, findChannel, findRole, logger, stringSelectCollector } from "../../../app/functions";
 
 const membersUpload: Collection<string, ResourceUploadProps> = new Collection();
-const membersEdit: Collection<string, ResourceUploadProps> = new Collection();
+const membersEdit: Collection<string, string> = new Collection();
 const membersReport: Collection<string, string> = new Collection();
 
 export default new Command({
@@ -241,6 +241,7 @@ export default new Command({
                             ]}),
                         ]
                     }));
+                    membersEdit.set(member.id, resourceId);
                     return;
                 }
                 case "thumbnail":{
@@ -648,6 +649,49 @@ export default new Command({
                 membersUpload.delete(member.id);
                 collector.stop();
             });
+        },
+        "resource-edit-modal": async interaction => {
+            if (!interaction.inCachedGuild()) return;
+            const { member, fields, guild } = interaction;
+
+            await interaction.deferReply({ephemeral: true});
+
+            const resourceId = membersEdit.get(member.id);
+            const editResource = await db.resources.get(resourceId || "unknow") as DocumentResource | undefined;
+            if (!editResource){
+                new BreakInteraction(interaction, "O recurso inicial não foi encontrado! \nUtilize o comando novamente", {replace: true});
+                return;
+            }
+
+            const title = fields.getTextInputValue("resource-edit-title-input");
+            const description = fields.getTextInputValue("resource-edit-description-input");
+            const acessURL = fields.getTextInputValue("resource-edit-url-input");
+
+            const embedResource = new EmbedBuilder({
+                title, description, color: convertHex(config.colors.secondary),
+                thumbnail: { url: "attachment://thumb.png" },
+                image: { url: "attachment://banner.png" }
+            });
+
+            try {
+                embedResource.setURL(acessURL);
+            } catch (err) {
+                new BreakInteraction(interaction, "O link de acesso que você enviou não é válido!", {replace: true});
+                return;
+            }
+
+            editResource.title = title;
+            editResource.description = description;
+            editResource.acessURL = acessURL;
+
+            // const files: AttachmentBuilder[] = [];
+
+            // if (editResource.thumbAttach){
+            //     files.push(new AttachmentBuilder(editResource.thumbAttach.url, {name: "thumb.png"}));
+            // }
+            // if (editResource.bannerAttach){
+            //     files.push(new AttachmentBuilder(editResource.bannerAttach.url, {name: "banner.png"}));
+            // }
         },
         "resource-report-modal": async interaction => {
             if (!interaction.inCachedGuild()) return;

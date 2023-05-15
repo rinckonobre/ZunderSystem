@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
 import { db, config } from "../../..";
 import { Command } from "../../../app/base";
-import { BreakInteraction, DiscordTools } from "../../../app/classes";
+import { BreakInteraction } from "../../../app/classes";
 import { findRole, stringSelectCollector, buttonCollector, systemRecords } from "../../../app/functions";
 import { DocumentPlayer } from "../../../app/interfaces";
 
@@ -70,7 +70,7 @@ export default new Command({
 
                     subInteraction.update({
                         embeds: [embed],
-                        components: [DiscordTools.createRowButtons(confirmButton)]
+                        components: [new ActionRowBuilder<ButtonBuilder>({components: [confirmButton]})]
                     });
 
                     return;
