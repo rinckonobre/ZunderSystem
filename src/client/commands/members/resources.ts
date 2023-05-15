@@ -1,122 +1,159 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, Attachment, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, ColorResolvable, ComponentType, EmbedBuilder, Guild, GuildMember, MessageCollector, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, TextChannel, TextInputStyle, codeBlock } from "discord.js";
-import { db, client, config } from "../../..";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildMember, ModalBuilder, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { Command } from "../../../app/base";
-import { BreakInteraction, DiscordCreate, Files, MenuBuilder, DiscordTools } from "../../../app/classes";
-import { convertHex, logger, findChannel, wait } from "../../../app/functions";
-import { DocumentResource, DocumentPlayer, ZunderResourceUploadProps } from "../../../app/interfaces";
-import { ResourceManager } from "../../../app/manager";
+import { DocumentPlayer, DocumentResource, ResourceUploadProps, ZunderResourceUploadProps } from "../../../app/interfaces";
+import { client, config, db } from "../../..";
+import { BreakInteraction, MenuBuilder } from "../../../app/classes";
+import { buttonCollector, convertHex, findChannel, findRole, logger, stringSelectCollector } from "../../../app/functions";
+
+const membersUpload: Collection<string, ResourceUploadProps> = new Collection();
+const membersEdit: Collection<string, ResourceUploadProps> = new Collection();
+const membersReport: Collection<string, string> = new Collection();
 
 export default new Command({
     name: "resources",
-    nameLocalizations: { "pt-BR": "recursos" },
-    description: "📂 Zunder Resources",
-    descriptionLocalizations: { "pt-BR": "📂 Recursos da Zunder" },
-    visibility: "public",
+    description: "Zunder resources",
     type: ApplicationCommandType.ChatInput,
+    visibility: "public",
     options: [
         {
             name: "upload",
-            nameLocalizations: { "pt-BR": "enviar" },
-            description: "📂 Upload a new resource",
-            descriptionLocalizations: { "pt-BR": "📂 Envia um novo recurso" },
+            description: "upload",
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
-                    name: "thumb",
-                    description: "🌌 Add resource thumbnail",
-                    descriptionLocalizations: { "pt-BR": "🌌 Adicionar thumbnail no recurso" },
+                    name: "thumbnail",
+                    description: "thumbnail",
                     type: ApplicationCommandOptionType.Attachment,
                 },
                 {
                     name: "banner",
-                    description: "🏞️ Add resource banner",
-                    descriptionLocalizations: { "pt-BR": "🏞️ Adicionar banner no recurso" },
+                    description: "banner",
                     type: ApplicationCommandOptionType.Attachment,
-                }
+                },
             ]
         },
         {
             name: "edit",
-            nameLocalizations: { "pt-BR": "editar"},
-            description: "✏️ Edit a resource",
-            descriptionLocalizations: { "pt-BR": "✏️ Editar um recurso" },
-            type: ApplicationCommandOptionType.Subcommand,
+            description: "edit",
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
-                    name: "id",
-                    description: "Resource id",
-                    descriptionLocalizations: { "pt-BR": "Id do recurso" },
-                    type: ApplicationCommandOptionType.String,
-                    required: true,
-                }
-            ]
-        },
-        {
-            name: "list",
-            nameLocalizations: { "pt-BR": "listar" },
-            description: "🗂️ Show a resource list",
-            descriptionLocalizations: { "pt-BR": "🗂️ Exibe uma lista de recursos" },
-            type: ApplicationCommandOptionType.Subcommand,
-            options: [
+                    name: "information",
+                    description: "information",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "id",
+                            description: "id",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                        },
+                    ]
+                },
                 {
-                    name: "member",
-                    nameLocalizations: { "pt-BR": "membro" },
-                    description: "list a member's resources",
-                    descriptionLocalizations: { "pt-BR": "listar os recursos de um membro" },
-                    type: ApplicationCommandOptionType.User,
-                }
-            ]
-        },
-        {
-            name: "search",
-            nameLocalizations: { "pt-BR": "pesquisar" },
-            description: "Search a resource",
-            descriptionLocalizations: { "pt-BR": "Pesquisa um recurso" },
-            type: ApplicationCommandOptionType.Subcommand,
-            options: [
+                    name: "thumbnail",
+                    description: "thumbnail",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "id",
+                            description: "id",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                        },
+                        {
+                            name: "image",
+                            description: "image",
+                            type: ApplicationCommandOptionType.Attachment,
+                        },
+                    ]
+                },
                 {
-                    name: "title",
-                    nameLocalizations: { "pt-BR": "titulo" },
-                    description: "Resources' title",
-                    descriptionLocalizations: { "pt-BR": "Título do recurso" },
-                    type: ApplicationCommandOptionType.String,
-                    autocomplete: true,
-                    required: true
-                }
-            ]
-        },
-        {
-            name: "fetch",
-            nameLocalizations: { "pt-BR": "obter" },
-            description: "Fetch a resource by id",
-            descriptionLocalizations: { "pt-BR": "Busca um recurso por id" },
-            type: ApplicationCommandOptionType.Subcommand,
-            options: [
-                {
-                    name: "id",
-                    description: "Resource's id",
-                    descriptionLocalizations: { "pt-BR": "Id do recurso" },
-                    type: ApplicationCommandOptionType.String,
-                    required: true
+                    name: "banner",
+                    description: "banner",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "id",
+                            description: "id",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                        },
+                        {
+                            name: "image",
+                            description: "image",
+                            type: ApplicationCommandOptionType.Attachment,
+                        },
+                    ]
                 },
             ]
         },
         {
             name: "delete",
-            nameLocalizations: { "pt-BR": "deletar" },
-            description: "🗑️ Delete a resource",
-            descriptionLocalizations: { "pt-BR": "🗑️ Deleta um recurso" },
+            description: "delete",
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "id",
-                    description: "Resource's id",
-                    descriptionLocalizations: { "pt-BR": "Id do recurso" },
+                    description: "id",
                     type: ApplicationCommandOptionType.String,
-                    required: true
+                    required: true,
                 },
             ]
-        }
+        },
+        {
+            name: "list",
+            description: "list",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "member",
+                    description: "member",
+                    type: ApplicationCommandOptionType.User,
+                    required: true,
+                },
+            ]
+        },
+        {
+            name: "get",
+            description: "get",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "id",
+                    description: "id",
+                    type: ApplicationCommandOptionType.String,
+                    required: true,
+                },
+            ]
+        },
+        {
+            name: "search",
+            description: "search",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "title",
+                    description: "title",
+                    type: ApplicationCommandOptionType.String,
+                    autocomplete: true,
+                    required: true,
+                },
+            ]
+        },
+        // {
+        //     name: "migrate",
+        //     description: "migrate",
+        //     type: ApplicationCommandOptionType.Subcommand,
+        //     options: [
+        //         {
+        //             name: "id",
+        //             description: "id",
+        //             type: ApplicationCommandOptionType.String,
+        //             required: true,
+        //         },
+        //     ]
+        // },
     ],
     async autoComplete(interaction) {
         const focusedValue = interaction.options.getFocused(true);
@@ -129,7 +166,7 @@ export default new Command({
                 });
                 let filtered = choices.filter(c => c.name.startsWith(focusedValue.value));
 
-                if (filtered.length < 1) 
+                if (filtered.length < 1)
                 filtered = choices.filter(c => c.name.toLowerCase().includes(focusedValue.value));
                 
                 if (filtered.length < 1) 
@@ -139,120 +176,164 @@ export default new Command({
                 return;
             }
         }
-
     },
     async run(interaction) {
         if (!interaction.inCachedGuild()) return;
-        const { guild, member, channel, options } = interaction;
+        const { member, guild, channel, options } = interaction;
 
-        if (channel?.type !== ChannelType.GuildText){
-            new BreakInteraction(interaction, "Este comando não pode ser usado neste chat!");
-            return;
-        }
-
-        if (guild.id != client.mainGuildID) {
-            new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
-            return;
-        }
-        
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
-        if (!memberData){
+        if (!memberData) {
             new BreakInteraction(interaction, "Apenas membros registrados podem utilizar este comando!");
             return;
         }
 
-        const rows = [
-            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
-            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
-            new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>(),
-        ];
-        
-        switch ((options.getSubcommand()) as SubCommands){
-            case "upload": {
-                
-                const currCooldown = memberData.cooldowns?.commands?.resources?.upload || Date.now();
-                if (Date.now() < currCooldown) {
-                    new BreakInteraction(interaction, `Você poderá usar esse comando novamente <t:${~~(currCooldown / 1000)}:R>`);
-                    return;
-                }
+        if (guild.id !== client.mainGuildID){
+            new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
+            return;
+        }
 
-                const modal = new ModalBuilder({
-                    title: "Enviar recurso",
-                    customId: "resource-upload-modal",
-                    components: [
-                        DiscordCreate.textInput({ type: ComponentType.TextInput,
-                            customId: "resource-upload-title",
-                            label: "Definir título",
-                            minLength: 8, maxLength: 150,
-                            placeholder: "Escreva o título do seu recurso",
-                            required: true,
-                            style: TextInputStyle.Short
-                        }),
-                        DiscordCreate.textInput({ type: ComponentType.TextInput,
-                            customId: "resource-upload-description",
-                            label: "Definir descrição",
-                            minLength: 20, maxLength: 4000,
-                            placeholder: "Descreva um pouco sobre o seu recurso",
-                            required: true,
-                            style: TextInputStyle.Paragraph
-                        }),
-                        DiscordCreate.textInput({ type: ComponentType.TextInput,
-                            customId: "resource-upload-acessurl",
-                            label: "Definir link para acesso",
-                            minLength: 1,
-                            placeholder: "Insira o link para acessar seu recurso",
-                            required: true,
-                            style: TextInputStyle.Short
-                        })
-                    ]
-                });
+        const subCommandGroup = options.getSubcommandGroup();
+        const subCommand = options.getSubcommand();
 
-                const zunderResource: ZunderResourceUploadProps = {
-                    authorID: member.id, 
-                    guildID: guild.id,
-                    title: "", description: "", acessURL: "",
-                    reports: new Array()
-                };
-
-                const [ thumb, banner ] = [ options.getAttachment("thumb"), options.getAttachment("banner") ];
-
-                if (thumb) {
-                    if (Files.checkAttachmentMbSize(thumb, ">", 8)) {
-                        new BreakInteraction(interaction, "O arquivo que você enviou para thumbnail execede o limite de `8 mbs`");
-                        return;
-                    }
-                    zunderResource.thumbAttach = thumb;
-                }
-                if (banner) {
-                    if (Files.checkAttachmentMbSize(banner,">", 8)) {
-                        new BreakInteraction(interaction, "O arquivo que você enviou para thumbnail execede o limite de `8 mbs`");
-                        return;
-                    }
-                    zunderResource.bannerAttach = banner;
-                }
-
-                ResourceManager.tempUpload.set(member.id, zunderResource);
-
-                await interaction.showModal(modal);
+        if (subCommandGroup == "edit"){
+            const resourceId = options.getString("id", true);
+            const resource = await db.resources.get(resourceId) as DocumentResource | undefined;
+            if (!resource) {
+                new BreakInteraction(interaction, "O recurso não foi encontrado! \nTalvez o id tenha sido digitado incorretamente!");
                 return;
             }
-            case "list": {
+
+            switch(subCommand){
+                case "information":{
+                    interaction.showModal(new ModalBuilder({
+                        customId: "resource-edit-modal",
+                        title: "📝 Editar recurso",
+                        components: [
+                            new ActionRowBuilder<TextInputBuilder>({components: [
+                                new TextInputBuilder({
+                                    customId: "resource-edit-title-input",
+                                    label: "Título",
+                                    placeholder: "Editar título do recurso",
+                                    style: TextInputStyle.Short,
+                                    value: resource.title,
+                                    required: true
+                                })
+                            ]}),
+                            new ActionRowBuilder<TextInputBuilder>({components: [
+                                new TextInputBuilder({
+                                    customId: "resource-edit-description-input",
+                                    label: "Descrição",
+                                    placeholder: "Editar descrição do recurso",
+                                    style: TextInputStyle.Paragraph,
+                                    value: resource.description,
+                                    required: true
+                                })
+                            ]}),
+                            new ActionRowBuilder<TextInputBuilder>({components: [
+                                new TextInputBuilder({
+                                    customId: "resource-edit-url-input",
+                                    label: "Link de acesso",
+                                    placeholder: "Editar link de acesso do recurso",
+                                    style: TextInputStyle.Short,
+                                    value: resource.acessURL,
+                                    required: true
+                                })
+                            ]}),
+                        ]
+                    }));
+                    return;
+                }
+                case "thumbnail":{
+
+                    return;
+                }
+                case "banner":{
+
+                    return;
+                }
+            }
+            return;
+        }
+
+        switch(subCommand){
+            case "upload":{
+                const initialResource: ZunderResourceUploadProps = {
+                    authorID: member.id, guildID: guild.id, reports: new Array(),
+                    title: "inserir", description: "inserir", acessURL: "inserir",
+                };
+
+                const thumbnail = options.getAttachment("thumbnail");
+                const banner = options.getAttachment("banner");
+
+                if (thumbnail){
+                    if ((thumbnail.size / 1024 / 1024) > 8){
+                        new BreakInteraction(interaction, "A imagem para thumbnail que você enviou é muito pesada!");
+                        return;
+                    }
+                    thumbnail.name = "thumb.png";
+                    initialResource.thumbAttach = thumbnail;
+                }
+                if (banner){
+                    if ((banner.size / 1024 / 1024) > 8){
+                        new BreakInteraction(interaction, "A imagem para o banner que você enviou é muito pesada!");
+                        return;
+                    }
+                    banner.name = "banner.png";
+                    initialResource.bannerAttach = banner;
+                }
+
+                membersUpload.set(member.id, initialResource);
+
+                interaction.showModal(new ModalBuilder({
+                    customId: "resource-upload-modal",
+                    title: "📁 Enviar recurso",
+                    components: [
+                        new ActionRowBuilder<TextInputBuilder>({components: [new TextInputBuilder({
+                            customId: "resource-upload-title-input",
+                            label: "🏷️ Título",
+                            placeholder: "Digite o título do recurso...",
+                            maxLength: 100,
+                            minLength: 6,
+                            style: TextInputStyle.Short,
+                            required: true,
+                        })]}),
+                        new ActionRowBuilder<TextInputBuilder>({components: [new TextInputBuilder({
+                            customId: "resource-upload-description-input",
+                            label: "📄 Descrição",
+                            placeholder: "Digite a descrição do recurso...",
+                            maxLength: 3800,
+                            minLength: 10,
+                            style: TextInputStyle.Paragraph,
+                            required: true,
+                        })]}),
+                        new ActionRowBuilder<TextInputBuilder>({components: [new TextInputBuilder({
+                            customId: "resource-upload-url-input",
+                            label: "🔗 Link de acesso",
+                            placeholder: "Insira o link de acesso do recurso...",
+                            style: TextInputStyle.Short,
+                            required: true,
+                        })]}),
+                    ]
+                }));
+                return;
+            }
+            case "list":{
                 // const currCooldown = memberData.cooldowns?.commands?.resources?.list || Date.now()
                 // if (Date.now() < currCooldown) {
                 //     new BreakInteraction(interaction, `Você poderá usar esse comando novamente <t:${~~(currCooldown / 1000)}:R>`)
                 //     return;
                 // }
 
-                const mention = options.getMember("member") as GuildMember || member;
+                const mention = options.getMember("member") || member;
                 const mentionData = await db.players.get(mention.id) as DocumentPlayer | undefined;
 
-                if (!mentionData || !mentionData.registry) {
+                if (!mentionData) {
                     new BreakInteraction(interaction, `${mention} não está registrado`);
                     return;
                 }
                 
                 const snapshot = await db.resources.collection.where("authorID", "==", mention.id).get();
-                if (!mentionData.resources || mentionData.resources.length < 1 || snapshot.docs.length < 1) {
+                if (snapshot.docs.length < 1) {
                     new BreakInteraction(interaction, `${mention} não tem recursos enviados`);
                     return;
                 }
@@ -261,7 +342,7 @@ export default new Command({
                     mainEmbed: new EmbedBuilder({
                         title: "📁 Lista de recursos",
                         description: `Exibindo todos os recursos de ${mention}
-                        // > Total: \`${snapshot.docs.length}\` recursos`,
+                        > Total: \`${snapshot.docs.length}\` recursos`,
                         color: convertHex(config.colors.systems.resources)
                     }),
                     maxItemsPerPage: 6,
@@ -278,334 +359,53 @@ export default new Command({
                         };
                     })
                 }).show(interaction, member);
-                // new oldEmbedMenuBuilder({ title: "📁 Lista de recursos", maxItems: 6, type: "BLOCK_LIST" })
-                // .setItems(snapshot.docs.map(doc => {
-                //     const resource = doc.data() as DocumentResource;
-                    
-                //     return {
-                //         title: resource.title,
-                //         content: `> [Acessar o recurso](${resource.messageURL})
-                //         > ID \`${doc.id}\``,
-                //         thumb: resource.thumbURL,
-                //         color: config.colors.systems.resources as ColorResolvable
-                //     };
-                // }))
-                // .editEmbed((embed) => embed.setDescription(`Exibindo todos os recursos de ${mention}
-                // > Total: \`${snapshot.docs.length}\` recursos`))
-                // .send(interaction, member);
 
-
+                // db.players.update(member.id, 
+                //     "cooldowns.commands.resources.list", 
+                //     new Cooldown(4, "minutes").endTime
+                // );
                 // const cooldown = new Cooldown(4, "MINUTES");
                 // playersColl.getDocManager(member.id).set("cooldowns.commands.resources.list", cooldown.getTime())
                 return;
             }
-            case "edit": {
-                const id = options.getString("id", true).trim();
+            case "get":{
+                const id = options.getString("id", true);
+
                 const resource = await db.resources.get(id) as DocumentResource | undefined;
                 if (!resource) {
-                    new BreakInteraction(interaction, `Não foi encontrado nenhum recurso com o id: \`${id}\`!` +
-                    "\nVerifique se você digitou o id corretamente");
+                    new BreakInteraction(interaction, "O recurso não foi encontrado! \nTalvez o id tenha sido digitado incorretamente!");
                     return;
                 }
 
-                const resourceMsg = await ResourceManager.findMessage(id, resource, guild);
-                if (!resourceMsg){
-                    new BreakInteraction(interaction, "Ocorreu um erro ao buscar o recurso! Contate o desenvolvedor");
-                    return;
-                }
-                const backupEmbed = resourceMsg.embeds[0].data;
-
-                if (backupEmbed.fields?.[1].value != member.id) {
-                    new BreakInteraction(interaction, "Apenas o autor do recurso pode editar ele!");
-                    return;
-                }
-
-
-                let newEmbed = new EmbedBuilder(backupEmbed);
-                newEmbed.setFooter({text: "Isso é um preview do seu recurso original", iconURL: config.images.status.existing})
-                .setURL(resource.acessURL);
-
-                const mainMenuSelect = new StringSelectMenuBuilder({
-                    customId: "resource-edit-select",
-                    placeholder: "Selecione o que deseja editar no seu recurso",
-                    options: [
-                        {label: "Título", emoji: "✏️",value: "title", description: "Editar o título do recurso"},
-                        {label: "Descrição", emoji: "📝",value: "description", description: "Editar a descrição do recurso"},
-                        {label: "Link", emoji: "🔗",value: "url", description: "Editar o link de acesso do recurso"},
-                        {label: "Thumb", emoji: "🌌",value: "thumb", description: "Editar a imagem da thumb do recurso"},
-                        {label: "Banner", emoji: "🏞️",value: "banner", description: "Editar a imagem do banner do recurso"},
-                    ]
-                });
-
-                const mainMenuButtons = [
-                    new ButtonBuilder({customId: "resource-edit-save-button", label: "Salvar", style: ButtonStyle.Success}),
-                    new ButtonBuilder({customId: "resource-edit-discard-button", label: "Descartar", style: ButtonStyle.Danger}),
-                    new ButtonBuilder({customId: "resource-edit-cancel-button", label: "Cancelar", style: ButtonStyle.Danger}),
-                ];
-
-                const backButton = new ButtonBuilder({customId: "resource-edit-back-button", label: "Voltar", style: ButtonStyle.Danger});
-
-                let currentElement: string;
-                let currentCollector: MessageCollector;
-
-                const embedPrompt = DiscordCreate.simpleEmbed(config.colors.default, "-");
-
-                async function backToMenu(interaction: ButtonInteraction | StringSelectMenuInteraction | ChatInputCommandInteraction){
-                    const options = {embeds: [newEmbed], files, components: [
-                        DiscordTools.createRowSelects(mainMenuSelect),
-                        DiscordTools.createRowButtons(...mainMenuButtons),
-                    ]};
-
-                    if (interaction.isChatInputCommand()) {
-                        if (interaction.replied) {
-                            return await interaction.editReply(options);
-                        }
-                        return await interaction.reply({ephemeral: true, ...options});
-                    } else return await interaction.update(options);
-                }
-
-                const files: Array<AttachmentBuilder> = [];
-
-                const msg = await backToMenu(interaction);
-
-                DiscordTools.selectCollector({source: msg, async collect(subInteraction){
-                    currentElement = subInteraction.values[0];
-
-                    const imageEditButtons = [
-                        backButton,
-                        new ButtonBuilder({customId: "resource-edit-image-change-button", label: "Alterar", style: ButtonStyle.Primary}),
-                        new ButtonBuilder({customId: "resource-edit-image-remove-button", label: "Remover", style: ButtonStyle.Danger})
-                    ];
-                    
-                    switch (currentElement) {
-                        case "title":{
-                            embedPrompt.setDescription("Digite o novo título");
-                            break;
-                        }
-                        case "description":{
-                            embedPrompt.setDescription("Digite a nova descrição");
-                            break;
-                        }
-                        case "url":{
-                            embedPrompt.setDescription("Digite a nova descrição");
-                            break;
-                        }
-                        case "thumb":{
-                            if (!newEmbed.data.thumbnail) {
-                                imageEditButtons[2].setDisabled(true);
-                            }
-    
-                            embedPrompt.setDescription("Escolha o que deseja fazer com a imagem da thumb");
-
-                            subInteraction.update({
-                                embeds: [newEmbed, embedPrompt], files, 
-                                components: [DiscordTools.createRowButtons(...imageEditButtons)]
-                            });
-                            return;
-                        }
-                        case "banner":{
-                            if (!newEmbed.data.image) {
-                                imageEditButtons[2].setDisabled(true);
-                            }
-                            embedPrompt.setDescription("Escolha o que deseja fazer com a imagem do banner");
-
-                            subInteraction.update({
-                                embeds: [newEmbed, embedPrompt], files, 
-                                components: [DiscordTools.createRowButtons(...imageEditButtons)]
-                            });
-                            return;
-                        }
-                    }
-
-                    subInteraction.update({
-                        embeds: [newEmbed, embedPrompt], files,
-                        components: [DiscordTools.createRowButtons(backButton)]
-                    });
-
-                    currentCollector = awaitMessage(channel, interaction);
-                }});
-
-                DiscordTools.buttonCollector({source: msg, async collect(subInteraction){
-                    switch (subInteraction.customId) {
-                        case "resource-edit-back-button":{
-                            if (currentCollector) currentCollector.stop();
-                            backToMenu(subInteraction);
-                            return;
-                        }
-                        case "resource-edit-discard-button":{
-                            newEmbed = new EmbedBuilder(backupEmbed).setFooter({
-                                text: "Isso é um preview do seu recurso original", 
-                                iconURL: config.images.status.existing
-                            })
-                            .setURL(resource.acessURL);
-    
-                            files.length = 0;
-                            
-                            backToMenu(subInteraction);
-                            return;
-                        }
-                        case "resource-edit-cancel-button":{
-                            subInteraction.deferUpdate();
-                            interaction.deleteReply().catch(() => {});
-                            return;
-                        }
-                        case "resource-edit-image-change-button":{
-                            switch (currentElement) {
-                                case "thumb":{
-                                    embedPrompt.setDescription("Envie a nova imagem para a thumbnail");
-                                    break;
-                                }
-                                case "banner":{
-                                    embedPrompt.setDescription("Envie a nova imagem para o banner");
-                                    break;
-                                }
-                            }
-    
-                            await subInteraction.update({
-                                embeds: [newEmbed, embedPrompt], files,
-                                components: [DiscordTools.createRowButtons(backButton)]
-                            });
-    
-                            currentCollector = awaitMessage(channel, interaction);
-                            return;
-                        }
-                        case "resource-edit-image-remove-button":{
-                            switch (currentElement) {
-                                case "thumb":{
-                                    newEmbed.setThumbnail(null);
-                                    const currentImage = files.find(a => a.name == "thumb.png");
-                                    if (currentImage) {
-                                        files.splice(files.indexOf(currentImage), 1);
-                                    }
-                                    break;
-                                }
-                                case "banner":{
-                                    newEmbed.setImage(null);
-                                    const currentImage = files.find(a => a.name == "banner.png");
-                                    if (currentImage) {
-                                        files.splice(files.indexOf(currentImage), 1);
-                                    }
-                                    break;
-                                }
-                            }
-    
-                            backToMenu(subInteraction);
-                            return;
-                        }
-                        case "resource-edit-save-button":{
-                            subInteraction.deferUpdate();
-    
-                            const { title, description, url, thumbnail, image } = newEmbed.data;
-    
-                            const rowResource = DiscordTools.createRowButtons(
-                                new ButtonBuilder({url: url, label: "Acessar", style: ButtonStyle.Link}),
-                                new ButtonBuilder({customId: "resource-report-button", label: "Reportar", style: ButtonStyle.Danger}),
-                            );
-    
-                            newEmbed.setFooter(null);
-    
-                            resourceMsg.edit({embeds: [newEmbed], components: [rowResource], files})
-                            .then(async (msg) => {
-                                if (title) resource.title = title;
-                                if (description) resource.description = description;
-                                if (url) resource.acessURL = url;
-    
-                                if (!thumbnail) delete resource.thumbURL;
-                                else resource.thumbURL = msg.embeds[0].thumbnail?.url;
-                                
-                                if (!image) delete resource.bannerURL;
-                                else resource.bannerURL = msg.embeds[0].image?.url;
-    
-                                await db.resources.setData(id, resource);
-                                //resourcesColl.saveDocData(id, resource);
-
-                                await interaction.editReply({ embeds: [], files: [], components: [],
-                                    content: `O seu recurso foi editado com sucesso! [Confira](${resource.messageURL})`
-                                });
-                            })
-                            .catch(async (err) => {
-                                await interaction.editReply({ embeds: [], files: [], components: [],
-                                    content: `Não foi possível editar o recurso!
-                                    ${codeBlock(err)}`
-                                });
-                            });
-                            return;
-                        }
-                    }
-                }});
-
-                function awaitMessage(channel: TextChannel, interaction: ChatInputCommandInteraction | ButtonInteraction | StringSelectMenuInteraction){
-                    return DiscordCreate.messageCollector(channel, {filter: m => m.author.id == member.id}, async (message) => {
-
-                        const { content, attachments } = message;
-
-                        const attach = attachments.first();
-
-                        message.delete().catch(logger);
-                        
-                        switch (currentElement) {
-                            case "title":{
-                                if (content.length > 200){
-                                    interaction.followUp({ephemeral: true, content: "O título não pode ultrapassar 200 caracteres"});
-                                    break;
-                                }
-                                newEmbed.setTitle(content);
-                                break;
-                            }
-                            case "description":{
-                                if (content.length > 3500){
-                                    interaction.followUp({ephemeral: true, content: "A descrição não pode ultrapassar 3500 caracteres"});
-                                    break;
-                                }
-                                newEmbed.setDescription(content);
-                                break;
-                            }
-                            case "url":{
-                                if (!content.includes("http://") && !content.includes("https://")) {
-                                    interaction.followUp({ephemeral: true, content: "A url de acesso do recurso que você enviou não é válida!"});
-                                    return;
-                                }
-                                newEmbed.setURL(content);
-                                break;
-                            }
-                            case "thumb":{
-                                if (!attach) {
-                                    interaction.followUp({ephemeral: true, content: "É necessário enviar uma imagem!"});
-                                    return;
-                                }
-
-                                const currentImage = files.find(a => a.name == "thumb.png");
-                                if (currentImage) {
-                                    files.splice(files.indexOf(currentImage), 1);
-                                }
-
-                                files.push(new AttachmentBuilder(attach.url, {name: "thumb.png"}));
-                                newEmbed.setThumbnail("attachment://thumb.png");
-                                break;
-                            }
-                            case "banner":{
-                                if (!attach) {
-                                    interaction.followUp({ephemeral: true, content: "É necessário enviar uma imagem!"});
-                                    return;
-                                }
-
-                                const currentImage = files.find(a => a.name == "banner.png");
-                                if (currentImage) {
-                                    files.splice(files.indexOf(currentImage), 1);
-                                }
-
-                                files.push(new AttachmentBuilder(attach.url, {name: "banner.png"}));
-                                newEmbed.setImage("attachment://banner.png");
-                                break;
-                            }
-                        }
-
-                        currentCollector.stop();
-                        backToMenu(interaction);
-                    });
-                }
+                interaction.reply({ ephemeral: true, embeds: [
+                    new EmbedBuilder({
+                        description: `Ir até **${resource.title}** [clicando aqui](${resource.messageURL})`,
+                        color: convertHex(config.colors.systems.resources)
+                    })
+                ]});
                 return;
             }
+            case "search":{
+                const id = options.getString("title", true);
+
+                const resource = await db.resources.get(id) as DocumentResource | undefined;
+                if (!resource) {
+                    new BreakInteraction(interaction, "O recurso não foi encontrado!");
+                    return;
+                }
+
+                interaction.reply({ ephemeral: true, embeds: [
+                    new EmbedBuilder({
+                        description: `Ir até **${resource.title}** [clicando aqui](${resource.messageURL})`,
+                        color: convertHex(config.colors.systems.resources)
+                    })
+                ]});
+                return;
+            }
+            // case "migrate":{
+            
+            //     return;
+            // }
             case "delete":{
                 // const currCooldown = memberData.cooldowns?.commands?.resources?.delete || Date.now()
                 // if (Date.now() < currCooldown) {
@@ -625,255 +425,309 @@ export default new Command({
                     return;
                 }
 
-                const msg = await interaction.reply({ephemeral: true, embeds: [
-                    new EmbedBuilder()
-                    .setColor(config.colors.danger as ColorResolvable)
-                    .setDescription(`O recurso **${resource.title}** será deletado permanentemente!
-                    Deseja mesmo deletar este recurso?`)
-                ], components: [DiscordTools.createRowButtons(
-                    new ButtonBuilder({customId: "resource-delete-confirm-button", label: "Confirmar", style: ButtonStyle.Success})
-                )]});
+                const message = await interaction.reply({
+                    ephemeral: true, embeds: [
+                        new EmbedBuilder({
+                            color: convertHex(config.colors.danger),
+                            description:`O recurso **${resource.title}** será deletado permanentemente!
+                        Deseja mesmo deletar este recurso?`
+                        })
+                    ],
+                    components: [
+                        new ActionRowBuilder<ButtonBuilder>({components: [
+                            new ButtonBuilder({
+                                customId: "resource-delete-confirm-button", 
+                                label: "Confirmar", style: ButtonStyle.Success
+                            })
+                        ]})
+                    ]
+                });
 
-                DiscordTools.buttonCollector({source: msg, async collect(subInteraction){
-                    const status = await ResourceManager.delete(id, guild);
-
-                    if (status.success) {
-                        new BreakInteraction(subInteraction, `O recurso ${resource.title} foi deletado com sucesso!`, {
-                            color: config.colors.success, disableFooter: true, replace: true
-                        });
-                    } else {
-                        new BreakInteraction(subInteraction, `Não foi possível deletar o recurso!
-                        Mensagem: ${codeBlock(status.message)}`, {
-                            color: config.colors.danger, disableFooter: true, replace: true
-                        });
+                buttonCollector(message).on("collect", async subInteraction => {
+                    const resource = await db.resources.get(id) as DocumentResource | undefined;
+                    if (!resource) {
+                        new BreakInteraction(subInteraction, "O recurso não foi encontrado!", {replace: true});
+                        return;
                     }
-                    // const cooldown = new Cooldown(1, "MINUTES");
-                    // playersColl.getDocManager(member.id).set("cooldowns.commands.resources.delete", cooldown.getTime())
-                }});
-                return;
-            }
-            case "search":{
-                const id = options.getString("title", true);
+                    
+                    const channelName = `${resource.category.name}-${resource.category.subCategory}`;
+                    const channel = findChannel(guild, channelName, ChannelType.GuildText, config.resources.title);
+                    
+                    if (!channel) {
+                        new BreakInteraction(subInteraction, "A mensagem do recurso não foi encontrada!", {replace: true});
+                        return;
+                    } 
+                    
+                    const message = await channel.messages.fetch(id).catch(() => null);
+                    if (!message) {
+                        new BreakInteraction(subInteraction, "A mensagem do recurso não foi encontrada!", {replace: true});
+                        return;
+                    }
+            
+                    const authorData = await db.players.get(resource.authorID) as DocumentPlayer | undefined;
+                    if (authorData && authorData.resources) {
+                        await db.players.update(member.id, "resources", { id }, "arrayRemove");
+                    }
 
-                const resource = await db.resources.get(id) as DocumentResource | undefined;
-                if (!resource) {
-                    new BreakInteraction(interaction, "O recurso não foi encontrado!");
-                    return;
-                }
+                    await db.resources.delete(id);
+                    message.delete().catch(() => {});
 
-                const embed = new EmbedBuilder({
-                    description: `Ir até **${resource.title}** [clicando aqui](${resource.messageURL})`,
-                    color: convertHex(config.colors.systems.resources)
+                    subInteraction.update({
+                        components: [], embeds: [],
+                        content: "O recurso foi deletado com sucesso!", 
+                    });
                 });
-
-                interaction.reply({ ephemeral: true, embeds: [embed] });
-
                 return;
-            }
-            case "fetch": {
-                const id = options.getString("id", true);
-
-                const resource = await db.resources.get(id) as DocumentResource | undefined;
-                if (!resource) {
-                    new BreakInteraction(interaction, "O recurso não foi encontrado! \nTalvez o id tenha sido digitado incorretamente!");
-                    return;
-                }
-
-                const embed = new EmbedBuilder({
-                    description: `Ir até **${resource.title}** [clicando aqui](${resource.messageURL})`,
-                    color: convertHex(config.colors.systems.resources)
-                });
-
-                interaction.reply({ ephemeral: true, embeds: [embed] });
             }
         }
     },
     modals: {
-        "resource-upload-modal": async (interaction) => {
-            const member = interaction.member as GuildMember;
-            const guild = interaction.guild as Guild;
-            
-            await interaction.deferReply({ephemeral: true, fetchReply: true});
-            
-            const zunderResource = ResourceManager.tempUpload.get(member.id);
-            if (!zunderResource){
-                new BreakInteraction(interaction, "O recurso inicial não foi encontrado! Utilize o comando novamente!");
+        "resource-upload-modal": async interaction => {
+            if (!interaction.inCachedGuild()) return;
+            const { member, fields, guild } = interaction;
+
+            await interaction.deferReply({ephemeral: true});
+
+            const initialResource = membersUpload.get(member.id);
+            if (!initialResource){
+                new BreakInteraction(interaction, "O recurso inicial não foi encontrado! \nUtilize o comando novamente", {replace: true});
                 return;
             }
-                        
-            const { thumbAttach, bannerAttach } = zunderResource;
-            const [ title, description, acessURL ] = [
-                interaction.fields.getTextInputValue("resource-upload-title"),
-                interaction.fields.getTextInputValue("resource-upload-description"),
-                interaction.fields.getTextInputValue("resource-upload-acessurl"),
-            ];
 
-            const embedResource = new EmbedBuilder({ title, description, color: convertHex(config.colors.progress.green) });
+            const title = fields.getTextInputValue("resource-upload-title-input");
+            const description = fields.getTextInputValue("resource-upload-description-input");
+            const acessURL = fields.getTextInputValue("resource-upload-url-input");
+
+            const embedResource = new EmbedBuilder({
+                title, description, color: convertHex(config.colors.secondary),
+                thumbnail: { url: "attachment://thumb.png" },
+                image: { url: "attachment://banner.png" }
+            });
 
             try {
                 embedResource.setURL(acessURL);
             } catch (err) {
-                new BreakInteraction(interaction, "O link de acesso que você enviou não é válido!");
+                new BreakInteraction(interaction, "O link de acesso que você enviou não é válido!", {replace: true});
                 return;
             }
 
-            zunderResource.title = title;
-            zunderResource.description = description;
-            zunderResource.acessURL = acessURL;
+            initialResource.title = title;
+            initialResource.description = description;
+            initialResource.acessURL = acessURL;
 
-            const files: Array<Attachment> = new Array();
+            const files: AttachmentBuilder[] = [];
 
-            if (thumbAttach) {
-                thumbAttach.name = "thumb.png";
-                files.push(thumbAttach);
-                embedResource.setThumbnail(thumbAttach.url);
+            if (initialResource.thumbAttach){
+                files.push(new AttachmentBuilder(initialResource.thumbAttach.url, {name: "thumb.png"}));
             }
-            if (bannerAttach){
-                bannerAttach.name = "banner.png";
-                files.push(bannerAttach);
-                embedResource.setImage(bannerAttach.url);
+            if (initialResource.bannerAttach){
+                files.push(new AttachmentBuilder(initialResource.bannerAttach.url, {name: "banner.png"}));
             }
 
-            const embedPrompt = new EmbedBuilder({
-                description: "Selecione a categoria do seu recurso",
-                color: convertHex(config.colors.progress.red)
+            const embed = new EmbedBuilder({
+                color: convertHex(config.colors.progress.red),
+                description: "Selecione a categoria que deseja"
             });
 
-            const rowCategorySelect = DiscordTools.createRowSelects(
-                new StringSelectMenuBuilder({
-                    customId: "resource-upload-category-select",
-                    placeholder: "Selecionar categoria",
-                    options: config.resources.categories.map(c => { 
-                        return {label: c.name, description: c.description, value: c.name };
+            const message = await interaction.editReply({
+                files, embeds: [embedResource, embed],
+                components: [new ActionRowBuilder<StringSelectMenuBuilder>({components: [
+                    new StringSelectMenuBuilder({
+                        customId: "resource-upload-category-select",
+                        placeholder: "Selecionar categoria",
+                        options: config.resources.categories.map(c => { 
+                            return {label: c.name, description: c.description, value: c.name };
+                        })
                     })
-                })
-            );
+                ]})],
+            });
 
             let resourceCategory = config.resources.categories[0];
-            const backButton = new ButtonBuilder({
-                customId: "resource-upload-back-button", 
-                label: "Voltar", style: ButtonStyle.Danger
-            });
-            const confirmButton = new ButtonBuilder({
-                customId: "resource-upload-confirm-button", 
-                label: "Confirmar", style: ButtonStyle.Success
-            });
 
-            const msg = await interaction.editReply({embeds: [embedResource, embedPrompt], components: [rowCategorySelect]});
+            const selectCollector = stringSelectCollector(message).on("collect", (subInteraction) => {
+                const selected = subInteraction.values[0];
 
-            DiscordTools.selectCollector({source: msg, async collect(subInteraction) {
-                const { customId, values } = subInteraction;
+                switch(subInteraction.customId){
+                    case "resource-upload-category-select":{
+                        resourceCategory = config.resources.categories.find(c => c.name == selected)!;
+                        embedResource.setColor(convertHex(config.colors.progress.yellow));
+                        embed.setColor(convertHex(config.colors.progress.yellow))
+                        .setDescription(`> **${resourceCategory.name}/**
+                        Selecione a sub categoria do recurso`);
 
-                if (customId == "resource-upload-category-select"){
-                    resourceCategory = config.resources.categories.find(c => c.name == values[0])!;
-
-                    const rowSubCategorySelect = DiscordTools.createRowSelects(
-                        new StringSelectMenuBuilder({
-                            customId: "resource-upload-subcategory-select",
-                            placeholder: "Selecionar sub categoria",
-                            options: resourceCategory.subCategories.map(c => ({label: c, value: c}))
-                        })
-                    );
-
-                    embedResource.setColor(config.colors.progress.yellow as ColorResolvable);
-                    embedPrompt.setDescription(`> **${resourceCategory.name}/**
-                    Selecione a sub categoria do recurso`)
-                    .setColor(config.colors.progress.yellow as ColorResolvable);
-
-                    subInteraction.update({
-                        embeds: [embedResource, embedPrompt], 
-                        components: [rowSubCategorySelect, DiscordTools.createRowButtons(backButton)]
-                    });
-                    return;
-                }
-
-                if (customId == "resource-upload-subcategory-select"){
-                    zunderResource.category = {name: resourceCategory.name, subCategory: values[0] };
-                    
-                    const rowBack = DiscordTools.createRowButtons(new ButtonBuilder({
-                        customId: "resource-upload-back-category-button", 
-                        label: "Voltar", style: ButtonStyle.Danger
-                    }));
-
-                    embedResource.setColor(config.colors.progress.green as ColorResolvable);
-                    embedPrompt.setDescription(`> **${resourceCategory.name}/${values[0]}**
-                    Deseja confirmar o envio do recurso?`)
-                    .setColor(config.colors.progress.green as ColorResolvable);
-
-                    subInteraction.update({
-                        embeds: [embedResource, embedPrompt], 
-                        components: [DiscordTools.createRowButtons(confirmButton, backButton)]
-                    });
-                    return;
-                }
-            }});
-
-            DiscordTools.buttonCollector({source: msg, async collect(subInteraction) {
-                if (subInteraction.customId == "resource-upload-back-button"){
-                    embedResource.setColor(config.colors.progress.red as ColorResolvable);
-                    embedPrompt.setDescription("Selecione a categoria")
-                    .setColor(config.colors.progress.red as ColorResolvable);
-                    subInteraction.update({embeds: [embedResource, embedPrompt], components: [rowCategorySelect]});
-                    return;
-                }
-
-                if (subInteraction.customId == "resource-upload-confirm-button"){
-
-                    await subInteraction.deferUpdate({fetchReply: true});
-                    
-                    const cName = `${zunderResource.category?.name}-${zunderResource.category?.subCategory}`;
-                    const channel = findChannel(guild, cName, ChannelType.GuildText);
-
-                    if (!channel) {
-                        new BreakInteraction(interaction, "O chat para o recurso não está configurado!", {replace: true});
+                        subInteraction.update({
+                            embeds: [embedResource, embed], 
+                            components: [new ActionRowBuilder<StringSelectMenuBuilder>({components: [
+                                new StringSelectMenuBuilder({
+                                    customId: "resource-upload-subcategory-select",
+                                    placeholder: "Selecionar sub categoria",
+                                    options: resourceCategory.subCategories.map(c => ({label: c, value: c}))
+                                })
+                            ]})]
+                        });
                         return;
                     }
+                    case "resource-upload-subcategory-select":{
+                        initialResource.category = { name: resourceCategory.name, subCategory: selected };
 
-                    const rowResource = DiscordTools.createRowButtons(
-                        new ButtonBuilder({url: zunderResource.acessURL, label: "Acessar", style: ButtonStyle.Link}),
-                        new ButtonBuilder({customId: "resource-report-button", label: "Reportar", style: ButtonStyle.Danger}),
-                    );
+                        embedResource.setColor(convertHex(config.colors.progress.green));
+                        embed
+                        .setColor(convertHex(config.colors.progress.green))
+                        .setDescription(`> **${resourceCategory.name}/${selected}**
+                        Deseja confirmar o envio do recurso?`);
 
-                    embedResource.setColor(config.colors.systems.resources as ColorResolvable);
+                        subInteraction.update({
+                            embeds: [embedResource, embed], 
+                            components: [new ActionRowBuilder<ButtonBuilder>({components: [
+                                new ButtonBuilder({
+                                    customId: "resource-upload-confirm-button",
+                                    label: "Confirmar envio",
+                                    style: ButtonStyle.Success
+                                })
+                            ]})]
+                        });
+                        selectCollector.stop();
+                        return;
+                    }
+                }
+            });
 
-                    if (zunderResource.thumbAttach) embedResource.setThumbnail("attachment://thumb.png");
-                    if (zunderResource.bannerAttach) embedResource.setImage("attachment://banner.png");
-                    
-                    const msg = await channel.send({embeds: [embedResource], components: [rowResource], files});
+            const collector = buttonCollector(message).on("collect", async subInteraction => {
+                await subInteraction.deferUpdate({fetchReply: true});
+                const cName = `${initialResource.category?.name}-${initialResource.category?.subCategory}`;
+                const channel = findChannel(guild, cName, ChannelType.GuildText);
 
-                    embedResource.setFields(
-                        {name: "ID do recurso", value: msg.id, inline: true},
-                        {name: "ID do autor", value: member.id, inline: true}
-                    );
-
-                    msg.edit({embeds: [embedResource]});
-
-                    if (msg.embeds[0].thumbnail?.url) zunderResource.thumbURL = msg.embeds[0].thumbnail.url;
-                    if (msg.embeds[0].image?.url) zunderResource.bannerURL = msg.embeds[0].image.url;
-
-                    zunderResource.messageID = msg.id;
-                    zunderResource.messageURL = msg.url;
-
-                    delete zunderResource.thumbAttach;
-                    delete zunderResource.bannerAttach;
-
-                    await db.resources.create({id: msg.id, data: zunderResource});
-
-                    embedPrompt.setDescription(`Seu recurso foi enviado em ${channel}! Confira [clicando aqui](${msg.url})`);
-                    await interaction.editReply({embeds: [embedPrompt], components: [], files: []});
-
-                    const role = guild.roles.cache.find(r => r.name == resourceCategory.role);
-                    if (!role) return;
-
-                    const notifyMsg = await channel.send({content: `||${role}||`});
-                    await wait(20_000);
-                    notifyMsg.delete().catch(logger);
+                if (!channel) {
+                    new BreakInteraction(interaction, "O chat para o recurso não está configurado!", {replace: true});
                     return;
                 }
-            }});
+
+                embedResource.setColor(convertHex(config.colors.systems.resources));
+                
+                const message = await channel.send({embeds: [embedResource], components: [
+                    new ActionRowBuilder<ButtonBuilder>({components: [
+                        new ButtonBuilder({url: initialResource.acessURL, label: "Acessar", style: ButtonStyle.Link}),
+                        new ButtonBuilder({customId: "resource-report-button", label: "Reportar", style: ButtonStyle.Danger}),
+                    ]})
+                ], files});
+
+                embedResource.setFields(
+                    {name: "ID do recurso", value: message.id, inline: true},
+                    {name: "ID do autor", value: member.id, inline: true}
+                );
+
+                message.edit({embeds: [embedResource]});
+
+                await message.react("👍");
+                await message.react("👎");
+
+                if (message.embeds[0].thumbnail?.url) initialResource.thumbURL = message.embeds[0].thumbnail.url;
+                if (message.embeds[0].image?.url) initialResource.bannerURL = message.embeds[0].image.url;
+
+                initialResource.messageID = message.id;
+                initialResource.messageURL = message.url;
+
+                delete initialResource.thumbAttach;
+                delete initialResource.bannerAttach;
+
+                await db.resources.create({id: message.id, data: initialResource});
+                await db.players.update(member.id, "resources", {id: message.id}, "arrayUnion");
+
+                embed.setDescription(`Seu recurso foi enviado em ${channel}! Confira [clicando aqui](${message.url})`);
+                await interaction.editReply({embeds: [embed], components: [], files: []});
+
+                const role = findRole(guild, resourceCategory.role); 
+                if (role) {
+                    const notifyMsg = await channel.send({content: `||${role}||`});
+                    setTimeout(() => {
+                        notifyMsg.delete().catch(logger);
+                    }, 20 * 1000);
+                    return;
+                }
+
+                membersUpload.delete(member.id);
+                collector.stop();
+            });
+        },
+        "resource-report-modal": async interaction => {
+            if (!interaction.inCachedGuild()) return;
+            const { member, fields } = interaction;
+
+            await interaction.deferReply({ephemeral: true});
+
+            const resourceId = membersReport.get(member.id);
+            const resource = await db.resources.get(resourceId || "unknow") as DocumentResource | undefined;
+            if (!resource){
+                new BreakInteraction(interaction, "O recurso não foi encontrado!");
+                return;
+            }
+
+            const reason = fields.getTextInputValue("resource-report-reason-input");
+            resource.reports.push({id: member.id, reason});
+            db.resources.update(resource.messageID, "reports", resource.reports);
+
+            interaction.editReply({content: `Você reportou o recurso ${resource.title} por \`${reason}\``});
+        }
+    },
+    buttons: {
+        "resource-report-button": async interaction => {
+            if (!interaction.inCachedGuild()) return;
+            const { member, message, guild } = interaction;
+            if (message.embeds.length < 1 || message.embeds[0].fields.length < 1) return;
+
+            const resourceId = message.embeds[0].fields[0].value;
+            const authorId = message.embeds[0].fields[1].value;
+
+            /* if (member.id == authorId){
+                new BreakInteraction(interaction, 
+                    `Você não pode reportar seu próprio recurso! 
+                    Se deseja excluí-lo utilize \`/recursos deletar\``
+                );
+                return;
+            } */
+
+            const resource = await db.resources.get(resourceId) as DocumentResource | undefined;
+            if (!resource){
+                new BreakInteraction(interaction, "O recurso não foi encontrado!");
+                return;
+            }
+            
+            if (resource.reports.find(r => r.id == member.id)){
+                new BreakInteraction(interaction, "Você já reportou este recurso!");
+                return;
+            }
+
+            const author = guild.members.cache.get(authorId);
+
+            interaction.showModal(new ModalBuilder({
+                customId: "resource-report-modal",
+                title: "Reportar recurso",
+                components: [
+                    new ActionRowBuilder<TextInputBuilder>({components: [
+                        new TextInputBuilder({
+                            customId: "resource-report-reason-input",
+                            label: "Motivo",
+                            placeholder: "Digite o motivo para reportar este recurso!",
+                            style: TextInputStyle.Short,
+                            required: true
+                        })
+                    ]}),
+                    new ActionRowBuilder<TextInputBuilder>({components: [
+                        new TextInputBuilder({
+                            customId: "resource-report-message-input",
+                            label: "Anotação",
+                            placeholder: "Apenas uma anotação para ser lida",
+                            value: `Recurso ${resource.title} de ${author?.displayName || "Autor desconhecido"} \nReportar um recurso indevidamente gera punições`,
+                            style: TextInputStyle.Paragraph,
+                            required: false
+                        })
+                    ]}),
+                ]
+            }));
+
+            membersReport.set(member.id, resourceId);
         }
     }
 });
 
-// Command Config
-type SubCommands = "upload" | "edit" | "list"| "fetch" | "search" | "delete" ;
+// type SubCommand = "upload" /* | "edit" */ | "list" | "get" | "search" | "delete" | "migrate";

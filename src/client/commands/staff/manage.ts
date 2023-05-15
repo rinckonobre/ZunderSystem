@@ -1,8 +1,10 @@
-import { Command, db, DocumentPlayer, config } from "@/app";
-import { BreakInteraction, MenuBuilder } from "@/app/classes";
-import { findRole, convertHex, systemRecords } from "@/app/functions";
-import { registries } from "@/config/jsons";
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, Collection, EmbedBuilder, GuildMember, ModalBuilder, RoleResolvable, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { db, config } from "../../..";
+import { Command } from "../../../app/base";
+import { BreakInteraction, MenuBuilder } from "../../../app/classes";
+import { findRole, convertHex, systemRecords } from "../../../app/functions";
+import { DocumentPlayer } from "../../../app/interfaces";
+import { registries } from "../../../settings/jsons";
 
 // Command statics
 const manager = {
@@ -17,23 +19,23 @@ export default new Command({
     type: ApplicationCommandType.ChatInput,
     visibility: "staff",
     options: [
-        {
-            name: "members",
-            nameLocalizations: {"pt-BR": "membros"},
-            description: "Manage server member",
-            descriptionLocalizations: {"pt-BR": "Gerenciar membro do servidor"},
-            type: ApplicationCommandOptionType.Subcommand,
-            options: [
-                {
-                    name: "mention",
-                    nameLocalizations: {"pt-BR": "membro"},
-                    description: "Mention a member",
-                    descriptionLocalizations: {"pt-BR": "Mencion um membro"},
-                    type: ApplicationCommandOptionType.User,
-                    required: true
-                }
-            ]
-        },
+        // {
+        //     name: "members",
+        //     nameLocalizations: {"pt-BR": "membros"},
+        //     description: "Manage server member",
+        //     descriptionLocalizations: {"pt-BR": "Gerenciar membro do servidor"},
+        //     type: ApplicationCommandOptionType.Subcommand,
+        //     options: [
+        //         {
+        //             name: "mention",
+        //             nameLocalizations: {"pt-BR": "membro"},
+        //             description: "Mention a member",
+        //             descriptionLocalizations: {"pt-BR": "Mencion um membro"},
+        //             type: ApplicationCommandOptionType.User,
+        //             required: true
+        //         }
+        //     ]
+        // },
         {
             name: "nicks",
             nameLocalizations: {"pt-BR": "nicks"},
@@ -42,21 +44,15 @@ export default new Command({
             type: ApplicationCommandOptionType.Subcommand
         }
     ],
-    async run({ interaction, options}) {
-        if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
-        const { member, guild } = interaction;
+    async run(interaction) {
+        if (!interaction.inCachedGuild()) return;
+        const { member, guild, options } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData || memberData.registry.level < 2){
             new BreakInteraction(interaction, "Apenas staffs podem utilizar este comando!");
             return;
         }
-
-        const rows = [
-            new ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>(),
-            new ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>(),
-            new ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>(),
-        ];
 
         switch (options.getSubcommand(true) as SubCommand){
             case "members":{
@@ -136,8 +132,8 @@ export default new Command({
             }
         }
     },
-    modals: new Collection([
-        ["manage-nicks-change-modal", async (interaction) => {
+    modals:{
+        "manage-nicks-change-modal": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild, fields } = interaction;
             const nick = fields.getTextInputValue("new-nick");
@@ -205,8 +201,9 @@ export default new Command({
             });
 
             interaction.editReply({content: `O registro Zunder de ${mention} foi encerrado! Novo nick: \`${nick}\``});
-        }]
-    ])
+            manager.nicks.delete(member.id);
+        }
+    }
 });
 
 // Command config
