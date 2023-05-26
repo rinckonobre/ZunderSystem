@@ -37,5 +37,11 @@ export default new Command({
 
             console.log(resourceId, authorId);
         }
+    },
+    modals:{
+        a(i){
+            const { fields } = i;
+            const nameField = fields.getTextInputValue("name");
+        }
     }
 });
