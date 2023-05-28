@@ -16,4 +16,3 @@ const db = {
 };
 
 export { db, client, config };
-

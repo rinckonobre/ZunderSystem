@@ -6,7 +6,6 @@ import { findRole, convertHex, systemRecords } from "../../../app/functions";
 import { DocumentPlayer } from "../../../app/interfaces";
 import { registries } from "../../../settings/jsons";
 
-// Command statics
 const manager = {
     nicks: new Collection() as Collection<string, string>
 };
@@ -165,7 +164,6 @@ export default new Command({
                     Nick antigo: \`${mentionData.registry.nick}\`
                     Novo nick: \`${nick}\``,
                 });
-
                 interaction.editReply({content: `O nick de ${mention} foi atualizado para \`${nick}\``});
                 return;
             }

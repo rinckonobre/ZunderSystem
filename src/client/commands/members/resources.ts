@@ -722,13 +722,13 @@ export default new Command({
             const resourceId = message.embeds[0].fields[0].value;
             const authorId = message.embeds[0].fields[1].value;
 
-            /* if (member.id == authorId){
+            if (member.id == authorId){
                 new BreakInteraction(interaction, 
                     `Você não pode reportar seu próprio recurso! 
                     Se deseja excluí-lo utilize \`/recursos deletar\``
                 );
                 return;
-            } */
+            }
 
             const resource = await db.resources.get(resourceId) as DocumentResource | undefined;
             if (!resource){
