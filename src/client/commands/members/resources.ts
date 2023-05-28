@@ -11,40 +11,51 @@ const membersReport: Collection<string, string> = new Collection();
 
 export default new Command({
     name: "resources",
+    nameLocalizations: {"pt-BR": "recursos"},
     description: "Zunder resources",
+    descriptionLocalizations: {"pt-BR": "Recursos da Zunder"},
     type: ApplicationCommandType.ChatInput,
     visibility: "public",
     options: [
         {
             name: "upload",
-            description: "upload",
+            nameLocalizations: {"pt-BR": "enviar"},
+            description: "📁 Upload a new resource",
+            descriptionLocalizations: {"pt-BR": "📁 Faz o envio de um novo recurso"},
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "thumbnail",
-                    description: "thumbnail",
+                    description: "🌌 (Optional) Upload image for resource thumbnail",
+                    descriptionLocalizations: {"pt-BR": "🌌 (Opcional) Enviar imagem para thumbnail do recurso"},
                     type: ApplicationCommandOptionType.Attachment,
                 },
                 {
                     name: "banner",
-                    description: "banner",
+                    description: "🏞️ (Optional) Upload image for resource banner",
+                    descriptionLocalizations: {"pt-BR": "🏞️ (Opcional) Enviar imagem para banner do recurso"},
                     type: ApplicationCommandOptionType.Attachment,
                 },
             ]
         },
         {
             name: "edit",
-            description: "edit",
+            nameLocalizations: {"pt-BR": "editar"},
+            description: "✏️ Edit an existing resource",
+            descriptionLocalizations: {"pt-BR": "✏️ Editar um recurso existente"},
             type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: "information",
-                    description: "information",
+                    nameLocalizations: {"pt-BR": "informações"},
+                    description: "✏️ Edit resource information",
+                    descriptionLocalizations: {"pt-BR": "✏️ Editar informações do recurso"},
                     type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "id",
-                            description: "id",
+                            description: "Resource id",
+                            descriptionLocalizations: {"pt-BR": "Id do recurso"},
                             type: ApplicationCommandOptionType.String,
                             required: true,
                         },
@@ -52,36 +63,44 @@ export default new Command({
                 },
                 {
                     name: "thumb",
-                    description: "thumb",
+                    description: "🌌 Edit resource thumbnail image",
+                    descriptionLocalizations: {"pt-BR": "🌌 Editar imagem de thumbnail do recurso"},
                     type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "id",
-                            description: "id",
+                            description: "Resource id",
+                            descriptionLocalizations: {"pt-BR": "Id do recurso"},
                             type: ApplicationCommandOptionType.String,
                             required: true,
                         },
                         {
                             name: "image",
-                            description: "image",
+                            nameLocalizations: {"pt-BR": "imagem"},
+                            description: "📷 Thumbnail image. (Leave blank to remove current thumbnail)",
+                            descriptionLocalizations: {"pt-BR": "📷 Imagem de thumb. (Deixar em branco para remover a thumbnail atual)"},
                             type: ApplicationCommandOptionType.Attachment,
                         },
                     ]
                 },
                 {
                     name: "banner",
-                    description: "banner",
+                    description: "🏞️ Edit resource thumbnail banner",
+                    descriptionLocalizations: {"pt-BR": "🏞️ Editar imagem de banner do recurso"},
                     type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "id",
-                            description: "id",
+                            description: "Resource id",
+                            descriptionLocalizations: {"pt-BR": "Id do recurso"},
                             type: ApplicationCommandOptionType.String,
                             required: true,
                         },
                         {
                             name: "image",
-                            description: "image",
+                            nameLocalizations: {"pt-BR": "imagem"},
+                            description: "📷 Thumbnail banner. (Leave blank to remove current banner)",
+                            descriptionLocalizations: {"pt-BR": "📷 Imagem de banner (Deixar em branco para remover o banner atual)"},
                             type: ApplicationCommandOptionType.Attachment,
                         },
                     ]
@@ -90,12 +109,15 @@ export default new Command({
         },
         {
             name: "delete",
-            description: "delete",
+            nameLocalizations: {"pt-BR": "deletar"},
+            description: "🗑️ Delete an existing resource",
+            descriptionLocalizations: {"pt-BR": "🗑️ Deletar um recurso existente"},
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "id",
-                    description: "id",
+                    description: "Resource id",
+                    descriptionLocalizations: {"pt-BR": "Id do recurso"},
                     type: ApplicationCommandOptionType.String,
                     required: true,
                 },
@@ -103,12 +125,15 @@ export default new Command({
         },
         {
             name: "list",
-            description: "list",
+            nameLocalizations: {"pt-BR": "listar"},
+            description: "🗂️ List a member's resources",
+            descriptionLocalizations: {"pt-BR": "🗂️ Listar os recursos de um membro"},
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "member",
-                    description: "member",
+                    description: "mention a member",
+                    descriptionLocalizations: {"pt-BR": "Mencione um membro"},
                     type: ApplicationCommandOptionType.User,
                     required: true,
                 },
@@ -116,12 +141,15 @@ export default new Command({
         },
         {
             name: "get",
-            description: "get",
+            nameLocalizations: {"pt-BR": "obter"},
+            description: "Get a resource by id",
+            descriptionLocalizations: {"pt-BR": "Obter um recurso por id"},
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "id",
-                    description: "id",
+                    description: "Resource id",
+                    descriptionLocalizations: {"pt-BR": "Id do recurso"},
                     type: ApplicationCommandOptionType.String,
                     required: true,
                 },
@@ -129,12 +157,16 @@ export default new Command({
         },
         {
             name: "search",
-            description: "search",
+            nameLocalizations: {"pt-BR": "pesquisar"},
+            description: "🔍 Search for a resource by title",
+            descriptionLocalizations: {"pt-BR": "🔍 Pesquisar um recurso pelo título"},
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "title",
-                    description: "title",
+                    nameLocalizations: {"pt-BR": "título"},
+                    description: "Resource title",
+                    descriptionLocalizations: {"pt-BR": "Título do recurso"},
                     type: ApplicationCommandOptionType.String,
                     autocomplete: true,
                     required: true,
@@ -200,6 +232,11 @@ export default new Command({
             const resource = await db.resources.get(resourceId) as DocumentResource | undefined;
             if (!resource) {
                 new BreakInteraction(interaction, "O recurso não foi encontrado! \nTalvez o id tenha sido digitado incorretamente!");
+                return;
+            }
+
+            if (resource.authorID !== member.id && memberData.registry.level < 4){
+                new BreakInteraction(interaction, "Apenas líderes e admins podem editar o recurso de outra pessoa");
                 return;
             }
             
@@ -648,7 +685,7 @@ export default new Command({
                     return;
                 }
 
-                if (resource.authorID != member.id && memberData.registry.level < 4){
+                if (resource.authorID !== member.id && memberData.registry.level < 4){
                     new BreakInteraction(interaction, "Apenas Líderes e Admins podem deletar o recurso de outra pessoa!");
                     return;
                 }
@@ -884,9 +921,15 @@ export default new Command({
             await interaction.deferReply({ephemeral: true});
 
             const resourceId = membersEdit.get(member.id);
-            const editResource = await db.resources.get(resourceId || "unknow") as DocumentResource | undefined;
-            if (!editResource){
+            const resource = await db.resources.get(resourceId || "unknow") as DocumentResource | undefined;
+            if (!resource){
                 new BreakInteraction(interaction, "O recurso inicial não foi encontrado! \nUtilize o comando novamente", {replace: true});
+                return;
+            }
+
+            const resourceMessage = await findMessage(resource, guild);
+            if (!resourceMessage) {
+                new BreakInteraction(interaction, "A mensagem do recurso não foi encontrada!");
                 return;
             }
 
@@ -895,7 +938,7 @@ export default new Command({
             const acessURL = fields.getTextInputValue("resource-edit-url-input");
 
             const embedResource = new EmbedBuilder({
-                title, description, color: convertHex(config.colors.secondary),
+                title, description, color: convertHex(config.colors.systems.resources),
                 thumbnail: { url: "attachment://thumb.png" },
                 image: { url: "attachment://banner.png" }
             });
@@ -907,9 +950,32 @@ export default new Command({
                 return;
             }
 
-            editResource.title = title;
-            editResource.description = description;
-            editResource.acessURL = acessURL;
+            resource.title = title;
+            resource.description = description;
+            resource.acessURL = acessURL;
+
+            resourceMessage.edit({
+                embeds: [embedResource],
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>({components: [
+                        new ButtonBuilder({url: resource.acessURL, label: "Acessar", style: ButtonStyle.Link}),
+                        new ButtonBuilder({customId: "resource-report-button", label: "Reportar", style: ButtonStyle.Danger}),
+                    ]})
+                ]
+            })
+            .then(() => {
+                interaction.editReply({
+                    embeds: [
+                        new EmbedBuilder({
+                            color: convertHex(config.colors.success),
+                            description: `O recurso foi editado. [Confira](${resource.messageURL})`
+                        }) 
+                    ]
+                });
+            })
+            .catch(logger);
+
+            
 
             // const files: AttachmentBuilder[] = [];
 
