@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, GuildMember, ModalBuilder, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, Collection, ComponentType, EmbedBuilder, Guild, GuildMember, ModalBuilder, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { Command } from "../../../app/base";
 import { DocumentPlayer, DocumentResource, ResourceUploadProps, ZunderResourceUploadProps } from "../../../app/interfaces";
 import { client, config, db } from "../../..";
@@ -51,8 +51,8 @@ export default new Command({
                     ]
                 },
                 {
-                    name: "thumbnail",
-                    description: "thumbnail",
+                    name: "thumb",
+                    description: "thumb",
                     type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
@@ -202,6 +202,12 @@ export default new Command({
                 new BreakInteraction(interaction, "O recurso não foi encontrado! \nTalvez o id tenha sido digitado incorretamente!");
                 return;
             }
+            
+            const resourceMessage = await findMessage(resource, guild);
+            if (!resourceMessage) {
+                new BreakInteraction(interaction, "A mensagem do recurso não foi encontrada!");
+                return;
+            }
 
             switch(subCommand){
                 case "information":{
@@ -244,16 +250,237 @@ export default new Command({
                     membersEdit.set(member.id, resourceId);
                     return;
                 }
-                case "thumbnail":{
+                case "thumb":{
+                    const thumb = options.getAttachment("image");
+                    if (!thumb){
+                        const message = await interaction.reply({
+                            ephemeral: true, fetchReply: true,
+                            embeds:[
+                                new EmbedBuilder({
+                                    color: convertHex(config.colors.default),
+                                    description: "Você não enviou uma imagem para a thumbnail \nDeseja remover a thumbnail atual?",
+                                })
+                            ],
+                            components: [
+                                new ActionRowBuilder<ButtonBuilder>({components: [
+                                    new ButtonBuilder({customId: "resources-remove-thumb-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
+                                    new ButtonBuilder({customId: "resources-remove-thumb-cancel-button", label: "Cancelar", style: ButtonStyle.Danger})
+                                ]})
+                            ]
+                        });
 
+                        const collector = buttonCollector(message).on("collect", async subInteraction => {
+                            collector.stop();
+                            if (subInteraction.customId == "resources-remove-thumb-cancel-button"){
+                                subInteraction.update({
+                                    embeds: [
+                                        new EmbedBuilder({
+                                            color: convertHex(config.colors.danger),
+                                            description: "Ação cancelada!",
+                                        })
+                                    ],
+                                    components: []
+                                });
+                                return;
+                            }
+
+                            await subInteraction.update({components: []});
+
+                            const files = resourceMessage.attachments
+                            .filter(a => a.name !== "thumb.png")
+                            .map(a => new AttachmentBuilder(a.url, {name: a.name}));
+
+                            await db.resources.update(resource.messageID, "thumbURL", {}, "delete");
+                            await resourceMessage.edit({files})
+                            .then(() => {
+                                interaction.editReply({
+                                    embeds: [
+                                        new EmbedBuilder({
+                                            color: convertHex(config.colors.success),
+                                            description: `A thumbnail do recurso foi removida! [Confira.](${resourceMessage.url})`,
+                                        })
+                                    ],
+                                });
+                            })
+                            .catch(logger);
+                        });
+                        return;
+                    }
+
+                    const message = await interaction.reply({
+                        ephemeral: true,  fetchReply: true,
+                        embeds: [
+                            new EmbedBuilder({
+                                color: convertHex(config.colors.default),
+                                description: "Essa será a nova thumbnail do recurso!",
+                                thumbnail: { url: thumb.url }
+                            }),
+                        ],
+                        components: [
+                            new ActionRowBuilder<ButtonBuilder>({components: [
+                                new ButtonBuilder({customId: "resources-change-thumb-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
+                                new ButtonBuilder({customId: "resources-change-thumb-cancel-button", label: "Cancelar", style: ButtonStyle.Danger})
+                            ]})
+                        ]
+                    });
+
+                    const collector = buttonCollector(message).on("collect", async subInteraction => {
+                        collector.stop();
+                        if (subInteraction.customId == "resources-change-thumb-cancel-button"){
+                            subInteraction.update({
+                                embeds: [
+                                    new EmbedBuilder({
+                                        color: convertHex(config.colors.danger),
+                                        description: "Ação cancelada!",
+                                    })
+                                ],
+                                components: []
+                            });
+                            return;
+                        }
+
+                        await subInteraction.update({components: []});
+
+                        const files = resourceMessage.attachments
+                        .filter(a => a.name !== "thumb.png")
+                        .map(a => new AttachmentBuilder(a.url, {name: a.name}));
+
+                        files.push(new AttachmentBuilder(thumb.url, {name: "thumb.png"}));
+                        await resourceMessage.edit({files, embeds: [
+                            new EmbedBuilder(resourceMessage.embeds[0].data)
+                            .setThumbnail("attachment://thumb.png")
+                        ]})
+                        .then(() => {
+                            interaction.editReply({
+                                embeds: [
+                                    new EmbedBuilder({
+                                        color: convertHex(config.colors.success),
+                                        description: `A thumbnail do recurso foi alterada! [Confira.](${resourceMessage.url})`,
+                                    })
+                                ]
+                            });
+                        })
+                        .catch(logger);
+                    });
                     return;
                 }
                 case "banner":{
+                    const banner = options.getAttachment("image");
+                    if (!banner){
+                        const message = await interaction.reply({
+                            ephemeral: true, fetchReply: true,
+                            embeds:[
+                                new EmbedBuilder({
+                                    color: convertHex(config.colors.default),
+                                    description: "Você não enviou uma imagem para o banner \nDeseja remover o banner atual?",
+                                })
+                            ],
+                            components: [
+                                new ActionRowBuilder<ButtonBuilder>({components: [
+                                    new ButtonBuilder({customId: "resources-remove-banner-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
+                                    new ButtonBuilder({customId: "resources-remove-banner-cancel-button", label: "Cancelar", style: ButtonStyle.Danger})
+                                ]})
+                            ]
+                        });
 
+                        const collector = buttonCollector(message).on("collect", async subInteraction => {
+                            collector.stop();
+                            if (subInteraction.customId == "resources-remove-banner-cancel-button"){
+                                subInteraction.update({
+                                    embeds: [
+                                        new EmbedBuilder({
+                                            color: convertHex(config.colors.danger),
+                                            description: "Ação cancelada!",
+                                        })
+                                    ],
+                                    components: []
+                                });
+                                return;
+                            }
+
+                            subInteraction.update({components: []});
+
+                            const files = resourceMessage.attachments
+                            .filter(a => a.name !== "banner.png")
+                            .map(a => new AttachmentBuilder(a.url, {name: a.name}));
+
+                            await db.resources.update(resource.messageID, "bannerURL", {}, "delete");
+                            await resourceMessage.edit({files})
+                            .then(() => {
+                                interaction.editReply({
+                                    embeds: [
+                                        new EmbedBuilder({
+                                            color: convertHex(config.colors.success),
+                                            description: `O banner do recurso foi removida! [Confira.](${resourceMessage.url})`,
+                                        })
+                                    ],
+                                    components: []
+                                });
+                            })
+                            .catch(logger);
+                        });
+                        return;
+                    }
+
+                    const message = await interaction.reply({
+                        ephemeral: true,  fetchReply: true,
+                        embeds: [
+                            new EmbedBuilder({
+                                color: convertHex(config.colors.default),
+                                description: "Esse será o novo banner do recurso!",
+                                thumbnail: { url: banner.url }
+                            }),
+                        ],
+                        components: [
+                            new ActionRowBuilder<ButtonBuilder>({components: [
+                                new ButtonBuilder({customId: "resources-change-banner-confirm-button", label: "Confirmar", style: ButtonStyle.Success}),
+                                new ButtonBuilder({customId: "resources-change-banner-cancel-button", label: "Cancelar", style: ButtonStyle.Danger})
+                            ]})
+                        ]
+                    });
+
+                    const collector = buttonCollector(message).on("collect", async subInteraction => {
+                        collector.stop();
+                        if (subInteraction.customId == "resources-change-banner-cancel-button"){
+                            subInteraction.update({
+                                embeds: [
+                                    new EmbedBuilder({
+                                        color: convertHex(config.colors.danger),
+                                        description: "Ação cancelada!",
+                                    })
+                                ],
+                                components: []
+                            });
+                            return;
+                        }
+
+                        await subInteraction.update({components: []});
+
+                        const files = resourceMessage.attachments
+                        .filter(a => a.name !== "banner.png")
+                        .map(a => new AttachmentBuilder(a.url, {name: a.name}));
+
+                        files.push(new AttachmentBuilder(banner.url, {name: "banner.png"}));
+                        await resourceMessage.edit({files, embeds: [
+                            new EmbedBuilder(resourceMessage.embeds[0].data)
+                            .setImage("attachment://banner.png")
+                        ]})
+                        .then(() => {
+                            interaction.editReply({
+                                embeds: [
+                                    new EmbedBuilder({
+                                        color: convertHex(config.colors.success),
+                                        description: `O banner do recurso foi alterada! [${resourceMessage.url}](Confira.)`,
+                                    })
+                                ],
+                                components: []
+                            });
+                        })
+                        .catch(logger);
+                    });
                     return;
                 }
             }
-            return;
         }
 
         switch(subCommand){
@@ -775,3 +1002,10 @@ export default new Command({
 });
 
 // type SubCommand = "upload" /* | "edit" */ | "list" | "get" | "search" | "delete" | "migrate";
+
+async function findMessage(resource: DocumentResource, guild: Guild){
+    const channelName = `${resource.category.name}-${resource.category.subCategory}`;
+    const channel = findChannel(guild, channelName, ChannelType.GuildText, config.resources.title);
+    if (!channel) return null;
+    return await channel.messages.fetch(resource.messageID).catch(() => null);
+}
