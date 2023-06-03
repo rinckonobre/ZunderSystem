@@ -26,22 +26,4 @@ export default new Command({
             ]})]
         });
     },
-    buttons:{
-        test(interaction){
-            if (!interaction.inCachedGuild()) return;
-            const { member, message, guild } = interaction;
-            if (message.embeds.length < 1 || message.embeds[0].fields.length < 1) return;
-
-            const resourceId = message.embeds[0].fields[0].name;
-            const authorId = message.embeds[0].fields[1].name;
-
-            console.log(resourceId, authorId);
-        }
-    },
-    modals:{
-        a(i){
-            const { fields } = i;
-            const nameField = fields.getTextInputValue("name");
-        }
-    }
 });

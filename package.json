@@ -2,7 +2,6 @@
   "name": "zunder-system",
   "displayName": "Zunder System Bot",
   "version": "1.0.0",
-  
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -23,22 +22,19 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node-cron": "^3.0.7",
-    "@typescript-eslint/eslint-plugin": "^5.59.0",
-    "@typescript-eslint/parser": "^5.59.0",
-    "eslint": "^8.38.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.42.0",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
-    "tscpaths": "^0.0.9"
+    "typescript": "^5.1.3"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.39",
-    "@types/firebase": "^3.2.1",
+    "@napi-rs/canvas": "^0.1.41",
     "colors": "^1.4.0",
-    "discord.js": "^14.10.2",
-    "dotenv": "^16.0.3",
-    "firebase-admin": "^11.5.0",
-    "fs": "^0.0.1-security",
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.1.3",
+    "firebase-admin": "^11.9.0",
     "node-cron": "^3.0.2",
-    "tslib": "^2.5.0"
+    "tslib": "^2.5.3"
   }
 }
