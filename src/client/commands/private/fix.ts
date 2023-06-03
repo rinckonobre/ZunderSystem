@@ -50,9 +50,9 @@ export default new Command({
                     return;
                 }
 
-                await db.players.update(member.id, "resources", {}, "delete");
+                await db.players.update(mention.id, "resources", {}, "delete");
                 snapshot.docs.forEach(async doc => {
-                    await db.players.update(member.id, "resources", {id: doc.id}, "arrayUnion");
+                    await db.players.update(mention.id, "resources", {id: doc.id}, "arrayUnion");
                 });
 
                 interaction.editReply({
