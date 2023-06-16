@@ -12,8 +12,8 @@ export default new Event({name: "voiceStateUpdate", async run(oldState, newState
     const cLogs = findChannel(guild, "logs", ChannelType.GuildText);
     if (!cLogs) return;
 
-    const text1 = `<t:${~~(Date.now() / 1000)}:t> ${findEmoji(client, "minus")} **${member.user.tag}** saiu de ${oldState.channel}`;
-    const text2 = `<t:${~~(Date.now() / 1000)}:t> ${findEmoji(client, "plus")} **${member.user.tag}** entrou em ${newState.channel}`;
+    const text1 = `<t:${~~(Date.now() / 1000)}:t> ${findEmoji(client, "minus")} **@${member.user.username}** saiu de ${oldState.channel}`;
+    const text2 = `<t:${~~(Date.now() / 1000)}:t> ${findEmoji(client, "plus")} **@${member.user.username}** entrou em ${newState.channel}`;
 
     if (oldState.channel) cLogs.send({content: text1});
     if (newState.channel) cLogs.send({content: text2});

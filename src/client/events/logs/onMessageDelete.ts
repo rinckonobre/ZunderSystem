@@ -25,7 +25,7 @@ export default new Event({ name: "messageDelete", async run(message){
 
     const time = `<t:${~~(Date.now() / 1000)}:t>`;
     const replyOptions = {
-        content: `${time} 🗑️ ${message.channel} **${message.member?.user.tag}** `,
+        content: `${time} 🗑️ ${message.channel} **@${message.member?.user.username}** `,
         files: [] as any[]
     };
 

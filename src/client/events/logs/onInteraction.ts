@@ -11,7 +11,7 @@ export default new Event({name: "interactionCreate", async run(interaction){
     if (!cLogs) return;
 
     const time = `<t:${~~(Date.now() / 1000)}:t>`;
-    let content = `${time} **${user.tag}** `;
+    let content = `${time} **@${user.username}** `;
 
     const format = chatInputApplicationCommandMention;
 

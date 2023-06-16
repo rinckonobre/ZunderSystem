@@ -11,70 +11,52 @@ export default new Event({
         if (targetType !== "User" || executor === null) return;
         const target = targetRaw as User;
 
-        if (action === AuditLogEvent.MemberKick){
-            systemRecords.create({
-                guild, title: "Membro expulso",
-                description: `${target} **${target.tag}**
-                
-                Motivo: \`${reason}\``,
-                color: config.colors.danger,
-                mention: target,
-                staff: executor
-            });
-            return;
-        }
-
-        if (action === AuditLogEvent.MemberBanAdd){
-            systemRecords.create({
-                guild, title: "Banimento aplicado",
-                description: `${target} **${target.tag}**
-                
-                Motivo: \`${reason}\``,
-                color: config.colors.danger,
-                mention: target,
-                staff: executor
-            });
-            return;
-        }
-
-
-
-        if (action === AuditLogEvent.MemberUpdate){
-            const change = changes[0];
-
-            if (change.key == "communication_disabled_until"){
-
-                if (change.new && !change.old) {
-                    systemRecords.create({
-                        guild, title: "Castigo aplicado",
-                        style: "Simple",
-                        description: `${target} **${target.tag}**
-                        
-                        Motivo: \`${reason}\`
-                        Expiração: ${time(~~ (new Date(String(change.new)).getTime() / 1000), TimestampStyles.RelativeTime)}
-                        `,
-                        color: config.colors.danger,
-                        mention: target,
-                        staff: executor
-                    });
-                }
-                
-                return;
+        switch(action){
+            case AuditLogEvent.MemberKick:{
+                systemRecords.create({
+                    guild, title: "Membro expulso",
+                    description: `${target} **@${target.username}**
+                    
+                    Motivo: \`${reason}\``,
+                    color: config.colors.danger,
+                    mention: target,
+                    staff: executor
+                });
+                break;
             }
-
-            // systemRecords.create({
-            //     guild, title: "Banimento aplicado",
-            //     description: `${target} **${target.tag}**
-                
-            //     Motivo: \`${reason}\``,
-            //     color: config.colors.danger,
-            //     mention: target,
-            //     staff: executor
-            // });
-            return;
+            case AuditLogEvent.MemberBanAdd:{
+                systemRecords.create({
+                    guild, title: "Banimento aplicado",
+                    description: `${target} **@${target.username}**
+                    
+                    Motivo: \`${reason}\``,
+                    color: config.colors.danger,
+                    mention: target,
+                    staff: executor
+                });
+                break;
+            }
+            case AuditLogEvent.MemberUpdate:{
+                const change = changes[0];
+                if (change.key == "communication_disabled_until"){
+                    if (change.new && !change.old) {
+                        systemRecords.create({
+                            guild, title: "Castigo aplicado",
+                            style: "Simple",
+                            description: `${target} **@${target.username}**
+                            
+                            Motivo: \`${reason}\`
+                            Expiração: ${time(~~ (new Date(String(change.new)).getTime() / 1000), TimestampStyles.RelativeTime)}
+                            `,
+                            color: config.colors.danger,
+                            mention: target,
+                            staff: executor
+                        });
+                    }
+                    break;
+                }
+                break;
+            }
         }
-        
-
-
     },
 });

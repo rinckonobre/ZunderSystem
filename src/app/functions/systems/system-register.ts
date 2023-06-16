@@ -26,12 +26,11 @@ export const systemRegister = {
         });
     },
     async auto(member: GuildMember){
-        const { guild, client, user: { tag } } = member;
+        const { guild, client, user } = member;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         
         if (!memberData) {
-            console.log("test2");
             systemRegister.create(member);
 
             const memberRole = findRole(guild, registries.discord.roles[1].name);
@@ -43,7 +42,7 @@ export const systemRegister = {
                 mention: member,
                 color: config.colors.primary,
                 staff: client,
-                description: `${member} **${tag}**
+                description: `${member} **@${user.username}**
         
                 Registrado(a) como ${memberRole} pelo sistema`,
             });
