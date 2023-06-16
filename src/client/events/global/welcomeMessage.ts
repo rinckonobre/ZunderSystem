@@ -5,49 +5,71 @@ import { client, db, config } from "../../..";
 import { CanvasFontBuilder, CanvasBuilder } from "../../../app/classes";
 import { DocumentPlayer } from "../../../app/interfaces";
 import { registries } from "../../../settings/jsons";
+import { createLinearGradiente } from "../../../app/functions";
 
 export default new Event({name: "guildMemberAdd", async run(member){
     if (member.guild.id != client.mainGuildID ) return;
+    const { guild } = member;
     
-    const cGlobal = member.guild.channels.cache.find(c => c.name == config.guild.channels.global);
-    if (!cGlobal || cGlobal.type != ChannelType.GuildText) return;
+    const cGlobal = guild.channels.cache.find(c => c.name == config.guild.channels.global);
+    if (cGlobal?.type !== ChannelType.GuildText) return;
 
     const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
-
+    
     const images = {
         background: await loadImage(config.images.resolutions["1024-260"][0]),
         profile: await loadImage(member.displayAvatarURL({extension: "png", size: 1024}))
     };
 
-    const username = member.user.username.slice(0, 25);
-    const discriminator = "#" + member.user.discriminator;
+    const styles = {
+        light: config.colors.tailwind.neutral[100],
+        text: config.colors.tailwind.neutral[200],
+        success: config.colors.tailwind.green[600],
+    };
 
-    const canvasFont = new CanvasFontBuilder({family: "Montserrat", size: 20, style: "light", textBaseLine: "alphabetic"});
-    
-    const canvas = new CanvasBuilder(1025, 260)
-    .drawImage({image: images.profile, x: 0, y: 0, radius: 82})
-    .setStyle({style: config.colors.joinGreen})
-    .drawRect({x: 160, y: 174, width: 8, height: 40, method: "fill", radius: 4})
-    .drawRect({x: 144, y: 190, width: 40, height: 8, method: "fill", radius: 4})
-    .drawRect({x: 70, y: 205, width: 104, height: 28, method: "fill", radius: 8, style: "#171717"})
+    const canvasFont = new CanvasFontBuilder({family: "Montserrat", size: 60, style: "bold", textBaseLine: "top"});
+    const canvas = new CanvasBuilder(1024, 260)
     .setFont(canvasFont.data)
-    .drawText({text: discriminator, method: "fill", x: 90, y: 226, style: config.colors.white})
-    .setFont({family: "Montserrat", size: 60, style: "bold"})
-    .drawText({text: username, method: "fill", x: 296, y: 116, style: config.colors.white})
-    .setFont({family: "Montserrat", size: 40, style: "medium"});
+    .drawImage({image: images.background, x: 0, y: 0});
 
-    if (!memberData) {
-        canvas.drawText({text: "Entrou no servidor".toUpperCase(), method: "fill", x: 244, y: 168, style: config.colors.joinGreen });
-    } else {
+    const gradient = createLinearGradiente(canvas.context, {
+        start: {x: 200, y: -100}, end: {x: 400, y: 760},
+        startColor: "rgba(0, 0, 0, 0.01)", endColor: styles.success
+    });
+
+    canvas
+    .drawRect({method: "fill", x: 0, y: 0, width: 1024, height: 300, style: gradient})
+    .drawImage({image: images.profile, x: 40, y: 34, radius: 100});
+
+    const displayname = member.displayName.slice(0, 18);
+    const displaynameWidth = canvas.context.measureText(displayname).width;
+
+    canvas
+    .drawText({method: "fill", x: 260, y: 55, text: displayname, style: styles.light})
+    .setFont(canvasFont.setSize(24).setStyle("light").data)
+    .drawText({method: "fill", x: 260 + displaynameWidth + 10, y: 72, text: "@" + displayname, style: styles.text});
+    canvas
+    .setFont(canvasFont.setSize(40).setStyle("regular").data)
+    .setFilter().brightness(110);
+
+    if (memberData){
         const { type, level } = memberData.registry;
         const register = registries[type].roles[level];
         
         const { colors, name } = register;
+
+        canvas
+        .drawText({method: "fill", x: 260, y: 126, text: "Voltou no servidor".toUpperCase(), style: styles.success})
+        .clearFilter()
+        .setFont(canvasFont.setSize(30).data)
+        .drawText({method: "fill", x: 260, y: 168, text: "Como: ".toUpperCase(), style: styles.success})
+        .drawText({method: "fill", x: 370, y: 168, text: name.toUpperCase(), style: colors.main});
+
+    } else {
         
         canvas
-        .drawText({text: "Voltou ao servidor".toUpperCase(), method: "fill", x: 244, y: 160, style: config.colors.joinGreen})
-        .drawText({text: "Como".toUpperCase(), method: "fill", x: 244, y: 200, style: config.colors.joinGreen})
-        .drawText({text: name.toUpperCase(), method: "fill", x: 338, y: 200, style: colors.main});
+        .drawText({method: "fill", x: 260, y: 116, text: "Entrou no servidor".toUpperCase(), style: styles.success})
+        .clearFilter();
     }
     
     const buffer = canvas.data.toBuffer("image/png");

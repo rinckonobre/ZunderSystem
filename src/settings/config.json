@@ -571,17 +571,14 @@
             "1024-260":[
                 "https://i.imgur.com/YUg1031.png"
             ],
-            "1920-1080":[]
+            "1920-1080":[
+
+            ]
         },
         "text": {
             "register": "https://i.imgur.com/8mlHvF6.png"
         },
-        "backgrounds": [
-            "https://i.imgur.com/YUg1031.png"
-        ],
         "icons": {
-            "join-plus": "https://i.imgur.com/UhO2mMi.png",
-            "leave-minus": "https://i.imgur.com/N7fSBbM.png",
             "interaction-level": "https://i.imgur.com/sMi1YBJ.png",
             "interaction-xp": "https://i.imgur.com/irksvwO.png",
             "work-level": "https://i.imgur.com/DciDHoC.png",

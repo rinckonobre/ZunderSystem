@@ -27,17 +27,17 @@ export default new Command({
             autocomplete: true,
         },
     ],
-    // async autocomplete({ interaction, options }) {
-    //     const focusedValue = options.getFocused(true);
-    //     switch (focusedValue.name) {
-    //         case "color": {
-    //             const choices = Object.entries(config.colors.defaults).map(([name, value]) => ({ name, value }));
-    //             const filtered = choices.filter(c => c.name.startsWith(focusedValue.value));
-    //             await interaction.respond(filtered.slice(0, 25).map(c => ({ name: c.name, value: c.value })));
-    //             return;
-    //         }
-    //     }
-    // },
+    async autoComplete(interaction) {
+        const focused = interaction.options.getFocused(true);
+        switch (focused.name) {
+            case "color": {
+                const choices = Object.entries(config.colors.defaults).map(([name, value]) => ({ name, value }));
+                const filtered = choices.filter(c => c.name.startsWith(focused.value));
+                await interaction.respond(filtered.slice(0, 25).map(c => ({ name: c.name, value: c.value })));
+                return;
+            }
+        }
+    },
     async run(interaction) {
         if (!interaction.inCachedGuild()) return;
         const { guild, channel, member, options } = interaction;

@@ -1,12 +1,11 @@
-import { ApplicationCommandDataResolvable, ApplicationCommandType, BitFieldResolvable, Client, ClientEvents, Collection, GatewayIntentsString, IntentsBitField, Partials, version } from "discord.js";
+import { ApplicationCommandType, BitFieldResolvable, Client, ClientEvents, Collection, GatewayIntentsString, IntentsBitField, Partials, version } from "discord.js";
 import { ButtonComponents, CommandType, EventType, ModalComponents, ScheduleType, StringSelectComponents } from ".";
-import { GlobalFonts } from "@napi-rs/canvas";
 import { existsSync, readdirSync } from "fs";
+import { GlobalFonts } from "@napi-rs/canvas";
+import { join, resolve } from "path";
+import { clear, log } from "console";
 import cron from "node-cron";
-import dotenv from "dotenv";
-import path from "path";
-import { log, clear } from "console";
-dotenv.config();
+import "dotenv/config";
 
 import firebase, { ServiceAccount, credential } from "firebase-admin";
 import devfbAccount from "../../settings/development/firebase.json";
@@ -19,7 +18,7 @@ if (enviroment == "Development"){
 } else {
     firebase.initializeApp({ credential: credential.cert(prodfbAccount as ServiceAccount) });
 }
-const clientFolderPath = path.join(__dirname, "../../client/");
+const clientFolderPath = join(__dirname, "../../client/");
 const fileCondition = (fileName: string) => fileName.endsWith(".js") || fileName.endsWith(".ts");
 
 export class ExtendedClient extends Client {
@@ -60,7 +59,7 @@ export class ExtendedClient extends Client {
     }
 
     private registerSchedules() {
-        const tasksFolderPath = path.join(clientFolderPath, "tasks");
+        const tasksFolderPath = join(clientFolderPath, "tasks");
         if (!existsSync(tasksFolderPath)) return;
         readdirSync(tasksFolderPath).forEach(local => {
 
@@ -84,14 +83,14 @@ export class ExtendedClient extends Client {
         });
     }
     private loadCommands(){
-        const commandsFolderPath = path.join(clientFolderPath, "commands");
+        const commandsFolderPath = join(clientFolderPath, "commands");
 
         const commandsFolders = readdirSync(commandsFolderPath);
         //console.log("\n" + `In commands folder: ${commandsFolders.length}`.blue);
         
         commandsFolders.forEach(subFolder => {
             //console.log("Accessing", subFolder.cyan);
-            readdirSync(path.join(commandsFolderPath, subFolder)).filter(fileCondition).forEach(async fileName => {
+            readdirSync(join(commandsFolderPath, subFolder)).filter(fileCondition).forEach(async fileName => {
                 //console.log("◌ Loaded".green, fileName.yellow);
 
                 const command: CommandType = (await import(`../../client/commands/${subFolder}/${fileName}`))?.default;
@@ -145,13 +144,13 @@ export class ExtendedClient extends Client {
         });
     }
     private registerEvents() {
-        const eventsFolderPath = path.join(clientFolderPath, "events");
+        const eventsFolderPath = join(clientFolderPath, "events");
 
         const eventsFolders = readdirSync(eventsFolderPath);
         //console.log("\n" + `In events folder: ${eventsFolders.length}`.blue);
         eventsFolders.forEach(subFolder => {
             //console.log("Accessing", subFolder.cyan);
-            readdirSync(path.join(eventsFolderPath, subFolder)).filter(fileCondition).forEach(async fileName => {
+            readdirSync(join(eventsFolderPath, subFolder)).filter(fileCondition).forEach(async fileName => {
                 //console.log("◌ Loaded".green, fileName.yellow);
 
                 const event: EventType<keyof ClientEvents> = (await import(`../../client/events/${subFolder}/${fileName}`))?.default;
@@ -165,7 +164,7 @@ export class ExtendedClient extends Client {
         });
     }
     private registerFonts() {
-        const fontsFolder = path.resolve(__dirname, "../../../assets/fonts/");
+        const fontsFolder = resolve(__dirname, "../../../assets/fonts/");
 
         readdirSync(fontsFolder).forEach((fontName) => {
             readdirSync(`${fontsFolder}/${fontName}/`).filter(f => f.endsWith(".ttf")).forEach((file) => {
@@ -186,9 +185,11 @@ export class ExtendedClient extends Client {
         const display = (this.enviroment == "Development") 
         ? " in development mode ".bgCyan.black
         : " in production mode ".bgGreen.white;
-    
+
+        const owner = this.users.cache.get(this.onwerID);
         log(" ✓ Bot online".green, display);
-        log(" discord.js".blue, version.yellow);
+        log(" discord.js".blue, "📦 " + version.yellow, "/", "👤", `@${owner?.username}`.blue.italic);
+
         this.application?.commands.set(this.commands.map(c => c))
         .then((commands) => log("⟨ / ⟩".cyan, `${commands.size} commands defined successfully!`.green))
         .catch((err) => log("An error occurred while trying to set the commands\n".red, err));
