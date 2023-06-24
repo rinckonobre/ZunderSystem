@@ -299,6 +299,12 @@ export default new Command({
         "register-member-button": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
             const { member, guild } = interaction;
+
+            if (member.roles.cache.has("iddocargo")){
+                interaction.reply({ephemeral: true, content: "Você ja tem esse cargo!"});
+                return;
+            }
+
             const cGeneral = guild.channels.cache.find(c => c.name === config.guild.channels.general);
     
             const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;

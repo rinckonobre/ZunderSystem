@@ -1,7 +1,7 @@
-/.vscode
 package-lock.json
 node_modules
 dist
+deprecated
 .env
 firebase.json
 ffmpeg.exe

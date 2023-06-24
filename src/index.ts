@@ -1,4 +1,4 @@
-import config from "./settings/config.json";
+import { config } from "./settings";
 export * from "colors";
 
 import { ExtendedClient } from "./app/base";
@@ -14,3 +14,6 @@ const db = {
 };
 
 export { client, config, db };
+
+
+  

@@ -1,0 +1,15 @@
+{
+    "material-icon-theme.folders.associations": {
+        "deprecated": "Archive",
+        "development":"Test",
+        "production":"Dist",
+        "staff": "Admin",
+        "protection": "Guard",
+        "systems":"Ci"
+    },
+    "material-icon-theme.files.associations": {
+        "config.json": "Raml",
+        "settings.json": "Raml",
+        "example_firebase.json": "Firebase"
+    }
+}

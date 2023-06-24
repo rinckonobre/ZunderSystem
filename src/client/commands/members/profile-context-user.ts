@@ -11,6 +11,7 @@ export default new Command({
     type: ApplicationCommandType.User,
     visibility: "public",
     async run(interaction) {
+
         if (!interaction.inCachedGuild()) return;
         const member = interaction.targetMember;
         
