@@ -12,6 +12,8 @@ export default new Command({
     description: "Manages Zunder's bank",
     descriptionLocalizations: {"pt-BR": "Administra o banco da Zunder"},
     type: ApplicationCommandType.ChatInput,
+    dmPermission: false,
+    visibility: "restricted",
     options: [
         {
             name: "add", nameLocalizations: {"pt-BR": "adicionar"},
@@ -58,12 +60,10 @@ export default new Command({
             ]
         }
     ],
-    visibility: "staff",
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
         const { member, guild, options } = interaction;
 
-        if (guild.id != client.mainGuildID){
+        if (guild.id != client.mainGuildId){
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal");
             return;
         }
@@ -99,7 +99,7 @@ export default new Command({
             amount: guildData.bank.total || 0
         };
 
-        const embed = new EmbedBuilder({ color: convertHex(config.colors.default) });
+        const embed = new EmbedBuilder({ color: convertHex(config.colors.theme.default) });
         
         switch(options.getSubcommand(true)){
             case "add":{
@@ -135,7 +135,7 @@ export default new Command({
                     const embedLog = new EmbedBuilder({
                         title: "📥 Valor adicionado",
                         description: `${mention} **${mention.user.tag}** apoiou o grupo \nValor: ${amount} reais`,
-                        color: convertHex(config.colors.joinGreen)
+                        color: convertHex(config.colors.tailwind.green[600])
                     });
 
                     cBank.send({embeds: [embedLog]});
@@ -183,7 +183,7 @@ export default new Command({
                     const embedLog = new EmbedBuilder({
                         title: "📥 Valor removido",
                         description: `> Motivo: ${reason} \nValor: ${amount} reais`,
-                        color: convertHex(config.colors.leaveRed)
+                        color: convertHex(config.colors.tailwind.red[600])
                     });
 
                     cBank.send({embeds: [embedLog]});

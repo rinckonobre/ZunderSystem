@@ -20,7 +20,7 @@ export const systemWork = {
         const embed = new EmbedBuilder()
         .setAuthor({name: member.displayName, iconURL: member.displayAvatarURL()})
         .setTitle(profession.emoji + " " + profession.name)
-        .setColor(config.colors.success as ColorResolvable)
+        .setColor(config.colors.theme.success as ColorResolvable)
         .setDescription(`Jogo: **${sector.game}**
         Modo: \`${profession.mode}\``)
         .setThumbnail("attachment://" + image.name)

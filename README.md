@@ -33,21 +33,26 @@ At the time the bot is starting, it gets all the components from all the command
 
 ```ts
 // Extended Client class method
-const commandsFolders = readdirSync(commandsFolderPath);
-commandsFolders.forEach(subFolder => {
-    readdirSync(path.join(commandsFolderPath, subFolder))
-    .filter(fileCondition).forEach(async fileName => {
-        const command: CommandType = (await import(`../../client/commands/${subFolder}/${fileName}`))?.default;
-        if (!command.name) return;
-        const { name, buttons, stringSelects, modals } = command;
+const comamndsDirPath = join(clientDirPath, "commands");
+if (!existsSync(comamndsDirPath)) mkdirSync(comamndsDirPath);
 
-        this.commands.set(name, command);
+for (const subFolder of readdirSync(comamndsDirPath)) {
+    const subFolderPath = join(comamndsDirPath, subFolder);
+    for (const fileName of readdirSync(subFolderPath).filter(fileFilter)){
+        const commandPath = join(subFolderPath, fileName);
+        const command: Command = (await import(commandPath))?.default;
+        if (!command.name){
+            logger("warn", `! "commands/${subFolder}/${fileName}" file is not exporting a Command`.yellow.italic);
+            continue;
+        }
+        logger("info",`✓ "commands/${subFolder}/${fileName}" registered as ${command.name.cyan}`.green);
+        this.Commands.set(command.name, command.data);
 
-        if (buttons) this.buttons = {...this.buttons, ...buttons};
-        if (stringSelects) this.stringSelects = {...this.stringSelects, ...stringSelects};
-        if (modals) this.modals = {...this.modals, ...modals};
-    });
-});
+        if (command.data.buttons) this.buttons = { ...this.buttons, ...command.data.buttons };
+        if (command.data.stringSelects) this.stringSelects = { ...this.stringSelects, ...command.data.stringSelects };
+        if (command.data.modals) this.modals = { ...this.modals, ...command.data.modals };
+    }
+}
 ```
 ```ts
 // Extended Client class method
@@ -78,7 +83,8 @@ export default new Command({
     name: "ticket",
     description: "Ticket command",
     type: ApplicationCommandType.ChatInput,
-    visibility: "staff",
+    visibility: "restricted",
+    dmPermission: false,
     async run(interaction) {
         // setup ticket channel
     },

@@ -7,7 +7,7 @@ import { DocumentPlayer } from "../../../app/interfaces";
 export default new Event({name: "messageCreate", async run(message){
     if (message.channel.type != ChannelType.GuildText ||
         message.channel.name != config.guild.channels.shares ||
-        message.guild?.id != client.mainGuildID ||
+        message.guild?.id != client.mainGuildId ||
         !message.member || message.member.user.bot
     ) return;
     

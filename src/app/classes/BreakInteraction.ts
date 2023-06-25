@@ -30,7 +30,7 @@ export class BreakInteraction {
             const member = source.member as GuildMember;
 
             const embed = new EmbedBuilder()
-            .setColor(config.colors.danger as ColorResolvable)
+            .setColor(config.colors.theme.danger as ColorResolvable)
             .setDescription("> " + text);
 
             if (color) embed.setColor(color as ColorResolvable);

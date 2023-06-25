@@ -8,7 +8,7 @@ const members: Collection<string, number> = new Collection();
 export default new Event({
     name: "voiceStateUpdate", async run(oldState, newState) {
 
-        if (newState.guild.id !== client.mainGuildID
+        if (newState.guild.id !== client.mainGuildId
             || oldState.channel === newState.channel
         ) return;
 
@@ -32,7 +32,7 @@ export default new Event({
             member.timeout(60*1000, "Entrando e saindo de salas várias vezes");
 
             cGeneral?.send({content: `||${member}||`, embeds: [new EmbedBuilder({
-                color: convertHex(config.colors.danger),
+                color: convertHex(config.colors.theme.danger),
                 description: `${member} evite ficar entrando e saindo das salas diversas vezes em um curto período por favor!
                 > Leia os ${cTerms} do servidor para evitar punições`
             })]})

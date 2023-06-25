@@ -9,6 +9,7 @@ export default new Command({
     description: "Change member data",
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
+    dmPermission: false,
     options: [
         {
             name: "register",
@@ -135,8 +136,7 @@ export default new Command({
         }
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
-        const { member, guild, channel, options } = interaction;
+        const { member, options } = interaction;
 
         await interaction.deferReply({ephemeral: true});
 

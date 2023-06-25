@@ -12,6 +12,7 @@ export default new Command({
     description: "Mostra informações sobre o servidor",
     type: ApplicationCommandType.ChatInput,
     visibility: "public",
+    dmPermission: false,
     options: [
         {
             name: "comandos",
@@ -25,7 +26,6 @@ export default new Command({
         }
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
         const { member, options, locale } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
@@ -37,17 +37,17 @@ export default new Command({
                 new MenuBuilder({
                     mainEmbed: new EmbedBuilder({
                         title: "⌨️ Comandos",
-                        color: convertHex(config.colors.primary)
+                        color: convertHex(config.colors.theme.primary)
                     }),
                     maxItemsPerPage: 8,
                     type: "Grid_2",
                     ephemeral: true,
-                    items: client.commands.map(command => {
+                    items: client.Commands.map(command => {
                         const typeIcons = { 1: "⌨️", 2: "👤",3: "✉️" };
                         const visibility = {
                             "public": "Pública",
                             "private": "Privada",
-                            "staff": "Somente staffs"
+                            "restricted": "Restrito"
                         };
 
                         const description = (command.type == ApplicationCommandType.ChatInput) 
@@ -60,14 +60,14 @@ export default new Command({
                         const content = `> Visibilidade: __${visibility[command.visibility]}__ \n> ${usage} \n${codeBlock(description)}`;
                         
                         if (command.visibility == "private" && member.id == member.guild.ownerId) {
-                            return {title, description: content, color: convertHex(config.colors.danger) };
-                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.danger)});
-                        } else if (command.visibility == "staff" && (memberData?.registry?.level || 1) > 1) {
-                            return {title, description: content, color: convertHex(config.colors.primary) };
-                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.primary) });
+                            return {title, description: content, color: convertHex(config.colors.theme.danger) };
+                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.theme.danger)});
+                        } else if (command.visibility == "restricted" && (memberData?.registry?.level || 1) > 1) {
+                            return {title, description: content, color: convertHex(config.colors.theme.primary) };
+                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.theme.primary) });
                         } else {
-                            return {title, description: content, color: convertHex(config.colors.success) };
-                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.success) });
+                            return {title, description: content, color: convertHex(config.colors.theme.success) };
+                            // commandInfoMenu.addItem({ title, content, color: convertHex(config.colors.theme.success) });
                         }
                     })
                 }).show(interaction, member);
@@ -77,7 +77,7 @@ export default new Command({
                 interaction.reply({ephemeral: true, embeds: [
                     new EmbedBuilder({
                         title: "Bot da Zunder",
-                        color: convertHex(config.colors.zunder),
+                        color: convertHex(config.colors.theme.zunder),
                         thumbnail: {url: client.user!.displayAvatarURL() },
                         description: ` ${client.user}
                         > Conta um sistemas de interação, economia e administração.
@@ -126,7 +126,7 @@ export default new Command({
                 ephemeral: true, components: rows, fetchReply: true,
                 embeds: [new EmbedBuilder({
                     title: "Índice de informações",
-                    color: convertHex(config.colors.primary),
+                    color: convertHex(config.colors.theme.primary),
                     description: "Clique nos botões abaixo para ver informações de cada categoria"
                 })]
             });
@@ -142,7 +142,7 @@ export default new Command({
 
                 const embed = new EmbedBuilder({
                     title, description, 
-                    color: (color ? convertHex(color) : convertHex(config.colors.primary)),
+                    color: (color ? convertHex(color) : convertHex(config.colors.theme.primary)),
                     fields
                 })
                 .setThumbnail(thumb)
@@ -165,7 +165,7 @@ export default new Command({
 
             const embed = new EmbedBuilder({
                 title: termsCategory.description,
-                color: convertHex(config.colors.zunder),
+                color: convertHex(config.colors.theme.zunder),
                 description: termsCategory.terms
                 .map((term, index) => `- 📃 **(${termsCategory.prefix}${zeroPad(index++)})** ${term}`)
                 .join("\n\n"),

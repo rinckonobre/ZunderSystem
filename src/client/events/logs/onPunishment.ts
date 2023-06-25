@@ -18,7 +18,7 @@ export default new Event({
                     description: `${target} **@${target.username}**
                     
                     Motivo: \`${reason}\``,
-                    color: config.colors.danger,
+                    color: config.colors.theme.danger,
                     mention: target,
                     staff: executor
                 });
@@ -30,7 +30,7 @@ export default new Event({
                     description: `${target} **@${target.username}**
                     
                     Motivo: \`${reason}\``,
-                    color: config.colors.danger,
+                    color: config.colors.theme.danger,
                     mention: target,
                     staff: executor
                 });
@@ -48,7 +48,7 @@ export default new Event({
                             Motivo: \`${reason}\`
                             Expiração: ${time(~~ (new Date(String(change.new)).getTime() / 1000), TimestampStyles.RelativeTime)}
                             `,
-                            color: config.colors.danger,
+                            color: config.colors.theme.danger,
                             mention: target,
                             staff: executor
                         });

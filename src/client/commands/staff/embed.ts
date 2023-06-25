@@ -4,13 +4,13 @@ import { Command } from "../../../app/base";
 import { BreakInteraction } from "../../../app/classes";
 import { convertHex, buttonCollector, messageCollector, stringSelectCollector } from "../../../app/functions";
 import { DocumentPlayer } from "../../../app/interfaces";
-import { MemberSaves } from "../../../app/manager";
 
 export default new Command({
     name: "embed",
     description: "Create a embed message",
     descriptionLocalizations: { "pt-BR": "Cria uma mensagem embed" },
-    visibility: "staff",
+    visibility: "restricted",
+    dmPermission: false,
     type: ApplicationCommandType.ChatInput,
     options: [
         {
@@ -18,28 +18,9 @@ export default new Command({
             description: "Embed data",
             descriptionLocalizations: { "pt-BR": "Dados de embed" },
             type: ApplicationCommandOptionType.String
-        },
-        {
-            name: "color", nameLocalizations: { "pt-BR": "cor" },
-            description: "Default embed colors",
-            descriptionLocalizations: { "pt-BR": "Cores padrões para o embed" },
-            type: ApplicationCommandOptionType.String,
-            autocomplete: true,
-        },
-    ],
-    async autoComplete(interaction) {
-        const focused = interaction.options.getFocused(true);
-        switch (focused.name) {
-            case "color": {
-                const choices = Object.entries(config.colors.defaults).map(([name, value]) => ({ name, value }));
-                const filtered = choices.filter(c => c.name.startsWith(focused.value));
-                await interaction.respond(filtered.slice(0, 25).map(c => ({ name: c.name, value: c.value })));
-                return;
-            }
         }
-    },
+    ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
         const { guild, channel, member, options } = interaction;
         
         // Checks
@@ -58,7 +39,6 @@ export default new Command({
 
         await interaction.deferReply({ ephemeral: true, fetchReply: true });
         const data = options.getString("data");
-        const color = options.getString("color");
 
         // Embed Struct
         const blankEmbedData: EmbedData = {
@@ -68,15 +48,12 @@ export default new Command({
             _*Separe artigos usando fields!_
             _*Formate seu texto com o markdown do discord!_
             `,
-            color: convertHex(config.colors.success)
+            color: convertHex(config.colors.theme.success)
         };
         let embedBuild: EmbedBuilder;
         embedBuild = new EmbedBuilder(blankEmbedData);
         try {
             if (data) embedBuild = new EmbedBuilder(JSON.parse(data));
-        } catch (err) { }
-        try {
-            if (color) embedBuild.setColor(convertHex(color));
         } catch (err) { }
 
         const maxEmbedSize = 5800;
@@ -141,7 +118,7 @@ export default new Command({
         };
 
         const embedDisplay = new EmbedBuilder({
-            color: convertHex(config.colors.default), description: "Selecione um elemento"
+            color: convertHex(config.colors.theme.default), description: "Selecione um elemento"
         });
 
         interface EmbedCreatorCurrents { 
@@ -209,7 +186,7 @@ export default new Command({
         }
 
         function getOptionsMenu(){
-            embedDisplay.setColor(convertHex(config.colors.default))
+            embedDisplay.setColor(convertHex(config.colors.theme.default))
             .setDescription("Escolha o que deseja fazer");
             rows.first.setComponents(buttons.save, buttons.load, buttons.reset, buttons.back);
             return { embeds: [embedBuild, embedDisplay], components: [rows.first], files };
@@ -279,7 +256,7 @@ export default new Command({
                     break;
                 }
             }
-            if (!noEditDisplay) embedDisplay.setColor(convertHex(config.colors.default)).setDescription(text);
+            if (!noEditDisplay) embedDisplay.setColor(convertHex(config.colors.theme.default)).setDescription(text);
             return { embeds: [embedBuild, embedDisplay], components: [rows.first], files };
         }
         
@@ -292,13 +269,13 @@ export default new Command({
                     switch (currents.element) {
                         case "field": {
                             currents.element = "fields";
-                            embedDisplay.setColor(convertHex(config.colors.default))
+                            embedDisplay.setColor(convertHex(config.colors.theme.default))
                             .setDescription("Escolha como deseja controlar os fields");
                             subInteraction.update(getFieldsMenu());
                             break;
                         }
                         default: {
-                            embedDisplay.setColor(convertHex(config.colors.default))
+                            embedDisplay.setColor(convertHex(config.colors.theme.default))
                             .setDescription("Selecione um elemento");
                             subInteraction.update(getMainMenu());
                         }
@@ -330,7 +307,7 @@ export default new Command({
                                 const fieldLenth = (name.length + value.length);
                                 if (getEmbedSize() + fieldLenth >= maxEmbedSize){
                                     const info = `Tamanho atual do embed: (${getEmbedSize()} / ${maxEmbedSize}) \nTamanho do field atual: ${fieldLenth}`;
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription(`O total de caracteres desse embed será atingido com este field! \n${info}`);
                                     await interaction.editReply(getFieldsMenu());
                                     return;
@@ -338,7 +315,7 @@ export default new Command({
 
                                 try {
                                     embedBuild.addFields({ name, value });
-                                    embedDisplay.setColor(convertHex(config.colors.success))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.success))
                                     .setDescription("Field adicionado!");
                                     await interaction.editReply(getFieldsMenu());
                                 } catch (err) {
@@ -347,7 +324,7 @@ export default new Command({
                                     } else {
                                         embedBuild.setFields();
                                     }
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription("Não foi possível adicionar o field ao embed!");
                                     await interaction.editReply(getFieldsMenu());
                                 }
@@ -378,7 +355,7 @@ export default new Command({
 
                                 if ((getEmbedSize() - (title?.length || 0)) + newTitle.length >= maxEmbedSize){
                                     const info = `Tamanho atual do embed: (${getEmbedSize()} / ${maxEmbedSize}) \nTamanho do field atual: ${newTitle.length}`;
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription(`O total de caracteres desse embed será atingido com este título! \n${info}`);
                                     noEditDisplay = true;
                                     break;
@@ -403,7 +380,7 @@ export default new Command({
                                 
                                 if ((getEmbedSize() - (description?.length || 0)) + newDescription.length >= maxEmbedSize){
                                     const info = `Tamanho atual do embed: (${getEmbedSize()} / ${maxEmbedSize}) \nTamanho da descrição: ${newDescription.length}`;
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription(`O total de caracteres desse embed será atingido com esta descrição! \n${info}`);
                                     noEditDisplay = true;
                                     break;
@@ -429,7 +406,7 @@ export default new Command({
                                     embedBuild.setColor(color as ColorResolvable);
                                 } catch (err) {
                                     embedDisplay.setDescription("Não foi possível definir a cor especificada!")
-                                        .setColor(convertHex(config.colors.danger));
+                                        .setColor(convertHex(config.colors.theme.danger));
                                     noEditDisplay = true;
                                 }
                             }
@@ -452,7 +429,7 @@ export default new Command({
                                     embedBuild.setURL(url);
                                 } catch (err) {
                                     embedDisplay.setDescription("Não foi possível definir a url especificada!")
-                                    .setColor(convertHex(config.colors.danger));
+                                    .setColor(convertHex(config.colors.theme.danger));
                                     noEditDisplay = true;
                                 }
                             }
@@ -488,7 +465,7 @@ export default new Command({
                                 
                                 if ((getEmbedSize() - (author?.name.length || 0)) + name.length >= maxEmbedSize){
                                     const info = `Tamanho atual do embed: (${getEmbedSize()} / ${maxEmbedSize}) \nTamanho do nome do autor: ${name.length}`;
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription(`O total de caracteres desse embed será atingido com este autor! \n${info}`);
                                     noEditDisplay = true;
                                     break;
@@ -496,7 +473,7 @@ export default new Command({
                                 try {
                                     embedBuild.setAuthor({ name: name, iconURL, url });
                                 } catch (err) {
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription("Não foi possível editar o autor");
                                     noEditDisplay = true;
                                 }
@@ -527,7 +504,7 @@ export default new Command({
                                 
                                 if ((getEmbedSize() - (footer?.text.length || 0)) + text.length >= maxEmbedSize){
                                     const info = `Tamanho atual do embed: (${getEmbedSize()} / ${maxEmbedSize}) \nTamanho do texto do footer: ${text.length}`;
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription(`O total de caracteres desse embed será atingido com este footer! \n${info}`);
                                     noEditDisplay = true;
                                     break;
@@ -536,7 +513,7 @@ export default new Command({
                                 try {
                                     embedBuild.setFooter({ text, iconURL });
                                 } catch (err) {
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription("Não foi possível editar o autor");
                                     noEditDisplay = true;
                                 }
@@ -570,7 +547,7 @@ export default new Command({
 
                                 if ((getEmbedSize() - currentFieldLenth) + newFieldLenth >= maxEmbedSize){
                                     const info = `Tamanho atual do embed: (${getEmbedSize()} / ${maxEmbedSize}) \nTamanho do field atual: ${newFieldLenth}`;
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription(`O total de caracteres desse embed será atingido com este field! \n${info}`);
                                     noEditDisplay = true;
                                     break;
@@ -579,7 +556,7 @@ export default new Command({
                                 try {
                                     embedBuild.spliceFields(currents.index, 1, { name, value });
                                 } catch (err) {
-                                    embedDisplay.setColor(convertHex(config.colors.danger))
+                                    embedDisplay.setColor(convertHex(config.colors.theme.danger))
                                     .setDescription("Não foi possível editar o field do embed!");
                                     noEditDisplay = true;
                                 }
@@ -602,7 +579,7 @@ export default new Command({
 
                                 if (!attach || attach.contentType !== "image/png"){
                                     embedDisplay.setDescription("Envie pelo menos uma imagem para a thumbnail")
-                                    .setColor(convertHex(config.colors.danger));
+                                    .setColor(convertHex(config.colors.theme.danger));
                                     subInteraction.editReply({ embeds: [embedBuild, embedDisplay] });
                                     return;
                                 }
@@ -634,7 +611,7 @@ export default new Command({
 
                                 if (!attach){
                                     embedDisplay.setDescription("Envie pelo menos uma imagem para o banner")
-                                    .setColor(convertHex(config.colors.danger));
+                                    .setColor(convertHex(config.colors.theme.danger));
                                     subInteraction.editReply({ embeds: [embedBuild, embedDisplay] });
                                     return;
                                 }
@@ -727,33 +704,33 @@ export default new Command({
                     return;
                 }
                 case "embed-save-button":{
-                    MemberSaves.EmbedEdit.set(member.id, new EmbedBuilder(embedBuild.data));
-                    const data = JSON.stringify(embedBuild, null, 2);
-                    subInteraction.reply({
-                        ephemeral: true, files: [new AttachmentBuilder(Buffer.from(data, "utf-8"), {name: "embed.json"})]
-                    });
-                    embedDisplay.setColor(convertHex(config.colors.success))
-                    .setDescription("O embed foi salvo!");
-                    interaction.editReply({embeds: [embedBuild, embedDisplay]});
+                    // MemberSaves.EmbedEdit.set(member.id, new EmbedBuilder(embedBuild.data));
+                    // const data = JSON.stringify(embedBuild, null, 2);
+                    // subInteraction.reply({
+                    //     ephemeral: true, files: [new AttachmentBuilder(Buffer.from(data, "utf-8"), {name: "embed.json"})]
+                    // });
+                    // embedDisplay.setColor(convertHex(config.colors.theme.success))
+                    // .setDescription("O embed foi salvo!");
+                    // interaction.editReply({embeds: [embedBuild, embedDisplay]});
                     return;
                 }
                 case "embed-load-button":{
-                    const embedLoaded = MemberSaves.EmbedEdit.get(member.id);
-                    if (!embedLoaded){
-                        embedDisplay.setColor(convertHex(config.colors.danger))
-                        .setDescription("Não foi encontrado nenhum embed salvo!");
-                        subInteraction.update({embeds: [embedBuild, embedDisplay]});
-                        return;
-                    }
+                    // const embedLoaded = MemberSaves.EmbedEdit.get(member.id);
+                    // if (!embedLoaded){
+                    //     embedDisplay.setColor(convertHex(config.colors.theme.danger))
+                    //     .setDescription("Não foi encontrado nenhum embed salvo!");
+                    //     subInteraction.update({embeds: [embedBuild, embedDisplay]});
+                    //     return;
+                    // }
                     
-                    embedDisplay.setDescription("Você tem certeza que deseja carregar este embed?");
-                    rows.first.setComponents(buttons.confirm, buttons.back);
-                    const message = await subInteraction.update({embeds: [embedLoaded, embedDisplay], components: [rows.first]});
-                    const buttonInteraction = await message.awaitMessageComponent({componentType: ComponentType.Button}).catch(() => null);
-                    if (buttonInteraction && buttonInteraction.customId == "embed-confirm-button"){
-                        embedBuild = new EmbedBuilder(embedLoaded.data);
-                        buttonInteraction.update(getOptionsMenu());
-                    }
+                    // embedDisplay.setDescription("Você tem certeza que deseja carregar este embed?");
+                    // rows.first.setComponents(buttons.confirm, buttons.back);
+                    // const message = await subInteraction.update({embeds: [embedLoaded, embedDisplay], components: [rows.first]});
+                    // const buttonInteraction = await message.awaitMessageComponent({componentType: ComponentType.Button}).catch(() => null);
+                    // if (buttonInteraction && buttonInteraction.customId == "embed-confirm-button"){
+                    //     embedBuild = new EmbedBuilder(embedLoaded.data);
+                    //     buttonInteraction.update(getOptionsMenu());
+                    // }
                     return;
                 }
                 case "embed-reset-button":{
@@ -769,7 +746,7 @@ export default new Command({
                     const webhooksMessages = webhooks.filter(w => w.name == "Zunder Mensagens");
 
                     if (webhooksMessages.size < 1){
-                        embedDisplay.setColor(convertHex(config.colors.danger))
+                        embedDisplay.setColor(convertHex(config.colors.theme.danger))
                         .setDescription("Nenhum webhook de mensagens encontrado!");
                         interaction.editReply(getMainMenu());
                         return;
@@ -780,7 +757,7 @@ export default new Command({
                         .map(w => ({label: `${w.channel?.name}`, value: w.id, description: `Enviar embed em ${w.channel?.name}`}))
                     });
 
-                    embedDisplay.setColor(convertHex(config.colors.success))
+                    embedDisplay.setColor(convertHex(config.colors.theme.success))
                     .setDescription("Selecione um chat para enviar!");
 
                     rows.first.setComponents(webhooksSelect);
@@ -825,7 +802,7 @@ export default new Command({
                     const webhook = webhooks.get(subInteraction.values[0]);
 
                     if (!webhook){
-                        embedDisplay.setColor(convertHex(config.colors.danger))
+                        embedDisplay.setColor(convertHex(config.colors.theme.danger))
                         .setDescription("Webhook não encontrado!");
                         interaction.editReply(getMainMenu());
                         return;
@@ -833,12 +810,12 @@ export default new Command({
 
                     webhook.send({embeds: [embedBuild], files})
                     .then((msg) => {
-                        embedDisplay.setColor(convertHex(config.colors.success))
+                        embedDisplay.setColor(convertHex(config.colors.theme.success))
                         .setDescription(`Sua mensagem embed foi enviada no chat ${msg.channel}! [Confira](${msg.url})`);
                         interaction.editReply(getMainMenu());
                     })
                     .catch(() => {
-                        embedDisplay.setColor(convertHex(config.colors.danger))
+                        embedDisplay.setColor(convertHex(config.colors.theme.danger))
                         .setDescription("Não foi possível enviar a mensagem para o webhook!");
                         interaction.editReply(getMainMenu());
                     });

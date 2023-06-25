@@ -8,10 +8,10 @@ import { DocumentPlayer } from "../../../app/interfaces";
 export default new Command({
     name: "Message Tools", nameLocalizations: {"pt-BR": "📩 Ferramentas de mensagem"},
     type: ApplicationCommandType.Message,
-    visibility: "staff",
+    visibility: "restricted",
+    dmPermission: false,
     async run(interaction) {
-        if (!interaction.isMessageContextMenuCommand() || !interaction.inCachedGuild()) return;
-        const { member, targetMessage, guild, channel } = interaction;
+        const { member, targetMessage } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData || !memberData.registry || memberData.registry.level < 3){

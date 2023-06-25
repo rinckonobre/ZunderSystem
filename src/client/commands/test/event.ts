@@ -8,6 +8,7 @@ export default new Command({
     description: "Comando básico de eventos",
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
+    dmPermission: false,
     options: [
         {
             name: Events.GuildMemberAdd.toLowerCase(),
@@ -36,8 +37,7 @@ export default new Command({
             ]
         }
     ],
-    async run(interaction) {
-        //if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;        
+    async run(interaction) {        
         const { options } = interaction;
         const subCommand = options.getSubcommand();
         const mention = options.getMember("membro") as GuildMember;

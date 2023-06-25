@@ -9,10 +9,9 @@ export default new Command({
     name: "Member Tools",
     nameLocalizations: {"pt-BR": "👤 Ferramentas de membro"},
     type: ApplicationCommandType.User,
-    visibility: "staff",
+    visibility: "restricted",
+    dmPermission: false,
     async run(interaction) {
-        if (!interaction.isUserContextMenuCommand() || !interaction.inCachedGuild()) return;
-
         const { member, guild, targetMember: target } = interaction;
 
         if (target.user.bot){

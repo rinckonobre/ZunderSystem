@@ -12,9 +12,9 @@ const excludeChannels = [
 
 export default new Event({ name: "messageDelete", async run(message){
     const { guild, channel, member } = message;
-    if (!guild || guild.id != client.mainGuildID || 
+    if (!guild || guild.id != client.mainGuildId || 
         channel.type != ChannelType.GuildText || 
-        !member || member.id == client.onwerID || 
+        !member || member.id == guild.ownerId || 
         member.id === client.user?.id
     ) return;
 

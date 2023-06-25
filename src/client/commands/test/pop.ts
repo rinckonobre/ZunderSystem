@@ -9,6 +9,7 @@ export default new Command({
     },
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
+    dmPermission: false,
     options: [
         {
             name: "usuario",
@@ -17,7 +18,6 @@ export default new Command({
         }
     ],
     async run(interaction) {
-        //if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) return;
         const { guild, member } = interaction;
 
         interaction.reply({

@@ -30,7 +30,7 @@ export class MenuBuilder {
         const { mainEmbed, items, maxItemsPerPage, ephemeral = true, type = "Grid_2", menuFunction } = options;
 
         if (mainEmbed) this.mainEmbed = mainEmbed;
-        else this.mainEmbed = new EmbedBuilder({title: "Menu", color: convertHex(config.colors.primary)});
+        else this.mainEmbed = new EmbedBuilder({title: "Menu", color: convertHex(config.colors.theme.primary)});
         
         this.options = { items, maxItemsPerPage, ephemeral, type, menuFunction };
     }
@@ -84,7 +84,7 @@ export class MenuBuilder {
 
                 if (type == "Blocks") {
                     const embedItem = new EmbedBuilder()
-                    .setColor(config.colors.default as ColorResolvable)
+                    .setColor(config.colors.theme.default as ColorResolvable)
                     .setTitle(item.title)
                     .setDescription(item.description);
                     // .setFields(

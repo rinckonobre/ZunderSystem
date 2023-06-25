@@ -8,7 +8,7 @@ const members: Collection<string, number> = new Collection();
 export default new Event({name: "messageCreate", async run(message){
 
 	if (message.channel.type !== ChannelType.GuildText || 
-        !message.inGuild() || message.guild.id !== client.mainGuildID || 
+        !message.inGuild() || message.guild.id !== client.mainGuildId || 
         message.author.bot || !message.member
     ) return;
     
@@ -37,7 +37,7 @@ export default new Event({name: "messageCreate", async run(message){
         member.timeout(60*1000, "Flood de mensagens");
 
         cGeneral?.send({content: `||${member}||`, embeds: [new EmbedBuilder({
-            color: convertHex(config.colors.danger),
+            color: convertHex(config.colors.theme.danger),
             description: `${member} evite o flood de mensagens nos chats por favor!
             > Leia os ${cTerms} do servidor para evitar punições
             ${italic("Você poderá enviar mensagens novamente em breve...")}`

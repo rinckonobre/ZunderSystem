@@ -11,6 +11,7 @@ export default new Command({
     description: "Configurar sistemas e chats",
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
+    dmPermission: false,
     options: [
         {
             name: "information",
@@ -24,8 +25,6 @@ export default new Command({
         },
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
-
         const { options, guild } = interaction;
 
         switch(options.getSubcommand()){
@@ -96,7 +95,7 @@ export default new Command({
 
                 const embed = new EmbedBuilder({
                     title, description, footer,
-                    color: convertHex(config.colors.primary)
+                    color: convertHex(config.colors.theme.primary)
                 })
                 .setImage(image)
                 .setThumbnail(thumb);
@@ -129,7 +128,7 @@ export default new Command({
 
                 const embed = new EmbedBuilder()
                 .setTitle("Registrar")
-                .setColor(config.colors.primary as ColorResolvable)
+                .setColor(config.colors.theme.primary as ColorResolvable)
                 .setDescription(`📝 Clique no botão abaixo para se registrar.
                 > Você precisará digitar seu nick!
                 - Mais que 3 caracteres

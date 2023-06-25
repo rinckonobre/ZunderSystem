@@ -11,7 +11,7 @@ export default new Event({
 
         if (channel.type != ChannelType.GuildText ||
             channel.name != config.guild.channels.instaplay ||
-            !guild || guild.id != client.mainGuildID ||
+            !guild || guild.id != client.mainGuildId ||
             !member || member.user.bot
         ) return;
         

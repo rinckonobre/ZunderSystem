@@ -13,6 +13,7 @@ export default new Command({
     descriptionLocalizations: {"pt-BR": "Create a Zunder register request"},
     type: ApplicationCommandType.ChatInput,
     visibility: "public",
+    dmPermission: false,
     options: [
         {
             name: "nick",
@@ -23,10 +24,9 @@ export default new Command({
         },
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
         const { member, guild, options } = interaction;
         
-        if (guild.id != client.mainGuildID) {
+        if (guild.id != client.mainGuildId) {
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
             return;
         }
@@ -85,7 +85,7 @@ export default new Command({
 
         const embed = new EmbedBuilder({
             title: "📝 Registro Zunder",
-            color: convertHex(config.colors.zunder),
+            color: convertHex(config.colors.theme.zunder),
             thumbnail: { url: member.displayAvatarURL() },
             description: `> Você está tentando se registrar usando o nick \`${nick}\`
             Selecione um dispositivo para se registrar`,
@@ -216,7 +216,7 @@ export default new Command({
                 await db.players.update(mention.id, "registry", newRegistry);
     
                 embed.setTitle("💛 Solicitação aprovada")
-                .setColor(convertHex(config.colors.zunder))
+                .setColor(convertHex(config.colors.theme.zunder))
                 .setFooter({text: "Administração Zunder"})
                 .setTimestamp()
                 .setDescription(`Sua solicitação de registro Zunder foi aprovada!
@@ -250,7 +250,7 @@ export default new Command({
                 }
                 systemRecords.create({
                     guild, title: "📝 Registro",
-                    color: config.colors.zunder,
+                    color: config.colors.theme.zunder,
                     style: "Full",
                     description: `> ${mention} **${mention.user.tag}**
                     
@@ -261,14 +261,14 @@ export default new Command({
     
                 interaction.update({embeds: [
                     new EmbedBuilder({
-                        color: convertHex(config.colors.success),
+                        color: convertHex(config.colors.theme.success),
                         description: "Esta solicitação de registro foi aprovada!",
                         footer: { text: "Administração Zunder" }
                     })
                 ], components: []});
             } else {
                 embed.setTitle("💔 Solicitação recusada")
-                .setColor(convertHex(config.colors.danger))
+                .setColor(convertHex(config.colors.theme.danger))
                 .setFooter({text: "Administração Zunder"})
                 .setTimestamp()
                 .setDescription(`Sua solicitação de registro Zunder foi recusada!
@@ -282,7 +282,7 @@ export default new Command({
     
                 interaction.update({embeds: [
                     new EmbedBuilder({
-                        color: convertHex(config.colors.danger),
+                        color: convertHex(config.colors.theme.danger),
                         description: "Esta solicitação de registro foi recusada!"
                     })
                 ], components: []});
@@ -371,7 +371,7 @@ export default new Command({
         
             systemRecords.send(guild, {
                 system: {
-                    title: "📝 Registro", color: config.colors.primary, style: "SIMPLE"
+                    title: "📝 Registro", color: config.colors.theme.primary, style: "SIMPLE"
                 },
                 details: `Novo membro registrado: ${member} **${member.user.tag}**
                 Nick: \`${nick}\``,

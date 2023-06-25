@@ -40,7 +40,7 @@ export const systemRegister = {
                 guild, title: "Registro",
                 style: "Simple",
                 mention: member,
-                color: config.colors.primary,
+                color: config.colors.theme.primary,
                 staff: client,
                 description: `${member} **@${user.username}**
         

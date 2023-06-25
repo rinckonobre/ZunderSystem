@@ -8,6 +8,7 @@ export default new Command({
     description: "Mostra informações sobre o bot",
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
+    dmPermission: false,
     async run(interaction) {
         const { heapTotal, heapUsed } = process.memoryUsage();
         const cpuUsage = process.cpuUsage();
@@ -24,7 +25,7 @@ export default new Command({
             new EmbedBuilder({
                 title: "Informações sobre o bot",
                 thumbnail: { url: client.user!.displayAvatarURL() },
-                color: convertHex(config.colors.zunder),
+                color: convertHex(config.colors.theme.zunder),
                 description: `> ${client.user}`,
                 fields: [
                     { name: "Memória", value: `${Math.round(heapUsed / 1024 / 1024 * 100) / 100} MB usados de ${Math.round(heapTotal / 1024 / 1024 * 100) / 100} MB` },

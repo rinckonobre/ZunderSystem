@@ -16,7 +16,8 @@ export default new Command({
     description: "Manage areas of server",
     descriptionLocalizations: {"pt-BR": "Gerencia areas do servidor"},
     type: ApplicationCommandType.ChatInput,
-    visibility: "staff",
+    visibility: "restricted",
+    dmPermission: false,
     options: [
         // {
         //     name: "members",
@@ -44,7 +45,6 @@ export default new Command({
         }
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
         const { member, guild, options } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
@@ -86,7 +86,7 @@ export default new Command({
                     type: "Grid_2",
                     mainEmbed: new EmbedBuilder({
                         title: "Nicks da Zunder",
-                        color: convertHex(config.colors.zunder),
+                        color: convertHex(config.colors.theme.zunder),
                         description: "Lista de membros com nick Zunder",
                         footer: {text: "Administração Zunder"}
                     }),
@@ -156,7 +156,7 @@ export default new Command({
             if (nick.endsWith("Z_")){
                 systemRecords.create({
                     guild, title: "Nick atualizado",
-                    color: config.colors.zunder,
+                    color: config.colors.theme.zunder,
                     mention, staff: member,
                     style: "Simple",
                     description: `${mention} **${mention.user.tag}**
@@ -189,7 +189,7 @@ export default new Command({
             
             systemRecords.create({
                 guild, title: "Registro encerrado",
-                color: config.colors.primary,
+                color: config.colors.theme.primary,
                 mention, staff: member,
                 style: "Simple",
                 description: `${mention} **${mention.user.tag}**

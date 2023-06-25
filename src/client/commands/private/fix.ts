@@ -9,6 +9,7 @@ export default new Command({
     description: "fix bugs",
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
+    dmPermission: false,
     options: [
         {
             name: "resourceslist",
@@ -25,14 +26,12 @@ export default new Command({
         }
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
-
-        const { member, options, guild } = interaction;
+        const { options, guild } = interaction;
 
         switch(options.getSubcommand(true)){
             case "resourceslist":{
                 await interaction.deferReply({ephemeral: true});
-                if (guild.id !== client.mainGuildID){
+                if (guild.id !== client.mainGuildId){
                     new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!", {replace: true});
                     return;
                 }

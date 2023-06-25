@@ -1,256 +1,149 @@
-import { ApplicationCommandType, BitFieldResolvable, Client, ClientEvents, Collection, GatewayIntentsString, IntentsBitField, Partials, version } from "discord.js";
-import { ButtonComponents, CommandType, EventType, ModalComponents, ScheduleType, StringSelectComponents } from ".";
-import { existsSync, readdirSync } from "fs";
-import { GlobalFonts } from "@napi-rs/canvas";
-import { join, resolve } from "path";
-import { clear, log } from "console";
-import cron from "node-cron";
+import { ApplicationCommandType, BitFieldResolvable, Client, ClientEvents, Collection, GatewayIntentBits, GatewayIntentsString, Interaction, Partials, version } from "discord.js";
+import { ButtonCommandComponents, Command, CommandData, ModalCommandComponents, StringSelectCommandComponents } from "./Command";
+import { existsSync, mkdirSync, readdirSync } from "fs";
+import { logger } from "../functions";
+import { Event } from "./Event";
+import { join } from "path";
 import "dotenv/config";
+
+const startTime: number = Date.now();
+const clientDirPath = join(__dirname, "../../client");
+
+const nodeEnv = process.env.ENV ?? "DEV";
+const botToken = process.env[`${nodeEnv}_BOT_TOKEN`];
+const mainGuildId = process.env[`${nodeEnv}_MAIN_GUILD_ID`];
 
 import firebase, { ServiceAccount, credential } from "firebase-admin";
 import devfbAccount from "../../settings/development/firebase.json";
 import prodfbAccount from "../../settings/production/firebase.json";
 
-const enviroment = process.env.ENV as "Development" | "Production";
+const enviroment = process.env.ENV ?? "DEV";
 
-if (enviroment == "Development"){
+if (enviroment == "DEV"){
     firebase.initializeApp({ credential: credential.cert(devfbAccount as ServiceAccount) });
 } else {
     firebase.initializeApp({ credential: credential.cert(prodfbAccount as ServiceAccount) });
 }
-const clientFolderPath = join(__dirname, "../../client/");
-const fileCondition = (fileName: string) => fileName.endsWith(".js") || fileName.endsWith(".ts");
 
-export class ExtendedClient extends Client {
-    public onwerID: string;
-    public mainGuildID: string;
-    public commands: Collection<String, CommandType> = new Collection();
-    public buttons: ButtonComponents = {};
-    public stringSelects: StringSelectComponents = {};
-    public modals: ModalComponents = {};
-    public enviroment: "Development" | "Production";
+function fileFilter(fileName: string){
+    return fileName.endsWith(".ts") || fileName.endsWith(".js");
+}
 
-    constructor() {
+export class ExtendedClient<Ready extends boolean = boolean> extends Client<Ready> {
+    public readonly Commands: Collection<string, CommandData> = new Collection();
+    public readonly mainGuildId: string;
+    public stringSelects: StringSelectCommandComponents = {};
+    public modals: ModalCommandComponents = {};
+    public buttons: ButtonCommandComponents = {};
+    constructor(){
         super({
-            intents: Object.keys(IntentsBitField.Flags) as BitFieldResolvable<GatewayIntentsString, number>,
-            partials: [Partials.Channel, Partials.GuildMember, Partials.Message, Partials.User, Partials.ThreadMember],
-            failIfNotExists: false,
+            intents: [Object.values(GatewayIntentBits) as BitFieldResolvable<GatewayIntentsString, number>],
+            partials: Object.values(Partials) as Partials[],
+            failIfNotExists: false
         });
-        
-        this.enviroment = enviroment;
-        this.onwerID = "264620632644255745";
-        this.mainGuildID = (enviroment == "Development") ?
-        process.env.DEV_MAIN_GUILD_ID as string : 
-        process.env.PROD_MAIN_GUILD_ID as string;
+        if (!mainGuildId){
+            throw new Error("Main guild id is not defined".red);
+        }
+        this.mainGuildId = mainGuildId;
     }
-
-    public start() {
-        const token = (this.enviroment == "Development") ? 
-        process.env.DEV_BOT_TOKEN as string : 
-        process.env.PROD_BOT_TOKEN as string;
-
-        this.loadCommands();
-        this.registerEvents();
-        this.registerFonts();
-        this.registerSchedules();
-        this.registerListeners();
-        this.once("ready", this.whenReady);
-        this.login(token);
+    public async start(){
+        this.on("ready", this.whenReady);
+        this.on("interactionCreate", this.registerListeners);
+        await this.registerCommands();
+        await this.registerEvents();
+        this.login(botToken);
     }
+    private async registerCommands() {
+        const comamndsDirPath = join(clientDirPath, "commands");
+        if (!existsSync(comamndsDirPath)) mkdirSync(comamndsDirPath);
 
-    private registerSchedules() {
-        const tasksFolderPath = join(clientFolderPath, "tasks");
-        if (!existsSync(tasksFolderPath)) return;
-        readdirSync(tasksFolderPath).forEach(local => {
-
-            readdirSync(`${tasksFolderPath}/${local}/`)
-            .filter(file => file.endsWith(".ts") || file.endsWith(".js"))
-            .forEach(async (filename) => {
-                const schedule: ScheduleType = (await import(`../../client/tasks/${local}/${filename}`))?.default;
-
-                const { name, display: consoleDisplay, enable, frequency, execute } = schedule;
-
-                if (enable) {
-                    if (cron.validate(frequency)) {
-                        cron.schedule(frequency, execute);
-                        console.log("⏱️  " + name.green + " " + consoleDisplay);
-                    } else {
-                        console.log(`❌ A tarefa ${name} não tem a frequência válida!`.red);
-                    }
+        for (const subFolder of readdirSync(comamndsDirPath)) {
+            const subFolderPath = join(comamndsDirPath, subFolder);
+            for (const fileName of readdirSync(subFolderPath).filter(fileFilter)){
+                const commandPath = join(subFolderPath, fileName);
+                const command: Command = (await import(commandPath))?.default;
+                if (!command.name){
+                    logger("warn", `! "commands/${subFolder}/${fileName}" file is not exporting a Command`.yellow.italic);
+                    continue;
                 }
+                logger("info",`✓ "commands/${subFolder}/${fileName}" registered as ${command.name.cyan}`.green);
+                this.Commands.set(command.name, command.data);
 
-            });
-        });
+                if (command.data.buttons) this.buttons = { ...this.buttons, ...command.data.buttons };
+                if (command.data.stringSelects) this.stringSelects = { ...this.stringSelects, ...command.data.stringSelects };
+                if (command.data.modals) this.modals = { ...this.modals, ...command.data.modals };
+            }
+        }
     }
-    private loadCommands(){
-        const commandsFolderPath = join(clientFolderPath, "commands");
+    private registerListeners(interaction: Interaction){
+        if (interaction.isButton()){
+            const onClick = this.buttons[interaction.customId];
+            if (onClick) onClick(interaction);
+            return;
+        }
+        if (interaction.isStringSelectMenu()){
+            const onSelect = this.stringSelects[interaction.customId];
+            if (onSelect) onSelect(interaction);
+            return;
+        }
+        if (interaction.isModalSubmit()){
+            const onSubmit = this.modals[interaction.customId];
+            if (onSubmit) onSubmit(interaction);
+            return;
+        }
+        if (!interaction.isCommand()) return;
+        const command = this.Commands.get(interaction.commandName);
+        if (!command) return;
 
-        const commandsFolders = readdirSync(commandsFolderPath);
-        //console.log("\n" + `In commands folder: ${commandsFolders.length}`.blue);
-        
-        commandsFolders.forEach(subFolder => {
-            //console.log("Accessing", subFolder.cyan);
-            readdirSync(join(commandsFolderPath, subFolder)).filter(fileCondition).forEach(async fileName => {
-                //console.log("◌ Loaded".green, fileName.yellow);
+        const { ChatInput, Message, User } = ApplicationCommandType;
 
-                const command: CommandType = (await import(`../../client/commands/${subFolder}/${fileName}`))?.default;
-                if (!command.name) return;
-                const { name, buttons, stringSelects, modals } = command;
+        if (!command.dmPermission && interaction.inCachedGuild()){
+            if (interaction.isChatInputCommand() && command.type == ChatInput) command.run(interaction);
+            if (interaction.isUserContextMenuCommand() && command.type == User) command.run(interaction);
+            if (interaction.isMessageContextMenuCommand() && command.type == Message) command.run(interaction);
+            return;
+        }
+        if (command.dmPermission && !interaction.inCachedGuild()) {
+            if (interaction.isChatInputCommand() && command.type == ChatInput) command.run(interaction);
+            if (interaction.isUserContextMenuCommand() && command.type == User) command.run(interaction);
+            if (interaction.isMessageContextMenuCommand() && command.type == Message) command.run(interaction);
+            return;
+        }
 
-                this.commands.set(name, command);
-
-                if (buttons) this.buttons = {...this.buttons, ...buttons};
-                if (stringSelects) this.stringSelects = {...this.stringSelects, ...stringSelects};
-                if (modals) this.modals = {...this.modals, ...modals};
-            });
-        });
+        if (interaction.isAutocomplete() && command.autoComplete){
+            command.autoComplete(interaction);
+            return;
+        }
     }
-    private registerListeners(){
-        this.on("interactionCreate", (interaction) => {
-            if (interaction.isAutocomplete()){
-                const command = this.commands.get(interaction.commandName);
-                if (!command || !command.autoComplete) return;
-                
-                command.autoComplete(interaction);
-                return;
-            }
-            if (interaction.isCommand()){
-                const command = this.commands.get(interaction.commandName);
-                if (!command) return;
-                const { type } = command;
-                const { ChatInput, Message, User } = ApplicationCommandType;
-
-                if (interaction.isChatInputCommand() && type == ChatInput) command.run(interaction);
-                if (interaction.isUserContextMenuCommand() && type == User) command.run(interaction);
-                if (interaction.isMessageContextMenuCommand() && type == Message) command.run(interaction);
-                return;
-            }
-            if (interaction.isButton()){
-                const onClick = this.buttons[interaction.customId];
-                if (onClick) onClick(interaction);
-                return;
-            }
-            if (interaction.isStringSelectMenu()){
-                const onSelect = this.stringSelects[interaction.customId];
-                if (onSelect) onSelect(interaction);
-                return;
-            }
-            if (interaction.isModalSubmit()){
-                const onSubmit = this.modals[interaction.customId];
-                if (onSubmit) onSubmit(interaction);
-                return;
-            }
-
-        });
-    }
-    private registerEvents() {
-        const eventsFolderPath = join(clientFolderPath, "events");
-
-        const eventsFolders = readdirSync(eventsFolderPath);
-        //console.log("\n" + `In events folder: ${eventsFolders.length}`.blue);
-        eventsFolders.forEach(subFolder => {
-            //console.log("Accessing", subFolder.cyan);
-            readdirSync(join(eventsFolderPath, subFolder)).filter(fileCondition).forEach(async fileName => {
-                //console.log("◌ Loaded".green, fileName.yellow);
-
-                const event: EventType<keyof ClientEvents> = (await import(`../../client/events/${subFolder}/${fileName}`))?.default;
-
-                if (event.once){
-                    this.once(event.name, event.run);
-                } else {
-                    this.on(event.name, event.run);
+    private async registerEvents(){
+        const eventsDirPath = join(clientDirPath, "events");
+        if (!existsSync(eventsDirPath)) {
+          mkdirSync(eventsDirPath);
+        }
+        for (const subFolder of readdirSync(eventsDirPath)) {
+            const subFolderPath = join(eventsDirPath, subFolder);
+            for (const fileName of readdirSync(subFolderPath).filter(fileFilter)){
+                const eventPath = join(subFolderPath, fileName);
+                const event: Event<keyof ClientEvents> = (await import(eventPath))?.default;
+                if (!event.name){
+                    logger("warn", `! "events/${subFolder}/${fileName}" file is not exporting a Event`.yellow.italic);
+                    continue;
                 }
-            });
-        });
+                logger("info",`✓ "events/${subFolder}/${fileName}" registered as ${event.name.cyan}`.green);
+                if (event.once) this.once(event.name, event.run);
+                else this.on(event.name, event.run);
+            }
+        }
     }
-    private registerFonts() {
-        const fontsFolder = resolve(__dirname, "../../../assets/fonts/");
-
-        readdirSync(fontsFolder).forEach((fontName) => {
-            readdirSync(`${fontsFolder}/${fontName}/`).filter(f => f.endsWith(".ttf")).forEach((file) => {
-
-                const weight = file.replace(".ttf", "");
-
-                try {
-                    GlobalFonts.registerFromPath(`${fontsFolder}/${fontName}/${file}`, fontName);
-                    //registerFont(`${fontsFolder}/${fontName}/${file}`, { family: fontName, weight })
-                } catch (err) {
-                    console.log(`Não foi possível registrar a fonte ${fontName} ${weight}`.red);
-                }
-            });
-        });
-    }
-    private whenReady(){
-        clear();
-        const display = (this.enviroment == "Development") 
-        ? " in development mode ".bgCyan.black
-        : " in production mode ".bgGreen.white;
-
-        const owner = this.users.cache.get(this.onwerID);
-        log(" ✓ Bot online".green, display);
-        log(" discord.js".blue, "📦 " + version.yellow, "/", "👤", `@${owner?.username}`.blue.italic);
-
-        this.application?.commands.set(this.commands.map(c => c))
-        .then((commands) => log("⟨ / ⟩".cyan, `${commands.size} commands defined successfully!`.green))
-        .catch((err) => log("An error occurred while trying to set the commands\n".red, err));
-    }
-    // private registerListeners(){
-    //     this.on("interactionCreate", interaction => {
-    //         if (interaction.isModalSubmit()) {
-    //             const { customId } = interaction;
-    //             const clientModal = this.modals.get(customId);
-    //             if (clientModal) clientModal(interaction);
-    //             return;
-    //         }
-    
-    //         if (!interaction.isMessageComponent()) return;
-    //         const { customId } = interaction;
+    private whenReady(client: Client<true>){
+        const { guilds: { cache: guilds } } = client;
+        const loginTime = Date.now() - startTime;
+        logger("log", "\n" + "✓ Bot online".green, `in ${loginTime} ms`.magenta, "in", ` ${nodeEnv} `.bgCyan.black, "mode");
+        logger("info", "discord.js 📦".blue, version.yellow, `Guilds: ${guilds.size}`.cyan);
         
-    //         if (interaction.isButton()){
-    //             const clientButton = this.buttons.get(customId);
-    //             if (clientButton) clientButton(interaction);
-    //             return;
-    //         }
-    //         if (interaction.isStringSelectMenu()){
-    //             const clientSelect = this.selects.get(customId);
-    //             if (clientSelect) clientSelect(interaction);
-    //             return;
-    //         }
-    //     });
-    // }
-    // private registerCommands() {
-    //     this.application?.commands.set(this.slashCommands)
-    //     .then(() => {
-    //         console.log("✓ Slash Commands (/) defined".green);
-    //     })
-    //     .catch((error) => {
-    //         console.log(`✘ An error occurred while trying to set the Slash Commands (/) \n${error}`.red);
-    //     });
-    // }
-    // this.on("ready", () => {
-    //     // this.registerCommands();
-
-    //     // const [commands, buttons, selects, modals] = [
-    //     //     this.commands.size,
-    //     //     this.buttons.size,
-    //     //     this.selects.size,
-    //     //     this.modals.size
-    //     // ];
-
-    //     // function formatNumber(number: number) {
-    //     //     return number < 10 ? `0${number}` : `${number}`;
-    //     // }
-
-    //     const display = (this.enviroment == "Development") ?
-    //     " in development mode ".bgCyan.black:
-    //     " in production mode ".bgGreen.white;
-
-    //     console.log(" ✓ Bot online".green, display);
-    //     console.log(" discord.js".blue, version.yellow);
-    //     // console.log("\u276f ⌨️  Commands (/) loaded:".cyan, `${formatNumber(commands) || "nenhum"}`);
-    //     // console.log("\u276f ⏺️  Buttons loaded:".cyan, `${formatNumber(buttons) || "nenhum"}`);
-    //     // console.log("\u276f 🗃️  Select Menus loaded:".cyan, `${formatNumber(selects) || "nenhum"}`);
-    //     // console.log("\u276f 📑 Modals loaded:".cyan, `${formatNumber(modals) || "nenhum"}`);
-    // });
+        this.application?.commands.set(this.Commands.map(c => c))
+        .then((c) => logger("info", "⟨ / ⟩".cyan, `${c.size} commands defined successfully!`.green))
+        .catch(err => logger("error", "✗ An error occurred while trying to set the commands\n".red, err));
+    }
 }
 

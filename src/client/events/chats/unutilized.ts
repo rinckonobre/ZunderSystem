@@ -17,7 +17,7 @@ export default new Event({
 
         const embed = new EmbedBuilder({
             author: {name: member.displayName, iconURL: member.displayAvatarURL()},
-            color: convertHex(config.colors.danger),
+            color: convertHex(config.colors.theme.danger),
             description: `Olá ${member}. Este chat não pode ser utilizado! \nSe registre usando o chat ${cRegister} por favor`
         });
 

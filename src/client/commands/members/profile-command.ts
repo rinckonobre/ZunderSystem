@@ -12,6 +12,7 @@ export default new Command({
     descriptionLocalizations: {"pt-BR": "Exibe o perfil Zunder de um membro"},
     type: ApplicationCommandType.ChatInput,
     visibility: "public",
+    dmPermission: false,
     options: [
         {
             name: "membro",
@@ -20,7 +21,6 @@ export default new Command({
         }
     ],
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
         const { member, options } = interaction;
         //const member = interaction.member as GuildMember;
         const mention = options.getMember("membro");

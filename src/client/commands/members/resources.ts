@@ -16,6 +16,7 @@ export default new Command({
     descriptionLocalizations: {"pt-BR": "Recursos da Zunder"},
     type: ApplicationCommandType.ChatInput,
     visibility: "public",
+    dmPermission: false,
     options: [
         {
             name: "upload",
@@ -210,8 +211,7 @@ export default new Command({
         }
     },
     async run(interaction) {
-        if (!interaction.inCachedGuild()) return;
-        const { member, guild, channel, options } = interaction;
+        const { member, guild, options } = interaction;
 
         const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
         if (!memberData) {
@@ -219,7 +219,7 @@ export default new Command({
             return;
         }
 
-        if (guild.id !== client.mainGuildID){
+        if (guild.id !== client.mainGuildId){
             new BreakInteraction(interaction, "Este comando só pode ser usado no servidor principal!");
             return;
         }
@@ -294,7 +294,7 @@ export default new Command({
                             ephemeral: true, fetchReply: true,
                             embeds:[
                                 new EmbedBuilder({
-                                    color: convertHex(config.colors.default),
+                                    color: convertHex(config.colors.theme.default),
                                     description: "Você não enviou uma imagem para a thumbnail \nDeseja remover a thumbnail atual?",
                                 })
                             ],
@@ -312,7 +312,7 @@ export default new Command({
                                 subInteraction.update({
                                     embeds: [
                                         new EmbedBuilder({
-                                            color: convertHex(config.colors.danger),
+                                            color: convertHex(config.colors.theme.danger),
                                             description: "Ação cancelada!",
                                         })
                                     ],
@@ -333,7 +333,7 @@ export default new Command({
                                 interaction.editReply({
                                     embeds: [
                                         new EmbedBuilder({
-                                            color: convertHex(config.colors.success),
+                                            color: convertHex(config.colors.theme.success),
                                             description: `A thumbnail do recurso foi removida! [Confira.](${resourceMessage.url})`,
                                         })
                                     ],
@@ -348,7 +348,7 @@ export default new Command({
                         ephemeral: true,  fetchReply: true,
                         embeds: [
                             new EmbedBuilder({
-                                color: convertHex(config.colors.default),
+                                color: convertHex(config.colors.theme.default),
                                 description: "Essa será a nova thumbnail do recurso!",
                                 thumbnail: { url: thumb.url }
                             }),
@@ -367,7 +367,7 @@ export default new Command({
                             subInteraction.update({
                                 embeds: [
                                     new EmbedBuilder({
-                                        color: convertHex(config.colors.danger),
+                                        color: convertHex(config.colors.theme.danger),
                                         description: "Ação cancelada!",
                                     })
                                 ],
@@ -391,7 +391,7 @@ export default new Command({
                             interaction.editReply({
                                 embeds: [
                                     new EmbedBuilder({
-                                        color: convertHex(config.colors.success),
+                                        color: convertHex(config.colors.theme.success),
                                         description: `A thumbnail do recurso foi alterada! [Confira.](${resourceMessage.url})`,
                                     })
                                 ]
@@ -408,7 +408,7 @@ export default new Command({
                             ephemeral: true, fetchReply: true,
                             embeds:[
                                 new EmbedBuilder({
-                                    color: convertHex(config.colors.default),
+                                    color: convertHex(config.colors.theme.default),
                                     description: "Você não enviou uma imagem para o banner \nDeseja remover o banner atual?",
                                 })
                             ],
@@ -426,7 +426,7 @@ export default new Command({
                                 subInteraction.update({
                                     embeds: [
                                         new EmbedBuilder({
-                                            color: convertHex(config.colors.danger),
+                                            color: convertHex(config.colors.theme.danger),
                                             description: "Ação cancelada!",
                                         })
                                     ],
@@ -447,7 +447,7 @@ export default new Command({
                                 interaction.editReply({
                                     embeds: [
                                         new EmbedBuilder({
-                                            color: convertHex(config.colors.success),
+                                            color: convertHex(config.colors.theme.success),
                                             description: `O banner do recurso foi removida! [Confira.](${resourceMessage.url})`,
                                         })
                                     ],
@@ -463,7 +463,7 @@ export default new Command({
                         ephemeral: true,  fetchReply: true,
                         embeds: [
                             new EmbedBuilder({
-                                color: convertHex(config.colors.default),
+                                color: convertHex(config.colors.theme.default),
                                 description: "Esse será o novo banner do recurso!",
                                 thumbnail: { url: banner.url }
                             }),
@@ -482,7 +482,7 @@ export default new Command({
                             subInteraction.update({
                                 embeds: [
                                     new EmbedBuilder({
-                                        color: convertHex(config.colors.danger),
+                                        color: convertHex(config.colors.theme.danger),
                                         description: "Ação cancelada!",
                                     })
                                 ],
@@ -506,7 +506,7 @@ export default new Command({
                             interaction.editReply({
                                 embeds: [
                                     new EmbedBuilder({
-                                        color: convertHex(config.colors.success),
+                                        color: convertHex(config.colors.theme.success),
                                         description: `O banner do recurso foi alterada! [${resourceMessage.url}](Confira.)`,
                                     })
                                 ],
@@ -693,7 +693,7 @@ export default new Command({
                 const message = await interaction.reply({
                     ephemeral: true, embeds: [
                         new EmbedBuilder({
-                            color: convertHex(config.colors.danger),
+                            color: convertHex(config.colors.theme.danger),
                             description:`O recurso **${resource.title}** será deletado permanentemente!
                         Deseja mesmo deletar este recurso?`
                         })
@@ -764,7 +764,7 @@ export default new Command({
             const acessURL = fields.getTextInputValue("resource-upload-url-input");
 
             const embedResource = new EmbedBuilder({
-                title, description, color: convertHex(config.colors.secondary),
+                title, description, color: convertHex(config.colors.theme.secondary),
                 thumbnail: { url: "attachment://thumb.png" },
                 image: { url: "attachment://banner.png" }
             });
@@ -967,7 +967,7 @@ export default new Command({
                 interaction.editReply({
                     embeds: [
                         new EmbedBuilder({
-                            color: convertHex(config.colors.success),
+                            color: convertHex(config.colors.theme.success),
                             description: `O recurso foi editado. [Confira](${resource.messageURL})`
                         }) 
                     ]

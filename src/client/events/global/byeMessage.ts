@@ -6,7 +6,7 @@ import { CanvasFontBuilder, CanvasBuilder } from "../../../app/classes";
 import { createLinearGradiente } from "../../../app/functions";
 
 export default new Event({name: "guildMemberRemove", async run(member){
-    if (member.guild.id != client.mainGuildID ) return;
+    if (member.guild.id != client.mainGuildId) return;
     const { guild } = member;
     
     const cGlobal = guild.channels.cache.find(c => c.name == config.guild.channels.global);

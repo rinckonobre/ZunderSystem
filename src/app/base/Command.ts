@@ -1,36 +1,63 @@
-import { ApplicationCommandData, ApplicationCommandType, AutocompleteInteraction, ButtonInteraction, CacheType, ChatInputCommandInteraction, Collection, Locale, MessageContextMenuCommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandType, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction, UserContextMenuCommandInteraction } from "discord.js";
 
-interface ChatInputCommandProps {
+type CommandProps = {
+    dmPermission?: true,
     type: ApplicationCommandType.ChatInput,
     run(interaction: ChatInputCommandInteraction): any;
-}
-interface UserContextCommandProps {
+    autoComplete?: (interaction: AutocompleteInteraction) => any;
+} | {
+    dmPermission?: true,
     type: ApplicationCommandType.User,
     run(interaction: UserContextMenuCommandInteraction): any;
-}
-interface MessageContextCommandProps {
+} | {
+    dmPermission?: true,
     type: ApplicationCommandType.Message,
     run(interaction: MessageContextMenuCommandInteraction): any;
+} | {
+    type: ApplicationCommandType.ChatInput,
+    dmPermission?: false,
+    run(interaction: ChatInputCommandInteraction<"cached">): any;
+    autoComplete?: (interaction: AutocompleteInteraction<"cached">) => any;
+} | {
+    type: ApplicationCommandType.User,
+    dmPermission?: false,
+    run(interaction: UserContextMenuCommandInteraction<"cached">): any;
+} | {
+    type: ApplicationCommandType.Message,
+    dmPermission?: false,
+    run(interaction: MessageContextMenuCommandInteraction<"cached">): any;
 }
 
-export type ButtonComponents = { [key: string]: (interaction: ButtonInteraction) => void };
-export type StringSelectComponents = { [key: string]: (interaction: StringSelectMenuInteraction) => void };
-export type ModalComponents = { [key: string]: (interaction: ModalSubmitInteraction) => void };
+export type StringSelectCommandComponents = Record<string, (interaction: StringSelectMenuInteraction) => any>
+export type ModalCommandComponents = Record<string, (interaction: ModalSubmitInteraction) => any>
+export type ButtonCommandComponents = Record<string, (interaction: ButtonInteraction) => any>
 
-type CommandProps = ChatInputCommandProps | UserContextCommandProps | MessageContextCommandProps
+interface CommandComponents {
+    stringSelects?: StringSelectCommandComponents,
+    modals?: ModalCommandComponents
+    buttons?: ButtonCommandComponents
+}
 
-export type CommandType = CommandProps & ApplicationCommandData & {
-    visibility: "private" | "public" | "staff",
-    autoComplete?: (interaction: AutocompleteInteraction) => any;
-    buttons?: ButtonComponents,
-    stringSelects?: StringSelectComponents,
-    modals?: ModalComponents
+export type CommandData = CommandProps & ApplicationCommandData & Partial<CommandComponents> & {
+    visibility: "private" | "public" | "restricted",
+    autoComplete?: (interaction: AutocompleteInteraction) => any
 }
 
 export class Command {
-    constructor(options: CommandType){
-        if (!options.dmPermission) options.dmPermission = false;
-        Object.assign(this, options);
-    }
+  public readonly name;
+  public readonly data;
+  constructor(data: CommandData){
+    this.name = data.name;
+    this.data = data;
+  }
 }
 
+// type MeuTipo = {
+//     prop1: string;
+//     prop2: number;
+//     prop3: boolean;
+//   };
+  
+//   interface MinhaInterface extends MeuTipo {
+//     outraProp: string;
+//   }

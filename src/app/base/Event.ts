@@ -1,13 +1,18 @@
 import { ClientEvents } from "discord.js";
 
-export type EventType<Key extends keyof ClientEvents> = {
+type EventData<Key extends keyof ClientEvents> = {
     name: Key,
     once?: boolean,
-    run: (...args: ClientEvents[Key]) => any,
+    run(...args: ClientEvents[Key]): any,
 }
 
 export class Event<Key extends keyof ClientEvents> {
-    constructor(options: EventType<Key>){
-        Object.assign(this, options);
+    public readonly name: Key;
+    public readonly once?: boolean;
+    public run: (...args: ClientEvents[Key]) => any;
+    constructor({name, once, run }: EventData<Key>){
+        this.name = name;
+        this.once = once;
+        this.run = run;
     }
 }

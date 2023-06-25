@@ -10,9 +10,8 @@ export default new Command({
     nameLocalizations: {"pt-BR": "Perfil Zunder"},
     type: ApplicationCommandType.User,
     visibility: "public",
+    dmPermission: false,
     async run(interaction) {
-
-        if (!interaction.inCachedGuild()) return;
         const member = interaction.targetMember;
         
         if (member.user.bot) {
