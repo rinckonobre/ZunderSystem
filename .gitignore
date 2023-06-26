@@ -9,3 +9,5 @@ ffplay.exe
 ffprobe.exe
 tsconfig.tsbuildinfo
 squarecloud.app
+discloud.config
+*.zip

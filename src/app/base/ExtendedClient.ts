@@ -16,6 +16,7 @@ const mainGuildId = process.env[`${nodeEnv}_MAIN_GUILD_ID`];
 import firebase, { ServiceAccount, credential } from "firebase-admin";
 import devfbAccount from "../../settings/development/firebase.json";
 import prodfbAccount from "../../settings/production/firebase.json";
+import { GlobalFonts } from "@napi-rs/canvas";
 
 const enviroment = process.env.ENV ?? "DEV";
 
@@ -47,17 +48,19 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
         this.mainGuildId = mainGuildId;
     }
     public async start(){
-        this.on("ready", this.whenReady);
-        this.on("interactionCreate", this.registerListeners);
         await this.registerCommands();
         await this.registerEvents();
+        this.registerFonts();
         this.login(botToken);
+        this.on("ready", this.whenReady);
+        this.on("interactionCreate", this.registerListeners);
     }
     private async registerCommands() {
         const comamndsDirPath = join(clientDirPath, "commands");
         if (!existsSync(comamndsDirPath)) mkdirSync(comamndsDirPath);
 
         for (const subFolder of readdirSync(comamndsDirPath)) {
+            if (subFolder.startsWith("-")) continue;
             const subFolderPath = join(comamndsDirPath, subFolder);
             for (const fileName of readdirSync(subFolderPath).filter(fileFilter)){
                 const commandPath = join(subFolderPath, fileName);
@@ -121,6 +124,7 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
           mkdirSync(eventsDirPath);
         }
         for (const subFolder of readdirSync(eventsDirPath)) {
+            if (subFolder.startsWith("-")) continue;
             const subFolderPath = join(eventsDirPath, subFolder);
             for (const fileName of readdirSync(subFolderPath).filter(fileFilter)){
                 const eventPath = join(subFolderPath, fileName);
@@ -134,6 +138,24 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
                 else this.on(event.name, event.run);
             }
         }
+    }
+    private registerFonts() {
+        const fontsFolder = join(__dirname, "../../../assets/fonts/");
+
+        readdirSync(fontsFolder).forEach((fontName) => {
+            readdirSync(`${fontsFolder}/${fontName}/`).filter(f => f.endsWith(".ttf")).forEach((file) => {
+
+                const weight = file.replace(".ttf", "");
+
+                try {
+                    const stats = GlobalFonts.registerFromPath(`${fontsFolder}/${fontName}/${file}`, fontName);
+                    console.log(stats ? `${fontName}/${file} source successfully registered` : `${fontName}/${file} is not registered`);
+                    //registerFont(`${fontsFolder}/${fontName}/${file}`, { family: fontName, weight })
+                } catch (err) {
+                    console.log(`Unable to register font ${fontName} ${weight}`.red);
+                }
+            });
+        });
     }
     private whenReady(client: Client<true>){
         const { guilds: { cache: guilds } } = client;

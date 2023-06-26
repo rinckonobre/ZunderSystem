@@ -13,3 +13,11 @@ const db = {
 };
 
 export { client, config, db };
+
+process.on("uncaughtException", (err, origin) => {
+	console.log("Zunder System: \n", err, "\n" + origin);
+});
+
+process.on("unhandledRejection", (a) => {
+	console.log("Zunder System: \n", a);
+});
