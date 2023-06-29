@@ -7,7 +7,7 @@ export class Database {
     constructor(collectionName: string){
         this.collection = db.collection(collectionName);
     }
-    public async create({id, data}:{id?: string, data: Object}){
+    public async create<T extends Object>({id, data}:{id?: string, data: T}){
         if (id) {
             return await this.collection.doc(id).set(data);
         }
@@ -16,27 +16,35 @@ export class Database {
     public async delete(id: string){
         return await this.collection.doc(id).delete();
     }
-    public async get(id:string, path?: string): Promise<any>{
-        const doc = await this.collection.doc(id).get();
-        const data = doc.data();
-        if (path && data){
-            const parts = path.split(".");
-            let value = data;
-            for (let i = 0; i < parts.length; i++) {
-                const part = parts[i];
-                if (part.includes("[")) {
-                    const key = part.substring(0, part.indexOf("["));
-                    const index = part.substring(part.indexOf("[") + 1, part.indexOf("]"));
-                    value = value[key][index];
-                } else {
-                    value = value[part];
-                }
-            }
-            return value;
-        } else {
-            return data;
+    public async get<T>(id: string, path?: string): Promise<T | undefined>{
+        const document = await this.collection.doc(id).get();
+        if (path){
+            return document.get(path);
         }
+        const data = document.data() as T;
+        return data;
     }
+    // public async get(id:string, path?: string): Promise<any>{
+    //     const doc = await this.collection.doc(id).get();
+    //     const data = doc.data();
+    //     if (path && data){
+    //         const parts = path.split(".");
+    //         let value = data;
+    //         for (let i = 0; i < parts.length; i++) {
+    //             const part = parts[i];
+    //             if (part.includes("[")) {
+    //                 const key = part.substring(0, part.indexOf("["));
+    //                 const index = part.substring(part.indexOf("[") + 1, part.indexOf("]"));
+    //                 value = value[key][index];
+    //             } else {
+    //                 value = value[part];
+    //             }
+    //         }
+    //         return value;
+    //     } else {
+    //         return data;
+    //     }
+    // }
     public async update(id: string, path: string, value: any, option?: "increment" | "delete" | "arrayUnion" | "arrayRemove"){
         const doc = this.collection.doc(id);
         if (option){

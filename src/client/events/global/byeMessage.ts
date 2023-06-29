@@ -4,6 +4,7 @@ import { Event } from "../../../app/base";
 import { client, db, config } from "../../..";
 import { CanvasFontBuilder, CanvasBuilder } from "../../../app/classes";
 import { createLinearGradiente } from "../../../app/functions";
+import { join } from "path";
 
 export default new Event({name: "guildMemberRemove", async run(member){
     if (member.guild.id != client.mainGuildId) return;
@@ -13,7 +14,7 @@ export default new Event({name: "guildMemberRemove", async run(member){
     if (cGlobal?.type !== ChannelType.GuildText) return;
 
     const images = {
-        background: await loadImage(config.images.resolutions["1024-260"][0]),
+        background: await loadImage(join(process.cwd(), "images", "1024-260", "01.png")),
         profile: await loadImage(member.displayAvatarURL({extension: "png", size: 1024}))
     };
 

@@ -33,7 +33,7 @@ export default new Command({
 
         const nick = options.getString("nick", true);
 
-        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
+        const memberData = await db.players.get<DocumentPlayer>(member.id);
         if (!memberData) {
             new BreakInteraction(interaction, "Você precisa ter se registrado antes no servidor!");
             return;

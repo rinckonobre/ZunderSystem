@@ -6,6 +6,7 @@ import { CanvasFontBuilder, CanvasBuilder } from "../../../app/classes";
 import { DocumentPlayer } from "../../../app/interfaces";
 import { registries } from "../../../settings/jsons";
 import { createLinearGradiente } from "../../../app/functions";
+import { join } from "path";
 
 export default new Event({name: "guildMemberAdd", async run(member){
     if (member.guild.id != client.mainGuildId) return;
@@ -17,7 +18,7 @@ export default new Event({name: "guildMemberAdd", async run(member){
     const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
     
     const images = {
-        background: await loadImage(config.images.resolutions["1024-260"][0]),
+        background: await loadImage(join(process.cwd(), "images", "1024-260", "01.png")),
         profile: await loadImage(member.displayAvatarURL({extension: "png", size: 1024}))
     };
 

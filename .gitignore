@@ -8,6 +8,6 @@ ffmpeg.exe
 ffplay.exe
 ffprobe.exe
 tsconfig.tsbuildinfo
-squarecloud.app
-discloud.config
+*.app
+*.config
 *.zip

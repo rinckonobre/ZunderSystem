@@ -1,5 +1,6 @@
 import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, Embed, EmbedBuilder } from "discord.js";
 import { Command } from "../../../app/base";
+import { join } from "path";
 
 export default new Command({
     name: "pop",
@@ -10,20 +11,16 @@ export default new Command({
     type: ApplicationCommandType.ChatInput,
     visibility: "private",
     dmPermission: false,
-    options: [
-        {
-            name: "usuario",
-            description: "usuario",
-            type: ApplicationCommandOptionType.User
-        }
-    ],
     async run(interaction) {
         const { guild, member } = interaction;
 
+
+        const path = join(process.cwd(), "images", "1024-260", "01.png");
+        console.log(path);
+        const attach = new AttachmentBuilder(path, {name: "image.png"});
+
         interaction.reply({
-            components: [new ActionRowBuilder<ButtonBuilder>({components: [
-                new ButtonBuilder({customId: "test", label: "test", style: ButtonStyle.Success})
-            ]})]
+            files: [attach]
         });
     },
 });

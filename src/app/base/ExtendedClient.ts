@@ -6,21 +6,22 @@ import { Event } from "./Event";
 import { join } from "path";
 import "dotenv/config";
 
+import firebase, { ServiceAccount, credential } from "firebase-admin";
+import devfbAccount from "../../settings/development/firebase.json";
+import prodfbAccount from "../../settings/production/firebase.json";
+import { GlobalFonts } from "@napi-rs/canvas";
+import server from "../../server";
+
 const startTime: number = Date.now();
 const clientDirPath = join(__dirname, "../../client");
 
 const nodeEnv = process.env.ENV ?? "DEV";
 const botToken = process.env[`${nodeEnv}_BOT_TOKEN`];
 const mainGuildId = process.env[`${nodeEnv}_MAIN_GUILD_ID`];
+const enableServer = process.env.ENABLE_SERVER ?? "false";
+const serverPort = process.env.PORT;
 
-import firebase, { ServiceAccount, credential } from "firebase-admin";
-import devfbAccount from "../../settings/development/firebase.json";
-import prodfbAccount from "../../settings/production/firebase.json";
-import { GlobalFonts } from "@napi-rs/canvas";
-
-const enviroment = process.env.ENV ?? "DEV";
-
-if (enviroment == "DEV"){
+if (nodeEnv == "DEV"){
     firebase.initializeApp({ credential: credential.cert(devfbAccount as ServiceAccount) });
 } else {
     firebase.initializeApp({ credential: credential.cert(prodfbAccount as ServiceAccount) });
@@ -29,6 +30,8 @@ if (enviroment == "DEV"){
 function fileFilter(fileName: string){
     return fileName.endsWith(".ts") || fileName.endsWith(".js");
 }
+
+if (enableServer == "true") server({port: serverPort});
 
 export class ExtendedClient<Ready extends boolean = boolean> extends Client<Ready> {
     public readonly Commands: Collection<string, CommandData> = new Collection();
@@ -48,9 +51,9 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
         this.mainGuildId = mainGuildId;
     }
     public async start(){
-        await this.registerCommands();
-        await this.registerEvents();
-        this.registerFonts();
+        this.registerFonts(),
+        await this.registerEvents(),
+        await this.registerCommands(),
         this.login(botToken);
         this.on("ready", this.whenReady);
         this.on("interactionCreate", this.registerListeners);
@@ -69,7 +72,7 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
                     logger("warn", `! "commands/${subFolder}/${fileName}" file is not exporting a Command`.yellow.italic);
                     continue;
                 }
-                logger("info",`✓ "commands/${subFolder}/${fileName}" registered as ${command.name.cyan}`.green);
+                logger("info",`✓ "commands/${subFolder}/${fileName}" `.blue.underline + `registered as ${command.name.cyan}`.green);
                 this.Commands.set(command.name, command.data);
 
                 if (command.data.buttons) this.buttons = { ...this.buttons, ...command.data.buttons };
@@ -133,7 +136,7 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
                     logger("warn", `! "events/${subFolder}/${fileName}" file is not exporting a Event`.yellow.italic);
                     continue;
                 }
-                logger("info",`✓ "events/${subFolder}/${fileName}" registered as ${event.name.cyan}`.green);
+                logger("info",`✓ "events/${subFolder}/${fileName}" `.yellow.underline + `registered as ${event.name.cyan}`.green);
                 if (event.once) this.once(event.name, event.run);
                 else this.on(event.name, event.run);
             }
@@ -149,8 +152,10 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
 
                 try {
                     const stats = GlobalFonts.registerFromPath(`${fontsFolder}/${fontName}/${file}`, fontName);
-                    console.log(stats ? `${fontName}/${file} source successfully registered` : `${fontName}/${file} is not registered`);
-                    //registerFont(`${fontsFolder}/${fontName}/${file}`, { family: fontName, weight })
+                    console.log(stats 
+                        ? `${fontName}/${file} `.magenta + "font successfully registered".green
+                        : `${fontName}/${file} `.magenta + "is not registered".red
+                    );
                 } catch (err) {
                     console.log(`Unable to register font ${fontName} ${weight}`.red);
                 }

@@ -212,8 +212,8 @@ export default new Command({
     },
     async run(interaction) {
         const { member, guild, options } = interaction;
-
-        const memberData = await db.players.get(member.id) as DocumentPlayer | undefined;
+        
+        const memberData = await db.players.get<DocumentPlayer>(member.id);
         if (!memberData) {
             new BreakInteraction(interaction, "Apenas membros registrados podem utilizar este comando!");
             return;

@@ -19,7 +19,7 @@ export class Cooldown {
           case "days":
             return 1000 * 60 * 60 * 24;
           case "months":
-            return 1000 * 60 * 60 * 24 * 30; // 30 days per month (approx.)
+            return 1000 * 60 * 60 * 24 * 30;
           default:
             throw new Error(`Invalid unit: ${unit}`);
         }
@@ -34,28 +34,6 @@ export class Cooldown {
     get endTime(): number {
         return this.endDate.getTime();
     }
-    // constructor(value: number, cooldownTimes: TimeUnit){
-    //     super();
-    //     const date = new Date(Date.now());
-    //     switch (cooldownTimes) {
-    //         case "seconds":{
-    //             date.setSeconds(date.getSeconds() + value);
-    //             break;
-    //         }
-    //         case "minutes":{
-    //             date.setMinutes(date.getMinutes() + value);
-    //             break;
-    //         }
-    //         case "hours":{
-    //             date.setHours(date.getHours() + value);
-    //             break;
-    //         }
-    //         case "days":{
-    //             date.setHours(date.getHours() + (value  * 24));
-    //             break;
-    //         }
-    //     }
-    // }
 }
 
 // type TimeUnit = "seconds" | "minutes" | "hours" | "days" | "months";
