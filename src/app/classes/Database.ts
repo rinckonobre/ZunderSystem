@@ -45,7 +45,7 @@ export class Database {
     //         return data;
     //     }
     // }
-    public async update(id: string, path: string, value: any, option?: "increment" | "delete" | "arrayUnion" | "arrayRemove"){
+    public async update<T = any>(id: string, path: string, value: T, option?: "increment" | "delete" | "arrayUnion" | "arrayRemove"){
         const doc = this.collection.doc(id);
         if (option){
             switch(option){

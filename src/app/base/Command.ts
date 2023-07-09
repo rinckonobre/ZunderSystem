@@ -44,20 +44,10 @@ export type CommandData = CommandProps & ApplicationCommandData & Partial<Comman
 }
 
 export class Command {
-  public readonly name;
-  public readonly data;
-  constructor(data: CommandData){
-    this.name = data.name;
-    this.data = data;
-  }
+    public readonly name;
+    public readonly data;
+    constructor(data: CommandData){
+        this.name = data.name;
+        this.data = data;
+    }
 }
-
-// type MeuTipo = {
-//     prop1: string;
-//     prop2: number;
-//     prop3: boolean;
-//   };
-  
-//   interface MinhaInterface extends MeuTipo {
-//     outraProp: string;
-//   }

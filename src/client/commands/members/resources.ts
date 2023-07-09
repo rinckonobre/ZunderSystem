@@ -3,7 +3,7 @@ import { Command } from "../../../app/base";
 import { DocumentPlayer, DocumentResource, ResourceUploadProps, ZunderResourceUploadProps } from "../../../app/interfaces";
 import { client, config, db } from "../../..";
 import { BreakInteraction, MenuBuilder } from "../../../app/classes";
-import { buttonCollector, convertHex, findChannel, findRole, logger, stringSelectCollector } from "../../../app/functions";
+import { buttonCollector, convertHex, findChannel, findRole, stringSelectCollector } from "../../../app/functions";
 
 const membersUpload: Collection<string, ResourceUploadProps> = new Collection();
 const membersEdit: Collection<string, string> = new Collection();
@@ -339,7 +339,7 @@ export default new Command({
                                     ],
                                 });
                             })
-                            .catch(logger);
+                            .catch(console.log);
                         });
                         return;
                     }
@@ -397,7 +397,7 @@ export default new Command({
                                 ]
                             });
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     });
                     return;
                 }
@@ -454,7 +454,7 @@ export default new Command({
                                     components: []
                                 });
                             })
-                            .catch(logger);
+                            .catch(console.log);
                         });
                         return;
                     }
@@ -513,7 +513,7 @@ export default new Command({
                                 components: []
                             });
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     });
                     return;
                 }
@@ -905,7 +905,7 @@ export default new Command({
                 if (role) {
                     const notifyMsg = await channel.send({content: `||${role}||`});
                     setTimeout(() => {
-                        notifyMsg.delete().catch(logger);
+                        notifyMsg.delete().catch(console.log);
                     }, 20 * 1000);
                     return;
                 }
@@ -973,7 +973,7 @@ export default new Command({
                     ]
                 });
             })
-            .catch(logger);
+            .catch(console.log);
 
             
 

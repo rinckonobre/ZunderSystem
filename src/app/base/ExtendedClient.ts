@@ -1,7 +1,6 @@
 import { ApplicationCommandType, BitFieldResolvable, Client, ClientEvents, Collection, GatewayIntentBits, GatewayIntentsString, Interaction, Partials, version } from "discord.js";
 import { ButtonCommandComponents, Command, CommandData, ModalCommandComponents, StringSelectCommandComponents } from "./Command";
 import { existsSync, mkdirSync, readdirSync } from "fs";
-import { logger } from "../functions";
 import { Event } from "./Event";
 import { join } from "path";
 import "dotenv/config";
@@ -43,7 +42,7 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
         super({
             intents: [Object.values(GatewayIntentBits) as BitFieldResolvable<GatewayIntentsString, number>],
             partials: Object.values(Partials) as Partials[],
-            failIfNotExists: false
+            failIfNotExists: false,
         });
         if (!mainGuildId){
             throw new Error("Main guild id is not defined".red);
@@ -69,10 +68,10 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
                 const commandPath = join(subFolderPath, fileName);
                 const command: Command = (await import(commandPath))?.default;
                 if (!command.name){
-                    logger("warn", `! "commands/${subFolder}/${fileName}" file is not exporting a Command`.yellow.italic);
+                    console.log(`! "commands/${subFolder}/${fileName}" file is not exporting a Command`.yellow.italic);
                     continue;
                 }
-                logger("info",`✓ "commands/${subFolder}/${fileName}" `.blue.underline + `registered as ${command.name.cyan}`.green);
+                console.log(`✓ "commands/${subFolder}/${fileName}" `.blue.underline + `registered as ${command.name.cyan}`.green);
                 this.Commands.set(command.name, command.data);
 
                 if (command.data.buttons) this.buttons = { ...this.buttons, ...command.data.buttons };
@@ -133,10 +132,10 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
                 const eventPath = join(subFolderPath, fileName);
                 const event: Event<keyof ClientEvents> = (await import(eventPath))?.default;
                 if (!event.name){
-                    logger("warn", `! "events/${subFolder}/${fileName}" file is not exporting a Event`.yellow.italic);
+                    console.log(`! "events/${subFolder}/${fileName}" file is not exporting a Event`.yellow.italic);
                     continue;
                 }
-                logger("info",`✓ "events/${subFolder}/${fileName}" `.yellow.underline + `registered as ${event.name.cyan}`.green);
+                console.log(`✓ "events/${subFolder}/${fileName}" `.yellow.underline + `registered as ${event.name.cyan}`.green);
                 if (event.once) this.once(event.name, event.run);
                 else this.on(event.name, event.run);
             }
@@ -165,12 +164,12 @@ export class ExtendedClient<Ready extends boolean = boolean> extends Client<Read
     private whenReady(client: Client<true>){
         const { guilds: { cache: guilds } } = client;
         const loginTime = Date.now() - startTime;
-        logger("log", "\n" + "✓ Bot online".green, `in ${loginTime} ms`.magenta, "in", ` ${nodeEnv} `.bgCyan.black, "mode");
-        logger("info", "discord.js 📦".blue, version.yellow, `Guilds: ${guilds.size}`.cyan);
+        console.log("\n" + "✓ Bot online".green, `in ${loginTime} ms`.magenta, "in", ` ${nodeEnv} `.bgCyan.black, "mode");
+        console.log("discord.js 📦".blue, version.yellow, `Guilds: ${guilds.size}`.cyan);
         
         this.application?.commands.set(this.Commands.map(c => c))
-        .then((c) => logger("info", "⟨ / ⟩".cyan, `${c.size} commands defined successfully!`.green))
-        .catch(err => logger("error", "✗ An error occurred while trying to set the commands\n".red, err));
+        .then((c) => console.log( "⟨ / ⟩".cyan, `${c.size} commands defined successfully!`.green))
+        .catch(err => console.log("error", "✗ An error occurred while trying to set the commands\n".red, err));
     }
 }
 

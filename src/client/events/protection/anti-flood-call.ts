@@ -1,7 +1,7 @@
 import { ChannelType, Collection, EmbedBuilder } from "discord.js";
 import { Event } from "../../../app/base";
 import { client, config } from "../../..";
-import { convertHex, findChannel, logger, wait } from "../../../app/functions";
+import { convertHex, findChannel, wait } from "../../../app/functions";
 
 const members: Collection<string, number> = new Collection();
 
@@ -38,7 +38,7 @@ export default new Event({
             })]})
             .then(async message => {
                 await wait(60*1000);
-                message.delete().catch(logger);
+                message.delete().catch(console.log);
             });
             
             return;

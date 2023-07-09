@@ -1,5 +1,4 @@
 import { ButtonInteraction, ColorResolvable, CommandInteraction, EmbedBuilder, GuildMember, Message, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
-import { logger } from "../functions";
 import { config } from "../..";
 
 type BreakSources = CommandInteraction
@@ -22,7 +21,7 @@ export class BreakInteraction {
 
         function handleDeleteMessage(message: Message){
             setTimeout(() => {
-                message.delete().catch(logger);
+                message.delete().catch(console.log);
             }, deleteTime || 8000);
         }
 
@@ -47,7 +46,7 @@ export class BreakInteraction {
             if (source instanceof Message){
                 source.reply({embeds})
                 .then(handleDeleteMessage)
-                .catch(logger);
+                .catch(console.log);
                 return;
             }
 
@@ -58,13 +57,13 @@ export class BreakInteraction {
                         .then(message => {
                             if (deleteTime) handleDeleteMessage(message);
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     } else {
                         source.followUp({ephemeral: true, embeds})
                         .then(message => {
                             if (deleteTime) handleDeleteMessage(message);
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     }
                     return;
                 }
@@ -74,11 +73,11 @@ export class BreakInteraction {
                     .then(message => {
                         if (deleteTime) handleDeleteMessage(message);
                     })
-                    .catch(logger);
+                    .catch(console.log);
                     return;
                 }
 
-                source.reply({ephemeral: true, embeds}).catch(logger);
+                source.reply({ephemeral: true, embeds}).catch(console.log);
                 return;
             }
 
@@ -89,13 +88,13 @@ export class BreakInteraction {
                         .then(message => {
                             if (deleteTime) handleDeleteMessage(message);
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     } else {
                         source.followUp({ephemeral: true, embeds})
                         .then(message => {
                             if (deleteTime) handleDeleteMessage(message);
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     }
                     return;
                 }
@@ -105,13 +104,13 @@ export class BreakInteraction {
                     .then(message => {
                         if (deleteTime) handleDeleteMessage(message);
                     })
-                    .catch(logger);
+                    .catch(console.log);
                 } else {
                     source.reply({ephemeral: true, embeds, fetchReply: true})
                     .then(message => {
                         if (deleteTime) handleDeleteMessage(message);
                     })
-                    .catch(logger);
+                    .catch(console.log);
                 }
 
                 return;
@@ -124,13 +123,13 @@ export class BreakInteraction {
                         .then(message => {
                             if (deleteTime) handleDeleteMessage(message);
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     } else {
                         source.followUp({ephemeral: true, embeds})
                         .then(message => {
                             if (deleteTime) handleDeleteMessage(message);
                         })
-                        .catch(logger);
+                        .catch(console.log);
                     }
                     return;
                 }
@@ -140,7 +139,7 @@ export class BreakInteraction {
                     .then(message => {
                         if (deleteTime) handleDeleteMessage(message);
                     })
-                    .catch(logger);
+                    .catch(console.log);
                     return;
                 }
 
@@ -148,7 +147,7 @@ export class BreakInteraction {
                 .then(message => {
                     if (deleteTime) handleDeleteMessage(message);
                 })
-                .catch(logger);
+                .catch(console.log);
                 return;
             }
         })();

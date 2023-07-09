@@ -2,7 +2,7 @@ import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType,
 import { db } from "../../..";
 import { Command } from "../../../app/base";
 import { BreakInteraction } from "../../../app/classes";
-import { systemProfile, logger, stringSelectCollector } from "../../../app/functions";
+import { systemProfile, stringSelectCollector } from "../../../app/functions";
 import { DocumentPlayer } from "../../../app/interfaces";
 
 export default new Command({
@@ -54,7 +54,7 @@ export default new Command({
     
             if (!executorId || executorId !== member.id) return;
             
-            interaction.message.delete().catch(logger);
+            interaction.message.delete().catch(console.log);
         },
         "profile-config-button": async (interaction) => {
             if (!interaction.inCachedGuild()) return;
